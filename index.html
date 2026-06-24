@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prashant Singh — Equations → Algorithms → Decisions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --ink:#141412;
+  --ink-mid:#4a4842;
+  --ink-light:#8a8680;
+  --stone:#C8BFA8;
+  --stone-light:#E4DFD4;
+  --page:#F7F6F2;
+  --sky:#E8EEF4;
+  --rust:#B85C38;
+  --rust-pale:#F0E8E3;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ─── NAV ─────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.25rem 3rem;
+  background:rgba(247,246,242,.85);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--stone-light);
+  transition:transform .3s;
+}
+.nav-logo{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  color:var(--ink);text-decoration:none;
+  transition:opacity .3s;
+}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{
+  font-family:var(--sans);font-size:12px;font-weight:400;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-mid);text-decoration:none;
+  position:relative;transition:color .2s;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;
+  height:1px;background:var(--rust);
+  transform:scaleX(0);transform-origin:left;transition:transform .25s;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-links a.active{color:var(--ink)}
+.nav-links a.active::after{transform:scaleX(1)}
+
+/* ─── REVEAL ──────────────────────────────── */
+.reveal{
+  opacity:0;transform:translateY(32px);
+  transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.35s}
+.reveal-delay-4{transition-delay:.5s}
+
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ─── HERO ────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 3rem 4rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero-bg-text{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--serif);font-size:clamp(120px,20vw,260px);font-weight:300;
+  color:var(--stone-light);line-height:1;
+  pointer-events:none;user-select:none;white-space:nowrap;
+  letter-spacing:-.03em;
+  z-index:0;
+  animation:hero-bg-fade 2s cubic-bezier(.16,1,.3,1) forwards;
+  opacity:0;
+}
+@keyframes hero-bg-fade{0%{opacity:0;transform:translate(-50%,-50%) scale(.96)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+
+.hero-equation{
+  position:relative;z-index:1;
+  font-family:var(--serif);
+  font-size:clamp(2rem,5vw,4rem);
+  font-weight:300;font-style:italic;
+  color:var(--ink);letter-spacing:-.01em;
+  line-height:1.1;
+  margin-bottom:1rem;
+  animation:eq-in 1.2s .3s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes eq-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-equation .eq-rust{color:var(--rust);font-style:normal}
+.hero-equation .eq-frac{
+  display:inline-flex;flex-direction:column;align-items:center;
+  vertical-align:middle;margin:0 .15em;font-style:italic;
+}
+.eq-num,.eq-den{display:block;font-size:.8em;line-height:1.1}
+.eq-bar{display:block;width:100%;height:1px;background:currentColor;margin:.1em 0}
+
+.hero-identity{
+  position:relative;z-index:1;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  flex-wrap:wrap;gap:1.5rem;
+  animation:eq-in 1s .7s cubic-bezier(.16,1,.3,1) both;
+}
+.hero-name{
+  font-family:var(--serif);font-size:clamp(3rem,7vw,5.5rem);
+  font-weight:300;line-height:.9;letter-spacing:-.02em;
+  color:var(--ink);
+}
+.hero-name em{font-style:normal;color:var(--rust)}
+
+.hero-meta{
+  max-width:360px;padding-bottom:.2rem;
+}
+.hero-meta p{
+  font-size:14px;line-height:1.7;color:var(--ink-mid);font-weight:300;
+}
+.hero-meta strong{color:var(--ink);font-weight:500}
+
+.hero-scroll{
+  position:absolute;bottom:2rem;right:3rem;z-index:1;
+  display:flex;align-items:center;gap:.75rem;
+  animation:eq-in 1s 1.3s cubic-bezier(.16,1,.3,1) both;
+}
+.scroll-line{width:48px;height:1px;background:var(--stone);display:block}
+.scroll-label{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--ink-light);text-transform:uppercase}
+
+/* ─── MARQUEE ─────────────────────────────── */
+.marquee-wrap{
+  background:var(--ink);overflow:hidden;padding:.6rem 0;
+  border-top:1px solid #2a2a26;border-bottom:1px solid #2a2a26;
+}
+.marquee-track{
+  display:flex;gap:0;width:max-content;
+  animation:marquee-scroll 28s linear infinite;
+}
+.marquee-item{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  color:var(--ink-light);white-space:nowrap;
+  padding:0 2rem;text-transform:uppercase;
+  display:flex;align-items:center;gap:1rem;
+}
+.marquee-item .dot{color:var(--rust);font-size:6px}
+@keyframes marquee-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ─── SECTION SHELL ───────────────────────── */
+.section{padding:6rem 3rem;max-width:1200px;margin:0 auto}
+.section-full{padding:6rem 0}
+.section-eyebrow{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--rust);
+  margin-bottom:1rem;
+}
+.section-heading{
+  font-family:var(--serif);font-size:clamp(1.8rem,4.5vw,3rem);
+  font-weight:300;letter-spacing:-.01em;line-height:1.1;
+  color:var(--ink);margin-bottom:2.5rem;
+}
+
+/* ─── DIVIDER ─────────────────────────────── */
+.divider{
+  border:none;border-top:1px solid var(--stone-light);
+  margin:0;
+}
+
+/* ─── FILM-STRIP SECTION ──────────────────── */
+.filmstrip-outer{
+  background:var(--ink);
+  padding:4rem 0;
+  position:relative;overflow:hidden;
+}
+.filmstrip-header{
+  padding:0 3rem 3rem;
+  display:flex;justify-content:space-between;align-items:flex-end;
+}
+.filmstrip-heading{
+  font-family:var(--serif);font-size:clamp(1.5rem,3.5vw,2.5rem);
+  font-weight:300;color:var(--page);letter-spacing:-.01em;line-height:1.1;
+}
+.filmstrip-eyebrow{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--rust);margin-bottom:.5rem;
+}
+.filmstrip-hint{
+  font-family:var(--mono);font-size:11px;color:var(--ink-light);
+  letter-spacing:.06em;display:flex;align-items:center;gap:.5rem;
+}
+.filmstrip-hint-arrow{animation:hint-nudge 2s ease-in-out infinite}
+@keyframes hint-nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+
+.sprockets{
+  display:flex;gap:28px;padding:0 3rem;margin-bottom:1rem;
+  align-items:center;
+}
+.sprocket{
+  width:16px;height:10px;border-radius:2px;
+  background:var(--ink-light);opacity:.25;flex-shrink:0;
+}
+
+.filmstrip-track{
+  display:flex;gap:2px;
+  overflow-x:auto;
+  padding:0 3rem;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  cursor:grab;
+}
+.filmstrip-track::-webkit-scrollbar{display:none}
+.filmstrip-track:active{cursor:grabbing}
+
+.film-frame{
+  flex:0 0 360px;
+  background:var(--surface,#1c1c19);
+  border:1px solid #2a2a26;
+  scroll-snap-align:start;
+  position:relative;
+  padding:1.75rem;
+  transition:border-color .3s;
+}
+.film-frame:hover{border-color:var(--rust)}
+
+.film-frame-num{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  color:var(--ink-light);opacity:.4;margin-bottom:1.25rem;
+  display:flex;justify-content:space-between;
+}
+.film-frame-category{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--rust);margin-bottom:.6rem;
+}
+.film-frame-title{
+  font-family:var(--serif);font-size:1.3rem;font-weight:400;
+  color:var(--page);line-height:1.2;margin-bottom:.75rem;letter-spacing:-.01em;
+}
+.film-frame-desc{
+  font-size:13px;line-height:1.7;color:#a09c98;
+  font-weight:300;margin-bottom:1.5rem;
+}
+.film-frame-stack{
+  display:flex;flex-wrap:wrap;gap:.4rem;
+  margin-top:auto;
+}
+.stack-pill{
+  font-family:var(--mono);font-size:10px;
+  padding:.2rem .55rem;
+  border:1px solid #2e2e2a;
+  color:#6a6660;letter-spacing:.04em;
+  border-radius:2px;
+}
+.film-frame-link{
+  display:inline-flex;align-items:center;gap:.35rem;
+  font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+  color:var(--ink-light);text-decoration:none;
+  margin-top:.6rem;transition:color .2s;
+}
+.film-frame-link:hover{color:var(--rust)}
+.film-frame-line{
+  position:absolute;top:0;left:0;right:0;
+  height:2px;background:var(--rust);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+}
+.film-frame:hover .film-frame-line{transform:scaleX(1)}
+
+/* ─── ABOUT ───────────────────────────────── */
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;
+}
+.about-body p{
+  font-size:15px;line-height:1.8;color:var(--ink-mid);
+  margin-bottom:1rem;font-weight:300;
+}
+.about-body p strong{color:var(--ink);font-weight:500}
+.about-body p em{
+  font-family:var(--serif);font-style:italic;
+  font-size:1.05em;color:var(--ink);
+}
+
+.pull-quote{
+  font-family:var(--serif);font-size:clamp(1.2rem,2.5vw,1.8rem);
+  font-weight:300;font-style:italic;
+  line-height:1.4;color:var(--ink);
+  padding-left:1.5rem;
+  border-left:2px solid var(--rust);
+  margin-bottom:2rem;
+}
+
+.stats-col{display:flex;flex-direction:column;gap:1rem}
+.stat-row{
+  padding:1.25rem 0;border-bottom:1px solid var(--stone-light);
+  display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+}
+.stat-row:first-child{border-top:1px solid var(--stone-light)}
+.stat-num{
+  font-family:var(--serif);font-size:2.5rem;font-weight:300;
+  color:var(--ink);line-height:1;letter-spacing:-.02em;
+}
+.stat-unit{
+  font-family:var(--mono);font-size:11px;color:var(--rust);
+  letter-spacing:.1em;margin-left:.2rem;
+}
+.stat-label{
+  font-size:13px;color:var(--ink-light);text-align:right;
+  max-width:180px;line-height:1.4;font-weight:300;
+}
+
+/* ─── EXPERIENCE ──────────────────────────── */
+.exp-grid{display:grid;grid-template-columns:180px 1fr;gap:0}
+.exp-row{display:contents}
+.exp-row > *{
+  padding:1.75rem 0;
+  border-bottom:1px solid var(--stone-light);
+}
+.exp-row:first-child > *{border-top:1px solid var(--stone-light)}
+.exp-year{
+  font-family:var(--mono);font-size:11px;color:var(--ink-light);
+  letter-spacing:.08em;padding-right:2rem;
+}
+.exp-role{
+  font-family:var(--serif);font-size:1.2rem;font-weight:400;
+  color:var(--ink);margin-bottom:.3rem;line-height:1.2;
+}
+.exp-place{
+  font-family:var(--mono);font-size:11px;color:var(--rust);
+  letter-spacing:.08em;margin-bottom:.5rem;
+}
+.exp-desc{font-size:14px;color:var(--ink-mid);line-height:1.7;font-weight:300}
+
+/* ─── CONTACT ─────────────────────────────── */
+.contact-wrap{
+  background:var(--sky);
+  padding:6rem 3rem;
+}
+.contact-inner{max-width:1200px;margin:0 auto}
+.contact-heading{
+  font-family:var(--serif);
+  font-size:clamp(3rem,8vw,6rem);
+  font-weight:300;font-style:italic;
+  color:var(--ink);line-height:1;letter-spacing:-.02em;
+  margin-bottom:3rem;
+}
+.contact-heading em{font-style:normal;color:var(--rust)}
+.contact-links{
+  display:flex;flex-direction:column;gap:0;
+  max-width:560px;
+}
+.contact-link-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 0;
+  border-bottom:1px solid var(--stone);
+  text-decoration:none;color:var(--ink);
+  transition:color .2s;
+}
+.contact-link-row:first-child{border-top:1px solid var(--stone)}
+.contact-link-row:hover .cl-text{color:var(--rust)}
+.contact-link-row:hover .cl-arrow{transform:translateX(4px)}
+.cl-label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-light)}
+.cl-text{font-size:15px;font-weight:400;transition:color .2s}
+.cl-arrow{
+  font-size:18px;color:var(--stone);
+  transition:transform .2s;display:inline-block;
+}
+
+/* ─── FOOTER ──────────────────────────────── */
+footer{
+  padding:1.5rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid var(--stone-light);
+}
+.foot-copy{font-family:var(--mono);font-size:10px;color:var(--ink-light);letter-spacing:.08em}
+.foot-mark{font-family:var(--serif);font-size:13px;color:var(--stone);font-style:italic}
+
+/* ─── RESPONSIVE ──────────────────────────── */
+@media(max-width:800px){
+  nav{padding:1rem 1.5rem}
+  .hero{padding:0 1.5rem 3rem}
+  .hero-scroll{right:1.5rem}
+  .section{padding:4rem 1.5rem}
+  .about-grid{grid-template-columns:1fr;gap:2.5rem}
+  .exp-grid{grid-template-columns:1fr}
+  .exp-year{padding-bottom:0;border-bottom:none !important;padding-top:1.75rem}
+  .exp-content{padding-top:0 !important;border-top:none !important}
+  .filmstrip-header{padding:0 1.5rem 2rem;flex-direction:column;align-items:flex-start;gap:1rem}
+  .filmstrip-track{padding:0 1.5rem}
+  .sprockets{padding:0 1.5rem}
+  .film-frame{flex:0 0 280px}
+  .contact-wrap{padding:4rem 1.5rem}
+  footer{padding:1.5rem;flex-direction:column;gap:1rem;text-align:center}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">P.S.</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-text" aria-hidden="true">PS</div>
+
+  <div class="hero-equation" aria-label="The derivative of insight with respect to data">
+    <span class="eq-frac" aria-hidden="true">
+      <span class="eq-num">∂ insight</span>
+      <span class="eq-bar"></span>
+      <span class="eq-den">∂ data</span>
+    </span>
+    <span style="margin:0 .2em"> = </span>
+    <span class="eq-rust">f</span>(physics, analytics, strategy)
+  </div>
+
+  <div class="hero-identity">
+    <h1 class="hero-name">
+      Prashant<br/><em>Singh</em>
+    </h1>
+    <div class="hero-meta">
+      <p>
+        <strong>Physics from BHU.</strong> Business Analytics at BITS Pilani.
+        I build systems that extract signal from messy data — then
+        figure out what the signal means for strategy.
+      </p>
+    </div>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <span class="scroll-line"></span>
+    <span class="scroll-label">Scroll</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="dot">✦</span> Data Architecture <span class="dot">✦</span> Analytics <span class="dot">✦</span> Product Strategy <span class="dot">✦</span> Physics <span class="dot">✦</span> Machine Learning <span class="dot">✦</span> Competitive Intelligence <span class="dot">✦</span> Python <span class="dot">✦</span> SQL <span class="dot">✦</span> Strategy Consulting <span class="dot">✦</span> NLP <span class="dot">✦</span> Dashboard Design <span class="dot">✦</span> BITS Pilani <span class="dot">✦</span> BHU <span class="dot">✦</span> Insights from Data</span>
+    <span class="marquee-item"><span class="dot">✦</span> Data Architecture <span class="dot">✦</span> Analytics <span class="dot">✦</span> Product Strategy <span class="dot">✦</span> Physics <span class="dot">✦</span> Machine Learning <span class="dot">✦</span> Competitive Intelligence <span class="dot">✦</span> Python <span class="dot">✦</span> SQL <span class="dot">✦</span> Strategy Consulting <span class="dot">✦</span> NLP <span class="dot">✦</span> Dashboard Design <span class="dot">✦</span> BITS Pilani <span class="dot">✦</span> BHU <span class="dot">✦</span> Insights from Data</span>
+  </div>
+</div>
+
+<!-- FILM-STRIP: WORK -->
+<div class="filmstrip-outer" id="work">
+  <div class="filmstrip-header reveal">
+    <div>
+      <div class="filmstrip-eyebrow">// selected work</div>
+      <h2 class="filmstrip-heading">Six projects.<br/>One through-line.</h2>
+    </div>
+    <div class="filmstrip-hint">
+      <span>Drag to explore</span>
+      <span class="filmstrip-hint-arrow">→</span>
+    </div>
+  </div>
+
+  <div class="sprockets" aria-hidden="true">
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div>
+  </div>
+
+  <div class="filmstrip-track" id="filmstrip" role="region" aria-label="Project film strip, scroll horizontally">
+    <!-- Frame 01 -->
+    <article class="film-frame">
+      <div class="film-frame-line" aria-hidden="true"></div>
+      <div class="film-frame-num"><span>Frame 01</span><span>●</span></div>
+      <div class="film-frame-category">Health Tech · Data Pipeline</div>
+      <h3 class="film-frame-title">OCIE — Guideline ↔ Pipeline Mapper</h3>
+      <p class="film-frame-desc">NSCLC drug-to-guideline mapping by biomarker and line of therapy. Next.js + Postgres dashboard showing which drugs are standard-of-care at each NCCN/ASCO guideline line, with pipeline drugs overlaid on the same grid. NLP-tagged evidence mentions from guideline text.</p>
+      <div class="film-frame-stack">
+        <span class="stack-pill">Next.js</span><span class="stack-pill">Postgres</span>
+        <span class="stack-pill">Python</span><span class="stack-pill">NLP</span>
+        <span class="stack-pill">TypeScript</span>
+      </div>
+      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/ocie" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/ocie</a>
+    </article>
+
+    <!-- Frame 02 -->
+    <article class="film-frame">
+      <div class="film-frame-line" aria-hidden="true"></div>
+      <div class="film-frame-num"><span>Frame 02</span><span>●</span></div>
+      <div class="film-frame-category">ML · Drug Approval</div>
+      <h3 class="film-frame-title">NSCLC Drug Approval Prediction Pipeline</h3>
+      <p class="film-frame-desc">Binary classifier predicting FDA approval probability at the drug × biomarker × sponsor level. RF + XGBoost ensemble with GroupKFold drug-level leakage prevention and scispaCy NER gating.</p>
+      <div class="film-frame-stack">
+        <span class="stack-pill">XGBoost</span><span class="stack-pill">Random Forest</span>
+        <span class="stack-pill">scispaCy</span><span class="stack-pill">openFDA</span>
+        <span class="stack-pill">Python</span>
+      </div>
+    </article>
+
+    <!-- Frame 03 -->
+    <article class="film-frame">
+      <div class="film-frame-line" aria-hidden="true"></div>
+      <div class="film-frame-num"><span>Frame 03</span><span>●</span></div>
+      <div class="film-frame-category">Full-Stack · Clinical</div>
+      <h3 class="film-frame-title">Onco-Directory</h3>
+      <p class="film-frame-desc">Oncologist directory and real-time messaging platform for India. Next.js + Supabase with Clerk auth, postgres_changes subscriptions for live updates, and a cobalt/emerald design system.</p>
+      <div class="film-frame-stack">
+        <span class="stack-pill">Next.js</span><span class="stack-pill">Supabase</span>
+        <span class="stack-pill">Clerk</span><span class="stack-pill">Vercel</span>
+        <span class="stack-pill">TypeScript</span>
+      </div>
+      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/onco-directory" target="_blank" rel="noopener">🔒 github.com/itsprashantsingh19-lab/onco-directory</a>
+    </article>
+
+    <!-- Frame 04 -->
+    <article class="film-frame">
+      <div class="film-frame-line" aria-hidden="true"></div>
+      <div class="film-frame-num"><span>Frame 04</span><span>●</span></div>
+      <div class="film-frame-category">NLP · Signals</div>
+      <h3 class="film-frame-title">AI Hiring Signals Pipeline</h3>
+      <p class="film-frame-desc">Tracked job postings across frontier AI labs to predict product announcements. BERTopic topic modeling + Granger causality on scraped data to surface leading signals before public launches.</p>
+      <div class="film-frame-stack">
+        <span class="stack-pill">BERTopic</span><span class="stack-pill">Granger Causality</span>
+        <span class="stack-pill">JobSpy</span><span class="stack-pill">Python</span>
+      </div>
+    </article>
+
+    <!-- Frame 05 -->
+    <article class="film-frame">
+      <div class="film-frame-line" aria-hidden="true"></div>
+      <div class="film-frame-num"><span>Frame 05</span><span>●</span></div>
+      <div class="film-frame-category">NLP · Topic Modeling</div>
+      <h3 class="film-frame-title">Political Discourse Topic Modeling</h3>
+      <p class="film-frame-desc">LDA-based topic modeling pipeline analyzing speeches of political leaders. Uses NewsAPI data to surface common ground and divergence points across party lines — NLP on real-world political text.</p>
+      <div class="film-frame-stack">
+        <span class="stack-pill">LDA</span><span class="stack-pill">NewsAPI</span>
+        <span class="stack-pill">scikit-learn</span><span class="stack-pill">Python</span>
+        <span class="stack-pill">Jupyter</span>
+      </div>
+      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/Topic-Modelling" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/Topic-Modelling</a>
+    </article>
+
+    <!-- Frame 06 -->
+    <article class="film-frame">
+      <div class="film-frame-line" aria-hidden="true"></div>
+      <div class="film-frame-num"><span>Frame 06</span><span>●</span></div>
+      <div class="film-frame-category">OncoAssistant · Dashboard</div>
+      <h3 class="film-frame-title">OncoAssistant — Clinical Analytics Dashboard</h3>
+      <p class="film-frame-desc">Oncology intelligence dashboard for 5 immunotherapy drugs — Nivolumab, Pembrolizumab, Atezolizumab, Durvalumab, Dostarlimab. Full-stack Next.js + Recharts + Supabase across ~5,735 trials from ClinicalTrials.gov.</p>
+      <div class="film-frame-stack">
+        <span class="stack-pill">Next.js</span><span class="stack-pill">Recharts</span>
+        <span class="stack-pill">Supabase</span><span class="stack-pill">ECharts</span>
+      </div>
+      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/oncoassistant-" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/oncoassistant-</a>
+    </article>
+  </div>
+
+  <div class="sprockets" aria-hidden="true" style="margin-top:1rem;margin-bottom:0">
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="about-grid">
+    <div class="about-body">
+      <div class="section-eyebrow reveal">// who I am</div>
+      <h2 class="section-heading reveal reveal-delay-1">Physics brain.<br/>Product instincts.</h2>
+      <p class="reveal reveal-delay-2">I started in <strong>physics at BHU</strong> — learning to reason from first principles, model complex systems, and stay comfortable with ambiguity. That instinct didn't go away when I moved into data.</p>
+      <p class="reveal reveal-delay-2">Now at <strong>BITS Pilani</strong> pursuing an MBA in Business Analytics, I design architecture, build analytics dashboards, and draw business implications from complex data. My day-to-day is turning <strong>messy data into decisions</strong> — real pipelines, real impact.</p>
+      <p class="reveal reveal-delay-3">My goal is <em>corporate finance consulting</em> — not as a pivot away from technical work, but as the place where the technical work finds its highest leverage. I want to be the person who designed the system <em>and</em> knows what it means for the business.</p>
+    </div>
+
+    <div class="reveal reveal-delay-2">
+      <blockquote class="pull-quote">
+        "The purpose of computing is insight, not numbers."<br/>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--ink-light);font-style:normal;letter-spacing:.06em">— Richard Hamming</span>
+      </blockquote>
+      <div class="stats-col">
+        <div class="stat-row">
+          <div><span class="stat-num">6</span><span class="stat-unit">+</span></div>
+          <div class="stat-label">end-to-end projects shipped</div>
+        </div>
+        <div class="stat-row">
+          <div><span class="stat-num">7</span></div>
+          <div class="stat-label">NSCLC biomarker categories mapped</div>
+        </div>
+        <div class="stat-row">
+          <div><span class="stat-num">~6K</span></div>
+          <div class="stat-label">production data pipelines built</div>
+        </div>
+        <div class="stat-row">
+          <div><span class="stat-num">2</span></div>
+          <div class="stat-label">degrees, 0 excuses</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- EXPERIENCE -->
+<section class="section" id="experience">
+  <div class="section-eyebrow reveal">// background</div>
+  <h2 class="section-heading reveal reveal-delay-1">Where I've been.</h2>
+
+  <div class="exp-grid">
+    <div class="exp-row">
+      <div class="exp-year reveal reveal-delay-1">May 2026 — Present</div>
+      <div class="exp-content reveal reveal-delay-2">
+        <div class="exp-role">Data Science Intern</div>
+        <div class="exp-place">Health Tech Company</div>
+        <div class="exp-desc">Designing data architecture, building analytics dashboards, and drawing business implications from complex healthcare data. From raw messy data to actionable strategic output — pipelines, models, and the boardroom story.</div>
+      </div>
+    </div>
+    <div class="exp-row">
+      <div class="exp-year reveal reveal-delay-1">2025 — Present</div>
+      <div class="exp-content reveal reveal-delay-2">
+        <div class="exp-role">MBA — Business Analytics</div>
+        <div class="exp-place">BITS Pilani</div>
+        <div class="exp-desc">Quantitative strategy, marketing analytics, and corporate finance. Applying technical portfolio work as consulting-grade business intelligence. Where the equations meet the boardroom.</div>
+      </div>
+    </div>
+    <div class="exp-row">
+      <div class="exp-year reveal reveal-delay-1">2020 — 2023</div>
+      <div class="exp-content reveal reveal-delay-2">
+        <div class="exp-role">B.Sc.(Hons) Physics</div>
+        <div class="exp-place">Banaras Hindu University (BHU)</div>
+        <div class="exp-desc">First-principles reasoning, mathematical modeling, and comfort with ambiguity. The foundation for everything that came after — learning that the hard way is usually the right way.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-wrap" id="contact">
+  <div class="contact-inner">
+    <h2 class="contact-heading reveal">
+      Let's<br/><em>talk.</em>
+    </h2>
+    <div class="contact-links reveal reveal-delay-1">
+      <a class="contact-link-row" href="https://github.com/itsprashantsingh19-lab" target="_blank" rel="noopener">
+        <span class="cl-label">GitHub</span>
+        <span class="cl-text">github.com/itsprashantsingh19-lab</span>
+        <span class="cl-arrow">→</span>
+      </a>
+      <a class="contact-link-row" href="https://www.linkedin.com/in/prashant-singh-b8a613351" target="_blank" rel="noopener">
+        <span class="cl-label">LinkedIn</span>
+        <span class="cl-text">linkedin.com/in/prashant-singh-b8a613351</span>
+        <span class="cl-arrow">→</span>
+      </a>
+      <a class="contact-link-row" href="mailto:h20250845@pilani.bits-pilani.ac.in">
+        <span class="cl-label">Email</span>
+        <span class="cl-text">h20250845@pilani.bits-pilani.ac.in</span>
+        <span class="cl-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="foot-copy">Built from scratch · Prashant Singh · 2026</span>
+  <span class="foot-mark">∂(insight)/∂(data)</span>
+</footer>
+
+<script>
+// ─── SCROLL REVEAL ──────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ─── NAV ACTIVE SECTION ─────────────────────
+const sections = document.querySelectorAll('section, .contact-wrap');
+const navAnchors = document.querySelectorAll('.nav-links a');
+
+function updateActiveNav() {
+  const scrollY = window.scrollY;
+  let current = '';
+  sections.forEach(sec => {
+    const top = sec.offsetTop - 120;
+    const bottom = top + sec.offsetHeight;
+    if (scrollY >= top && scrollY < bottom) {
+      current = sec.getAttribute('id') || '';
+    }
+  });
+  navAnchors.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}
+window.addEventListener('scroll', updateActiveNav, {passive:true});
+
+// ─── FILMSTRIP DRAG SCROLL ──────────────────
+const track = document.getElementById('filmstrip');
+let isDown = false, startX, scrollLeft;
+
+track.addEventListener('mousedown', e => {
+  isDown = true;
+  track.style.cursor = 'grabbing';
+  startX = e.pageX - track.offsetLeft;
+  scrollLeft = track.scrollLeft;
+});
+track.addEventListener('mouseleave', () => { isDown = false; track.style.cursor = 'grab'; });
+track.addEventListener('mouseup', () => { isDown = false; track.style.cursor = 'grab'; });
+track.addEventListener('mousemove', e => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - track.offsetLeft;
+  const walk = (x - startX) * 1.4;
+  track.scrollLeft = scrollLeft - walk;
+});
+
+track.addEventListener('touchstart', e => {
+  startX = e.touches[0].pageX - track.offsetLeft;
+  scrollLeft = track.scrollLeft;
+}, {passive:true});
+track.addEventListener('touchmove', e => {
+  const x = e.touches[0].pageX - track.offsetLeft;
+  track.scrollLeft = scrollLeft - (x - startX) * 1.2;
+}, {passive:true});
+</script>
+</body>
+</html>
