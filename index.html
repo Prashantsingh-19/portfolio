@@ -21,6 +21,11 @@ html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--page);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
 /* ─── NAV ─────────────────────────────────── */
+.meet-ari{
+  position:fixed;top:calc(3.5rem + 4px);left:3rem;z-index:199;
+  font-family:var(--mono);font-size:10px;letter-spacing:.06em;
+  color:var(--ink-light);
+}
 nav{
   position:fixed;top:0;left:0;right:0;z-index:200;
   display:flex;justify-content:space-between;align-items:center;
@@ -140,7 +145,8 @@ nav{
 .about-name em{font-style:normal;color:var(--rust)}
 .about-sub{font-family:var(--serif);font-size:clamp(1rem,1.8vw,1.3rem);color:var(--ink-mid);font-style:italic;margin-bottom:2rem;font-weight:300}
 .about-sub-em{color:var(--rust);font-style:normal;font-weight:400}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:2rem}
+.about-left-col{min-width:0}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
 .about-body p{font-size:15px;line-height:1.8;color:var(--ink-mid);margin-bottom:1rem;font-weight:300}
 .about-body p strong{color:var(--ink);font-weight:500}
 .about-body p em{font-family:var(--serif);font-style:italic;font-size:1.05em;color:var(--ink)}
@@ -241,6 +247,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   .hero-equation{left:1.5rem}
   .hero-heading{left:1.5rem;top:34%}
   .hero-footer{right:1.5rem;bottom:2rem}
+  .meet-ari{left:1.5rem}
   .section,.about-photo-wrap{padding:4rem 1.5rem}
   .about-grid,.exp-grid,.toolkit-grid,.proj-grid{grid-template-columns:1fr}
   .exp-year{padding-bottom:0;border-bottom:none !important;padding-top:1.75rem}
@@ -249,6 +256,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   .contact-wrap{padding:4rem 1.5rem}
   footer{padding:1.5rem;flex-direction:column;gap:1rem;text-align:center}
   .nav-links{display:none}
+  .meet-ari{display:none}
 }
 </style>
 </head>
@@ -264,6 +272,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
     <li><a href="#contact">Contact</a></li>
   </ul>
 </nav>
+
+<span class="meet-ari">meet Ari 🦀 — your resident data assistant</span>
 
 <!-- HERO -->
 <section class="hero">
@@ -299,10 +309,18 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 
 <!-- ABOUT + PHOTO -->
 <section class="about-photo-wrap" id="about">
-  <div class="section-eyebrow reveal">about me</div>
-  <h1 class="about-name reveal reveal-delay-1">Prashant <em>Singh</em></h1>
-  <p class="about-sub reveal reveal-delay-1">A physicist who became a <span class="about-sub-em">Business Analyst</span></p>
   <div class="about-grid">
+    <div class="about-left-col">
+      <div class="section-eyebrow reveal">about me</div>
+      <h1 class="about-name reveal reveal-delay-1">Prashant <em>Singh</em></h1>
+      <p class="about-sub reveal reveal-delay-1">A Quantitative Analyst driven by <span class="about-sub-em">Strategic Impact</span></p>
+      <div class="about-body">
+        <p class="reveal reveal-delay-2">My approach is rooted in <strong>mathematical modeling and statistical rigor</strong> � time-series analysis, hypothesis testing, Bayesian inference, and the discipline to distinguish signal from noise. Trained in physics at BHU, I apply that first-principles mindset to every dataset I touch.</p>
+        <p class="reveal reveal-delay-2">Today, as an <strong>MBA candidate at BITS Pilani</strong> specializing in Business Analytics, I operate at the confluence of quantitative rigor and strategic clarity. I design data architecture, build analytics dashboards that drive decisions, and translate technical findings into business implications � connecting the pipeline to the boardroom.</p>
+        <p class="reveal reveal-delay-3">My long-term focus is <em>corporate finance consulting</em> � the discipline where technical depth meets strategic leverage. I aim to be the person who not only designs the system but also determines what the numbers mean for the business. Never mistaking noise for implication.</p>
+      </div>
+    </div>
+    <div class="photo-col reveal reveal-delay-2">
     <div class="about-body">
       <p class="reveal reveal-delay-2">My foundation is <strong>physics at BHU</strong> — rigorous training in first-principles reasoning, mathematical modeling of complex systems, and the discipline to distinguish signal from noise. That mindset is the bedrock of everything I build.</p>
       <p class="reveal reveal-delay-2">Today, as an <strong>MBA candidate at BITS Pilani</strong> specializing in Business Analytics, I operate at the confluence of quantitative rigor and strategic clarity. I design data architecture, build analytics dashboards that drive decisions, and translate technical findings into business implications — connecting the pipeline to the boardroom.</p>
@@ -424,6 +442,29 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 </footer>
 
 <style>
+/* ─── ARI THOUGHT BUBBLE ───────────────── */
+.thought-bubble{
+  position:fixed;pointer-events:none;z-index:99998;
+  max-width:260px;
+  background:#fff;border-radius:16px;
+  padding:10px 14px;
+  font-family:var(--sans);font-size:11px;line-height:1.5;
+  color:var(--ink-mid);
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+  border:1px solid var(--stone-light);
+  opacity:0;transition:opacity .4s;
+}
+.thought-bubble.show{opacity:1}
+.thought-bubble .thought-text{display:block}
+.thought-dot{
+  position:fixed;pointer-events:none;z-index:99997;
+  background:#fff;border:1px solid var(--stone-light);
+  border-radius:50%;opacity:0;transition:opacity .4s;
+}
+.thought-dot.show{opacity:1}
+.thought-dot.d1{width:10px;height:10px}
+.thought-dot.d2{width:7px;height:7px}
+
 /* Custom cursor companion — default cursor remains visible */
 
 #clawCursor {
@@ -481,6 +522,12 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 #clawCursor .claw.R { animation-delay: -1.6s; }
 #clawCursor.hunting .claw { animation-duration: 0.8s; }
 </style>
+
+<div id="thoughtBubble" class="thought-bubble">
+  <span class="thought-text">Welcome! Let's find the signal in this noise.</span>
+</div>
+<div class="thought-dot d1"></div>
+<div class="thought-dot d2"></div>
 
 <div id="clawCursor" aria-hidden="true">
   <svg viewBox="0 0 44 44" width="44" height="44" fill="none">
@@ -548,12 +595,57 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   const cursor = document.getElementById('clawCursor');
   const pupils = cursor.querySelectorAll('.pupil');
   const claws = cursor.querySelectorAll('.claw');
+  const bubble = document.getElementById('thoughtBubble');
+  const textEl = bubble.querySelector('.thought-text');
+  const dots = document.querySelectorAll('.thought-dot.d1, .thought-dot.d2');
 
   let tx = -200, ty = -200;
   let cx = -200, cy = -200;
   let lastMove = performance.now();
   const HUNT_DELAY = 600;
   let wasHunting = false;
+
+  // Thought bubble state
+  const thoughts = [
+    "Welcome! Let's find the signal in this noise.",
+    "Wait, does that PACF plot actually show exponential decay?",
+    "ARIMA(1,0,0) is definitely the better fit here.",
+    "Recalculating variance...",
+    "Minimizing the loss function..."
+  ];
+  let thoughtIdx = 0;
+  let lastThoughtTime = performance.now();
+  const THOUGHT_INTERVAL = 30000;
+  let showingBubble = false;
+  let pokeTimer = null;
+  let isPoked = false;
+
+  function showBubble(show) {
+    bubble.classList.toggle('show', show);
+    dots.forEach(d => d.classList.toggle('show', show));
+    showingBubble = show;
+  }
+
+  function setThought(text) {
+    textEl.textContent = text;
+  }
+
+  // Show greeting on load
+  setTimeout(() => {
+    setThought(thoughts[0]);
+    showBubble(true);
+    lastThoughtTime = performance.now();
+  }, 800);
+
+  function updateThought(now) {
+    if (!showingBubble || isPoked) return;
+    const elapsed = now - lastThoughtTime;
+    if (elapsed >= THOUGHT_INTERVAL) {
+      thoughtIdx = (thoughtIdx + 1) % thoughts.length;
+      setThought(thoughts[thoughtIdx]);
+      lastThoughtTime = now;
+    }
+  }
 
   function lookAt(targetX, targetY, crabX, crabY) {
     const dx = targetX - crabX;
@@ -580,10 +672,43 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     claws.forEach(c => {
       c.style.transform = dist > 120 ? 'rotate(14deg)' : '';
     });
+
+    // Hover detection for poke
+    if (dist < 35) {
+      if (!pokeTimer) {
+        pokeTimer = setTimeout(() => {
+          isPoked = true;
+          setThought("Stop poking, I'm calculating!");
+          showBubble(true);
+        }, 3000);
+      }
+    } else {
+      if (pokeTimer) { clearTimeout(pokeTimer); pokeTimer = null; }
+      if (isPoked) {
+        isPoked = false;
+        thoughtIdx = (thoughtIdx + 1) % thoughts.length;
+        setThought(thoughts[thoughtIdx]);
+        lastThoughtTime = performance.now();
+      }
+    }
   });
 
   document.addEventListener('mousedown', () => {
     claws.forEach(c => { c.style.transform = 'scale(0.8) rotate(8deg)'; });
+    // Click also triggers poke
+    if (!isPoked) {
+      if (pokeTimer) clearTimeout(pokeTimer);
+      isPoked = true;
+      setThought("Stop poking, I'm calculating!");
+      showBubble(true);
+      setTimeout(() => {
+        isPoked = false;
+        thoughtIdx = (thoughtIdx + 1) % thoughts.length;
+        setThought(thoughts[thoughtIdx]);
+        lastThoughtTime = performance.now();
+        pokeTimer = null;
+      }, 2500);
+    }
   });
   document.addEventListener('mouseup', () => {
     claws.forEach(c => c.style.transform = '');
@@ -606,7 +731,18 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
     cursor.style.left = cx + 'px';
     cursor.style.top = cy + 'px';
+
+    // Position thought bubble above crab
+    bubble.style.left = cx + 'px';
+    bubble.style.top = (cy - 60) + 'px';
+    bubble.style.transform = 'translate(-50%,-100%)';
+    dots[0].style.left = (cx - 8) + 'px';
+    dots[0].style.top = (cy - 60 + bubble.offsetHeight + 2) + 'px';
+    dots[1].style.left = (cx + 2) + 'px';
+    dots[1].style.top = (cy - 60 + bubble.offsetHeight + 14) + 'px';
+
     lookAt(tx, ty, cx, cy);
+    updateThought(now);
     requestAnimationFrame(anim);
   })();
 })();
