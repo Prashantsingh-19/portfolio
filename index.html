@@ -72,10 +72,13 @@ nav{
   position:absolute;top:55%;left:3rem;z-index:1;transform:translateY(-50%);
   font-family:var(--serif);font-size:clamp(1.6rem,4vw,3.2rem);
   font-weight:300;font-style:italic;color:var(--ink);
-  letter-spacing:-.01em;line-height:1.1;white-space:nowrap;
+  letter-spacing:-.01em;line-height:1.1;
   animation:hero-in .9s .3s both;
 }
 .hero-equation .eq-rust{color:var(--rust);font-style:normal}
+.hero-equation .eq-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;font-style:italic}
+.eq-num,.eq-den{display:block;font-size:.8em;line-height:1.1}
+.eq-bar{display:block;width:100%;height:1px;background:currentColor;margin:.1em 0}
 
 .hero-footer{
   position:absolute;bottom:3rem;right:3rem;z-index:1;
@@ -126,6 +129,8 @@ nav{
   color:var(--ink);margin-bottom:1.5rem;
 }
 .about-name em{font-style:normal;color:var(--rust)}
+.about-sub{font-family:var(--serif);font-size:clamp(1rem,1.8vw,1.3rem);color:var(--ink-mid);font-style:italic;margin-bottom:2rem;font-weight:300}
+.about-sub-em{color:var(--rust);font-style:normal;font-weight:400}
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:2rem}
 .about-body p{font-size:15px;line-height:1.8;color:var(--ink-mid);margin-bottom:1rem;font-weight:300}
 .about-body p strong{color:var(--ink);font-weight:500}
@@ -254,7 +259,13 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <section class="hero">
   <div class="hero-bg-text" aria-hidden="true">PS</div>
   <div class="hero-equation" aria-label="The derivative of insight with respect to data">
-    &part; insight / &part; data = <span class="eq-rust">f</span>(physics, analytics, strategy)
+    <span class="eq-frac" aria-hidden="true">
+      <span class="eq-num">&part; insight</span>
+      <span class="eq-bar"></span>
+      <span class="eq-den">&part; data</span>
+    </span>
+    <span style="margin:0 .2em"> = </span>
+    <span class="eq-rust">f</span>(physics, analytics, strategy)
   </div>
   <div class="hero-footer">
     <p class="hero-physicist">Data Science with a physicist's touch:</p>
@@ -279,6 +290,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <section class="about-photo-wrap" id="about">
   <div class="section-eyebrow reveal">about me</div>
   <h1 class="about-name reveal reveal-delay-1">Prashant <em>Singh</em></h1>
+  <p class="about-sub reveal reveal-delay-1">A physicist who became a <span class="about-sub-em">Business Analyst</span></p>
   <div class="about-grid">
     <div class="about-body">
       <p class="reveal reveal-delay-2">My foundation is <strong>physics at BHU</strong> — rigorous training in first-principles reasoning, mathematical modeling of complex systems, and the discipline to distinguish signal from noise. That mindset is the bedrock of everything I build.</p>
