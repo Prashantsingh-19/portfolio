@@ -66,55 +66,39 @@ nav{
   opacity:0;
 }
 @keyframes hero-bg-fade{0%{opacity:0;transform:translate(-50%,-50%) scale(.96)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-.hero-content{position:relative;z-index:1;animation:hero-in .9s .3s both;max-width:1200px;margin:0 auto;width:100%}
+
+.hero-bottom{
+  position:relative;z-index:1;margin-left:auto;text-align:right;
+  max-width:700px;animation:hero-in .9s .3s both;
+}
 @keyframes hero-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
 .hero-equation{
-  font-family:var(--serif);font-size:clamp(1.6rem,4vw,3.2rem);
+  font-family:var(--serif);font-size:clamp(1.3rem,3vw,2.2rem);
   font-weight:300;font-style:italic;color:var(--ink);
-  letter-spacing:-.01em;line-height:1.1;margin-bottom:1rem;
+  letter-spacing:-.01em;line-height:1.1;margin-bottom:.75rem;
 }
 .hero-equation .eq-rust{color:var(--rust);font-style:normal}
 .hero-equation .eq-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;font-style:italic}
 .eq-num,.eq-den{display:block;font-size:.8em;line-height:1.1}
 .eq-bar{display:block;width:100%;height:1px;background:currentColor;margin:.1em 0}
 
-.hero-name{
-  font-family:var(--serif);font-size:clamp(3.5rem,8vw,6rem);
-  font-weight:300;line-height:.95;letter-spacing:-.02em;
-  color:var(--ink);margin-bottom:.6rem;
+.hero-physicist{
+  font-family:var(--serif);font-size:clamp(1rem,2vw,1.3rem);
+  color:var(--ink-mid);font-style:italic;margin-bottom:.15rem;
 }
-.hero-name em{font-style:normal;color:var(--rust)}
-
-.hero-tagline{font-size:15px;line-height:1.6;color:var(--ink-mid);font-weight:300;margin-bottom:1.25rem;max-width:560px}
-.hero-tagline strong{color:var(--ink);font-weight:500}
-.hero-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
-.hero-pill{
-  font-family:var(--mono);font-size:10px;letter-spacing:.08em;
-  padding:.35rem .7rem;text-transform:uppercase;
-  border:1px solid var(--stone);color:var(--ink-mid);border-radius:3px;transition:all .2s;
+.hero-uncertainty{
+  font-family:var(--serif);font-size:clamp(1rem,2vw,1.3rem);
+  color:var(--ink-mid);font-style:italic;margin-bottom:1rem;
 }
-.hero-pill:hover{border-color:var(--rust);color:var(--rust)}
-.hero-tools{font-family:var(--mono);font-size:11px;color:var(--ink-light);letter-spacing:.06em;margin-bottom:.5rem}
-.hero-affiliation{font-family:var(--sans);font-size:13px;color:var(--ink-mid);margin-bottom:1.75rem}
-.hero-cta{display:flex;gap:1rem}
-.btn{
-  display:inline-block;padding:.6rem 1.4rem;
-  font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
-  text-decoration:none;border-radius:3px;transition:all .2s;
+.hero-einstein{
+  font-family:var(--serif);font-size:clamp(1.2rem,2.5vw,1.6rem);
+  color:var(--ink);font-style:italic;
 }
-.btn-primary{background:var(--ink);color:var(--page);border:1px solid var(--ink)}
-.btn-primary:hover{background:var(--rust);border-color:var(--rust)}
-.btn-outline{border:1px solid var(--stone);color:var(--ink-mid)}
-.btn-outline:hover{border-color:var(--ink);color:var(--ink)}
-
-.hero-scroll{
-  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:.4rem;
-  animation:hero-in 1s .8s both;opacity:.4;
+.hero-einstein-note{
+  font-style:normal;font-family:var(--mono);font-size:.65em;
+  color:var(--ink-light);letter-spacing:.04em;
 }
-.scroll-line{width:1px;height:32px;background:var(--stone);display:block}
-.scroll-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--ink-light);text-transform:uppercase}
 
 /* ─── MARQUEE ─────────────────────────────── */
 .marquee-wrap{background:var(--ink);overflow:hidden;padding:.6rem 0;border-top:1px solid #2a2a26;border-bottom:1px solid #2a2a26}
@@ -129,7 +113,13 @@ nav{
 
 /* ─── ABOUT + PHOTO ───────────────────────── */
 .about-photo-wrap{padding:6rem 3rem;max-width:1200px;margin:0 auto}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.about-name{
+  font-family:var(--serif);font-size:clamp(2.5rem,6vw,4.5rem);
+  font-weight:300;line-height:1;letter-spacing:-.02em;
+  color:var(--ink);margin-bottom:1.5rem;
+}
+.about-name em{font-style:normal;color:var(--rust)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:2rem}
 .about-body p{font-size:15px;line-height:1.8;color:var(--ink-mid);margin-bottom:1rem;font-weight:300}
 .about-body p strong{color:var(--ink);font-weight:500}
 .about-body p em{font-family:var(--serif);font-style:italic;font-size:1.05em;color:var(--ink)}
@@ -221,7 +211,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 
 /* ─── RESPONSIVE ──────────────────────────── */
 @media(max-width:900px){
-  .hero-scroll{display:none}
   .toolkit-grid,.proj-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:700px){
@@ -254,7 +243,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg-text" aria-hidden="true">PS</div>
-  <div class="hero-content">
+  <div class="hero-bottom">
     <div class="hero-equation" aria-label="The derivative of insight with respect to data">
       <span class="eq-frac" aria-hidden="true">
         <span class="eq-num">∂ insight</span>
@@ -264,30 +253,9 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
       <span style="margin:0 .2em"> = </span>
       <span class="eq-rust">f</span>(physics, analytics, strategy)
     </div>
-    <h1 class="hero-name">Prashant<br/><em>Singh</em></h1>
-    <p class="hero-tagline">
-      Trained in physics at Banaras Hindu University, now building at the
-      intersection of data and strategy at BITS Pilani. I architect systems
-      that transform raw, unstructured data into actionable business
-      intelligence — connecting first-principles reasoning to strategic
-      outcomes. Signal over noise, always.
-    </p>
-    <div class="hero-pills">
-      <span class="hero-pill">Data Architecture</span>
-      <span class="hero-pill">Analytics</span>
-      <span class="hero-pill">Product Strategy</span>
-      <span class="hero-pill">ML & NLP</span>
-    </div>
-    <p class="hero-tools">Python · SQL · Next.js · Postgres · Supabase · Tableau</p>
-    <p class="hero-affiliation">BITS Pilani · Banaras Hindu University</p>
-    <div class="hero-cta">
-      <a class="btn btn-primary" href="#work">See My Work</a>
-      <a class="btn btn-outline" href="#contact">Let's Talk →</a>
-    </div>
-  </div>
-  <div class="hero-scroll" aria-hidden="true">
-    <span class="scroll-line"></span>
-    <span class="scroll-label">Scroll</span>
+    <p class="hero-physicist">Data Science with a physicist's touch:</p>
+    <p class="hero-uncertainty">We leave the uncertainty principle at the door.</p>
+    <p class="hero-einstein">E = mc² <span class="hero-einstein-note">(Enterprise = Metrics × Clarity²)</span></p>
   </div>
 </section>
 
@@ -301,16 +269,16 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 
 <!-- ABOUT + PHOTO -->
 <section class="about-photo-wrap" id="about">
+  <div class="section-eyebrow reveal">about me</div>
+  <h1 class="about-name reveal reveal-delay-1">Prashant <em>Singh</em></h1>
   <div class="about-grid">
     <div class="about-body">
-      <div class="section-eyebrow reveal">// who I am</div>
-      <h2 class="section-heading reveal reveal-delay-1">First principles.<br/>Strategic execution.</h2>
       <p class="reveal reveal-delay-2">My foundation is <strong>physics at BHU</strong> — rigorous training in first-principles reasoning, mathematical modeling of complex systems, and the discipline to distinguish signal from noise. That mindset is the bedrock of everything I build.</p>
       <p class="reveal reveal-delay-2">Today, as an <strong>MBA candidate at BITS Pilani</strong> specializing in Business Analytics, I operate at the confluence of quantitative rigor and strategic clarity. I design data architecture, build analytics dashboards that drive decisions, and translate technical findings into business implications — connecting the pipeline to the boardroom.</p>
       <p class="reveal reveal-delay-3">My long-term focus is <em>corporate finance consulting</em> — the discipline where technical depth meets strategic leverage. I aim to be the person who not only designs the system but also determines what the numbers mean for the business. Never mistaking noise for implication.</p>
     </div>
     <div class="photo-col reveal reveal-delay-2">
-      <img src="data:image/jpeg;base64,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" alt="Prashant Singh"/>
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAGQAZADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD66uLh1dQBHgRp1jU/wj2qL7S/pH/37X/Ci5/1i/7if+gioq8k6yX7S/pH/wB+1/wo+0v/AHY/+/a/4VGBSgYpjuSi4f0j/wC/a/4UouXH8Mf/AH7X/CoqKAu2S/aX9I/+/a/4UfaX9I/+/a/4VFRQBL9pf0j/AO/a/wCFH2l/7sf/AH7X/Co9tLigZJ9of+7H/wB+1/wo+0P6R/8Afpf8KjooFcl+0N/dj/79r/hS/aX/ALsf/ftf8KhooETfaX9I/wDv2v8AhTTcOT92P/v2v+FR0UDRIZ3x0jz/ANcl/wAKQXEhBysf/ftf8KYTimHJPWmBL9pYdo/+/a/4U37Q5PSP/v2v+FMHB9aUqOoo2C4puXHaP/v2v+FJ9qf0j/79r/hSFSw5pm2mIk+1P6R/9+1/wpRcv6R/9+1/wqLbSgUATrO5/hj/AO/a/wCFKZmx0jz/ANc1/wAKhY9u1JmkMn898Y2x/wDftf8ACm+e/ZY/+/a/4VGHIFIWJ70ASm4cdo/+/a/4UG8YDgR5/wCua/4VX2ml2n0piH/aHznEf/ftf8KRrpz2j/79r/hTAOcUMuOpzSYx32lz2j/79r/hSfaH9I/+/a/4VHgg0ooTEP8AtDekf/ftf8KBcvj7sf8A36X/AAptJtqh7j/tDHtH/wB+1/wo+0OO0f8A37X/AAphGKb1ouBL9qZTwsf/AH7X/Cl+1yY6R/8Aftf8KgI96cFqGFiT7W/cR/8Aftf8KDduf4Y/+/a/4VCWHekyDQFiU3DntH/37X/Cl+0uO0f/AH7X/CogM0Y4pp2BEv2p/SP/AL9r/hQblv7sf/ftf8KixijBqroHqSfan9I/+/a/4UhuH/ux/wDftf8ACkWMscU4w4ouKw37Q/8Adj/37X/Cuo8PW0d1JOZFBUJ0/wCAmuY2V1Hhr/lt/wAB/rUS2GtzhboiSc5GRhR/46KYVHpUhGZPxH8qftrgO0j2j0o2ipAtG2gCMLj0o20/aaTaaAGFfaloII9qYetAEoGDSOKj3H1qR/miX2oAixRspwbjFL1oEV2tmM2cjag3Fsce3P1qQqNo4qG4JMhBPAHQGokG9cnOPegCw8Yx0qa2hQoeM1CyfL1NXLSPEYpNgkP+z... (line truncated to 2000 chars)
       <span class="photo-caption">Prashant Singh · BITS Pilani · BHU</span>
     </div>
   </div>
@@ -432,7 +400,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   width: 48px; height: 48px;
   transform: translate(-50%, -50%);
   left: 0; top: 0;
-  transition: transform 0.08s ease-out;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
 }
 
@@ -449,12 +416,39 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   transition: cx 0.15s ease-out, cy 0.15s ease-out;
 }
 
+#clawCursor .leg {
+  stroke: #B85C38; stroke-width: 2.5; fill: none;
+  stroke-linecap: round;
+  transform-origin: var(--lo);
+}
+#clawCursor .leg.L1 { --lo: 13px 30px; }
+#clawCursor .leg.L2 { --lo: 13px 33px; }
+#clawCursor .leg.L3 { --lo: 13px 36px; }
+#clawCursor .leg.R1 { --lo: 31px 30px; }
+#clawCursor .leg.R2 { --lo: 31px 33px; }
+#clawCursor .leg.R3 { --lo: 31px 36px; }
+
+@keyframes legWalk {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+@keyframes legWalkR {
+  0%, 100% { transform: rotate(6deg); }
+  50% { transform: rotate(-6deg); }
+}
+#clawCursor .leg { animation: legWalk 1.8s ease-in-out infinite; }
+#clawCursor .leg.R { animation-name: legWalkR; }
+#clawCursor .leg.L2, #clawCursor .leg.R2 { animation-delay: -0.6s; }
+#clawCursor .leg.L3, #clawCursor .leg.R3 { animation-delay: -1.2s; }
+#clawCursor.hunting .leg { animation-duration: 0.5s; }
+
 @keyframes clawSway {
   0%, 100% { transform: rotate(0deg); }
   50% { transform: rotate(5deg); }
 }
 #clawCursor .claw { animation: clawSway 3.2s ease-in-out infinite; }
 #clawCursor .claw.R { animation-delay: -1.6s; }
+#clawCursor.hunting .claw { animation-duration: 0.8s; }
 </style>
 
 <div id="clawCursor" aria-hidden="true">
@@ -463,6 +457,14 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
       <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
     </filter>
     <g filter="url(#cShadow)">
+      <!-- legs left -->
+      <path class="leg L L1" d="M12 30 Q8 28 5 33"/>
+      <path class="leg L L2" d="M12 33 Q7 31 4 37"/>
+      <path class="leg L L3" d="M12 36 Q8 35 5 41"/>
+      <!-- legs right -->
+      <path class="leg R R1" d="M32 30 Q36 28 39 33"/>
+      <path class="leg R R2" d="M32 33 Q37 31 40 37"/>
+      <path class="leg R R3" d="M32 36 Q36 35 39 41"/>
       <!-- body -->
       <ellipse cx="22" cy="28" rx="11" ry="9.5" fill="#B85C38"/>
       <ellipse cx="22" cy="29" rx="8" ry="5" fill="#C86E48" opacity="0.5"/>
@@ -497,13 +499,13 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   const pupils = cursor.querySelectorAll('.pupil');
   const claws = cursor.querySelectorAll('.claw');
 
-  let tx = -200, ty = -200;   // target = mouse position
-  let cx = -200, cy = -200;   // crab position
+  let tx = -200, ty = -200;
+  let cx = -200, cy = -200;
   let lastMove = performance.now();
-  const HUNT_DELAY = 350;     // ms before crab starts chasing
+  const HUNT_DELAY = 600;
+  let wasHunting = false;
 
   function lookAt(targetX, targetY, crabX, crabY) {
-    // Eyes always track the mouse, not the crab's movement direction
     const dx = targetX - crabX;
     const dy = targetY - crabY;
     const dist = Math.min(Math.sqrt(dx*dx + dy*dy), 60);
@@ -520,6 +522,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   document.addEventListener('mousemove', e => {
     tx = e.clientX; ty = e.clientY;
     lastMove = performance.now();
+    cursor.classList.remove('hunting');
+    wasHunting = false;
     lookAt(tx, ty, cx, cy);
 
     const dist = Math.sqrt((tx - cx)**2 + (ty - cy)**2);
@@ -540,11 +544,14 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
     const dt = now - lastMove;
     const dist = Math.sqrt((tx - cx)**2 + (ty - cy)**2);
 
-    // After a delay, slowly shuffle toward the mouse
     if (dt > HUNT_DELAY && dist > 8) {
-      const speed = Math.min(0.05, 0.008 + dist * 0.0004);
+      if (!wasHunting) { cursor.classList.add('hunting'); wasHunting = true; }
+      const speed = Math.min(0.025, 0.004 + dist * 0.0002);
       cx += (tx - cx) * speed;
       cy += (ty - cy) * speed;
+    } else if (wasHunting && dist <= 8) {
+      cursor.classList.remove('hunting');
+      wasHunting = false;
     }
 
     cursor.style.left = cx + 'px';
