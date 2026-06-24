@@ -514,6 +514,25 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 </div>
 
 <script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target) } });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+const sections = document.querySelectorAll('section[id], .work-outer, .about-photo-wrap, .contact-wrap');
+const navAnchors = document.querySelectorAll('.nav-links a');
+function updateActiveNav(){
+  const scrollY = window.scrollY + 100;
+  let current = '';
+  sections.forEach(sec => {
+    const top = sec.offsetTop;
+    const bottom = top + sec.offsetHeight;
+    if(scrollY >= top && scrollY < bottom) current = sec.getAttribute('id') || '';
+  });
+  navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+}
+window.addEventListener('scroll', updateActiveNav, {passive:true});
+
 (function(){
   const cursor = document.getElementById('clawCursor');
   const pupils = cursor.querySelectorAll('.pupil');
