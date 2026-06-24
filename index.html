@@ -599,7 +599,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   const HUNT_DELAY = 600;
   let wasHunting = false;
 
-  // Thought bubble state
+  // ─── Thought bubble state ─────────────────────
   const thoughts = [
     "Welcome! Let's find the signal in this noise.",
     "Wait, does that PACF plot actually show exponential decay?",
@@ -614,6 +614,66 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   let pokeTimer = null;
   let isPoked = false;
 
+  // ─── Section-aware thoughts ───────────────────
+  const sectionThoughts = {
+    about:     { first: "Meet Prashant, my creator!", repeat: "Interesting, we are here again." },
+    work:      { first: "Ooh, exploring projects! I love poking through code.", repeat: "Hmmmmm......, Again?" },
+    toolkit:   { first: "Let's see what tools we have in the shed.", repeat: "Still checking the toolbox?" },
+    experience:{ first: "A physicist's journey through data. Very interesting.", repeat: "You know, background checks are my specialty." },
+    contact:   { first: "Going to say hi? I approve.", repeat: "Leaving a message? I'll make sure it's delivered." }
+  };
+  const sectionVisitCount = {};
+  let lastActiveSection = '';
+  let sectionTimer = null;
+  let initialLoad = true;
+  const SECTION_THOUGHT_DURATION = 5000;
+
+  function handleSectionChange(sectionId) {
+    if (initialLoad) return;
+    if (!sectionId || sectionId === lastActiveSection) return;
+    lastActiveSection = sectionId;
+    const info = sectionThoughts[sectionId];
+    if (!info) return;
+
+    sectionVisitCount[sectionId] = (sectionVisitCount[sectionId] || 0) + 1;
+    const count = sectionVisitCount[sectionId];
+
+    if (sectionTimer) clearTimeout(sectionTimer);
+    if (pokeTimer) clearTimeout(pokeTimer);
+    isPoked = false;
+
+    const msg = count === 1 ? info.first : info.repeat;
+    setThought(msg);
+    showBubble(true);
+    lastThoughtTime = performance.now() + SECTION_THOUGHT_DURATION;
+
+    sectionTimer = setTimeout(() => {
+      thoughtIdx = (thoughtIdx + 1) % thoughts.length;
+      setThought(thoughts[thoughtIdx]);
+      lastThoughtTime = performance.now();
+      sectionTimer = null;
+    }, SECTION_THOUGHT_DURATION);
+  }
+
+  // ─── Scroll-based section detection ───────────
+  const sectionEls = document.querySelectorAll('section[id], .work-outer, .about-photo-wrap, .contact-wrap');
+  let scrollRaf = null;
+  window.addEventListener('scroll', () => {
+    if (scrollRaf) cancelAnimationFrame(scrollRaf);
+    scrollRaf = requestAnimationFrame(() => {
+      const scrollY = window.scrollY + 100;
+      let current = '';
+      sectionEls.forEach(sec => {
+        const top = sec.offsetTop;
+        const bottom = top + sec.offsetHeight;
+        if (scrollY >= top && scrollY < bottom) current = sec.getAttribute('id') || '';
+      });
+      handleSectionChange(current);
+      scrollRaf = null;
+    });
+  }, { passive: true });
+
+  // ─── Thought bubble helpers ───────────────────
   function showBubble(show) {
     bubble.classList.toggle('show', show);
     dots.forEach(d => d.classList.toggle('show', show));
@@ -630,6 +690,8 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     showBubble(true);
     lastThoughtTime = performance.now();
   }, 800);
+  // Allow section thoughts after greeting settles
+  setTimeout(() => { initialLoad = false; }, 3000);
 
   function updateThought(now) {
     if (!showingBubble || isPoked) return;
@@ -667,11 +729,11 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       c.style.transform = dist > 120 ? 'rotate(14deg)' : '';
     });
 
-    // Hover detection for poke
     if (dist < 35) {
       if (!pokeTimer) {
         pokeTimer = setTimeout(() => {
           isPoked = true;
+          if (sectionTimer) clearTimeout(sectionTimer);
           setThought("Stop poking, I'm calculating!");
           showBubble(true);
         }, 3000);
@@ -689,9 +751,9 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
   document.addEventListener('mousedown', () => {
     claws.forEach(c => { c.style.transform = 'scale(0.8) rotate(8deg)'; });
-    // Click also triggers poke
     if (!isPoked) {
       if (pokeTimer) clearTimeout(pokeTimer);
+      if (sectionTimer) clearTimeout(sectionTimer);
       isPoked = true;
       setThought("Stop poking, I'm calculating!");
       showBubble(true);
@@ -726,7 +788,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     cursor.style.left = cx + 'px';
     cursor.style.top = cy + 'px';
 
-    // Position thought bubble above crab
     bubble.style.left = cx + 'px';
     bubble.style.top = (cy - 60) + 'px';
     bubble.style.transform = 'translate(-50%,-100%)';
