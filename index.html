@@ -9,22 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
 :root{
-  --ink:#141412;
-  --ink-mid:#4a4842;
-  --ink-light:#8a8680;
-  --stone:#C8BFA8;
-  --stone-light:#E4DFD4;
-  --page:#F7F6F2;
-  --sky:#E8EEF4;
-  --rust:#B85C38;
-  --rust-pale:#F0E8E3;
+  --ink:#141412;--ink-mid:#4a4842;--ink-light:#8a8680;
+  --stone:#C8BFA8;--stone-light:#E4DFD4;--page:#F7F6F2;
+  --sky:#E8EEF4;--rust:#B85C38;
   --serif:'Cormorant Garamond',Georgia,serif;
   --sans:'DM Sans',system-ui,sans-serif;
   --mono:'JetBrains Mono',monospace;
 }
-
 html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--page);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
@@ -36,33 +28,23 @@ nav{
   background:rgba(247,246,242,.85);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--stone-light);
 }
-.nav-logo{
-  font-family:var(--serif);font-size:1.2rem;font-weight:400;
-  color:var(--ink);text-decoration:none;
-  letter-spacing:-.02em;
-}
+.nav-logo{font-family:var(--serif);font-size:1.2rem;font-weight:400;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
 .nav-links{display:flex;gap:2rem;list-style:none}
 .nav-links a{
   font-family:var(--sans);font-size:11px;font-weight:400;
   letter-spacing:.08em;text-transform:uppercase;
-  color:var(--ink-mid);text-decoration:none;
-  position:relative;transition:color .2s;
+  color:var(--ink-mid);text-decoration:none;position:relative;transition:color .2s;
 }
 .nav-links a::after{
   content:'';position:absolute;bottom:-2px;left:0;right:0;
   height:1px;background:var(--rust);
   transform:scaleX(0);transform-origin:left;transition:transform .25s;
 }
-.nav-links a:hover{color:var(--ink)}
-.nav-links a:hover::after{transform:scaleX(1)}
-.nav-links a.active{color:var(--ink)}
-.nav-links a.active::after{transform:scaleX(1)}
+.nav-links a:hover,.nav-links a.active{color:var(--ink)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
 
 /* ─── REVEAL ──────────────────────────────── */
-.reveal{
-  opacity:0;transform:translateY(28px);
-  transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
-}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .reveal-delay-1{transition-delay:.1s}
 .reveal-delay-2{transition-delay:.2s}
@@ -71,55 +53,36 @@ nav{
 
 /* ─── HERO ────────────────────────────────── */
 .hero{
-  min-height:100vh;
-  display:flex;align-items:center;
-  padding:6rem 3rem 4rem;
-  position:relative;
-  overflow:hidden;
+  min-height:100vh;display:flex;align-items:center;
+  padding:6rem 3rem 4rem;position:relative;overflow:hidden;
 }
 .hero-inner{
   display:grid;grid-template-columns:1fr auto;gap:4rem;align-items:center;
   width:100%;max-width:1200px;margin:0 auto;
 }
-.hero-left{animation:hero-in .9s .2s cubic-bezier(.16,1,.3,1) both}
+.hero-left{animation:hero-in .9s .2s both}
 @keyframes hero-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-
 .hero-name{
   font-family:var(--serif);font-size:clamp(3rem,7vw,5.5rem);
   font-weight:300;line-height:.95;letter-spacing:-.02em;
   color:var(--ink);margin-bottom:.6rem;
 }
 .hero-name em{font-style:normal;color:var(--rust)}
-
 .hero-tagline{
-  font-size:16px;line-height:1.6;color:var(--ink-mid);font-weight:300;
-  margin-bottom:1.5rem;max-width:480px;
+  font-size:15px;line-height:1.6;color:var(--ink-mid);font-weight:300;
+  margin-bottom:1.25rem;max-width:480px;
 }
 .hero-tagline strong{color:var(--ink);font-weight:500}
-
-.hero-pills{
-  display:flex;flex-wrap:wrap;gap:.5rem;
-  margin-bottom:1.25rem;
-}
+.hero-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
 .hero-pill{
   font-family:var(--mono);font-size:10px;letter-spacing:.08em;
   padding:.35rem .7rem;text-transform:uppercase;
-  border:1px solid var(--stone);color:var(--ink-mid);
-  border-radius:3px;transition:all .2s;
+  border:1px solid var(--stone);color:var(--ink-mid);border-radius:3px;transition:all .2s;
 }
 .hero-pill:hover{border-color:var(--rust);color:var(--rust)}
-
-.hero-tools{
-  font-family:var(--mono);font-size:11px;color:var(--ink-light);
-  letter-spacing:.06em;margin-bottom:.6rem;
-}
-.hero-affiliation{
-  font-family:var(--sans);font-size:13px;color:var(--ink-mid);
-  margin-bottom:2rem;
-}
-.hero-cta{
-  display:flex;gap:1rem;
-}
+.hero-tools{font-family:var(--mono);font-size:11px;color:var(--ink-light);letter-spacing:.06em;margin-bottom:.5rem}
+.hero-affiliation{font-family:var(--sans);font-size:13px;color:var(--ink-mid);margin-bottom:1.75rem}
+.hero-cta{display:flex;gap:1rem}
 .btn{
   display:inline-block;padding:.6rem 1.4rem;
   font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
@@ -129,39 +92,28 @@ nav{
 .btn-primary:hover{background:var(--rust);border-color:var(--rust)}
 .btn-outline{border:1px solid var(--stone);color:var(--ink-mid)}
 .btn-outline:hover{border-color:var(--ink);color:var(--ink)}
-
-.hero-right{animation:hero-in .9s .4s cubic-bezier(.16,1,.3,1) both}
+.hero-right{animation:hero-in .9s .4s both}
 .profile-frame{
   width:220px;height:220px;border-radius:50%;
-  border:2px solid var(--stone-light);
-  overflow:hidden;position:relative;
+  border:2px solid var(--stone-light);overflow:hidden;
   box-shadow:0 8px 32px rgba(0,0,0,.06);
 }
 .profile-frame img{width:100%;height:100%;object-fit:cover;display:block}
-
 .hero-scroll{
   position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:.4rem;
-  animation:hero-in 1s .8s cubic-bezier(.16,1,.3,1) both;
-  opacity:.4;
+  animation:hero-in 1s .8s both;opacity:.4;
 }
 .scroll-line{width:1px;height:32px;background:var(--stone);display:block}
 .scroll-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--ink-light);text-transform:uppercase}
 
 /* ─── MARQUEE ─────────────────────────────── */
-.marquee-wrap{
-  background:var(--ink);overflow:hidden;padding:.6rem 0;
-  border-top:1px solid #2a2a26;border-bottom:1px solid #2a2a26;
-}
-.marquee-track{
-  display:flex;width:max-content;
-  animation:marquee-scroll 30s linear infinite;
-}
+.marquee-wrap{background:var(--ink);overflow:hidden;padding:.6rem 0;border-top:1px solid #2a2a26;border-bottom:1px solid #2a2a26}
+.marquee-track{display:flex;width:max-content;animation:marquee-scroll 30s linear infinite}
 .marquee-item{
   font-family:var(--mono);font-size:11px;letter-spacing:.12em;
   color:var(--ink-light);white-space:nowrap;
-  padding:0 2rem;text-transform:uppercase;
-  display:flex;align-items:center;gap:1rem;
+  padding:0 2rem;text-transform:uppercase;display:flex;align-items:center;gap:1rem;
 }
 .marquee-item .dot{color:var(--rust);font-size:6px}
 @keyframes marquee-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
@@ -170,8 +122,7 @@ nav{
 .section{padding:6rem 3rem;max-width:1200px;margin:0 auto}
 .section-eyebrow{
   font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--rust);
-  margin-bottom:1rem;
+  text-transform:uppercase;color:var(--rust);margin-bottom:1rem;
 }
 .section-heading{
   font-family:var(--serif);font-size:clamp(1.8rem,4.5vw,3rem);
@@ -180,129 +131,62 @@ nav{
 }
 .section-heading em{font-style:normal;color:var(--rust)}
 
-/* ─── SKILLS ──────────────────────────────── */
-.skills-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
-}
-.skill-card{
-  border:1px solid var(--stone-light);padding:1.5rem;
-  transition:border-color .2s;border-radius:4px;
-}
-.skill-card:hover{border-color:var(--stone)}
-.skill-icon{font-size:1.5rem;margin-bottom:.5rem}
-.skill-card h3{
-  font-family:var(--serif);font-size:1.1rem;font-weight:400;
-  color:var(--ink);margin-bottom:.5rem;
-}
-.skill-card p{
-  font-size:12px;line-height:1.7;color:var(--ink-light);font-weight:300;
-}
-
-/* ─── FILM-STRIP ──────────────────────────── */
-.filmstrip-outer{
-  background:var(--ink);padding:4rem 0;position:relative;overflow:hidden;
-}
-.filmstrip-header{
-  padding:0 3rem 3rem;
-  display:flex;justify-content:space-between;align-items:flex-end;
-}
-.filmstrip-heading{
-  font-family:var(--serif);font-size:clamp(1.5rem,3.5vw,2.5rem);
-  font-weight:300;color:var(--page);letter-spacing:-.01em;line-height:1.1;
-}
-.filmstrip-eyebrow{
-  font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--rust);margin-bottom:.5rem;
-}
-.filmstrip-hint{
-  font-family:var(--mono);font-size:11px;color:var(--ink-light);
-  letter-spacing:.06em;display:flex;align-items:center;gap:.5rem;
-}
-.filmstrip-hint-arrow{animation:hint-nudge 2s ease-in-out infinite}
-@keyframes hint-nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
-
-.sprockets{
-  display:flex;gap:28px;padding:0 3rem;margin-bottom:1rem;align-items:center;
-}
-.sprocket{
-  width:16px;height:10px;border-radius:2px;
-  background:var(--ink-light);opacity:.25;flex-shrink:0;
-}
-.filmstrip-track{
-  display:flex;gap:2px;overflow-x:auto;padding:0 3rem;
-  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;cursor:grab;
-}
-.filmstrip-track::-webkit-scrollbar{display:none}
-.filmstrip-track:active{cursor:grabbing}
-
-.film-frame{
-  flex:0 0 360px;background:var(--surface,#1c1c19);
-  border:1px solid #2a2a26;scroll-snap-align:start;
-  position:relative;padding:1.75rem;transition:border-color .3s;
-}
-.film-frame:hover{border-color:var(--rust)}
-.film-frame-num{
-  font-family:var(--mono);font-size:10px;letter-spacing:.12em;
-  color:var(--ink-light);opacity:.4;margin-bottom:1.25rem;
-  display:flex;justify-content:space-between;
-}
-.film-frame-category{
-  font-family:var(--mono);font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--rust);margin-bottom:.6rem;
-}
-.film-frame-title{
-  font-family:var(--serif);font-size:1.3rem;font-weight:400;
-  color:var(--page);line-height:1.2;margin-bottom:.75rem;letter-spacing:-.01em;
-}
-.film-frame-desc{
-  font-size:13px;line-height:1.7;color:#a09c98;
-  font-weight:300;margin-bottom:1.5rem;
-}
-.film-frame-stack{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:auto}
-.stack-pill{
-  font-family:var(--mono);font-size:10px;
-  padding:.2rem .55rem;border:1px solid #2e2e2a;
-  color:#6a6660;letter-spacing:.04em;border-radius:2px;
-}
-.film-frame-link{
-  display:inline-flex;align-items:center;gap:.35rem;
-  font-family:var(--mono);font-size:10px;letter-spacing:.04em;
-  color:var(--ink-light);text-decoration:none;
-  margin-top:.6rem;transition:color .2s;
-}
-.film-frame-link:hover{color:var(--rust)}
-.film-frame-line{
-  position:absolute;top:0;left:0;right:0;height:2px;background:var(--rust);
-  transform:scaleX(0);transform-origin:left;
-  transition:transform .4s cubic-bezier(.16,1,.3,1);
-}
-.film-frame:hover .film-frame-line{transform:scaleX(1)}
-
 /* ─── ABOUT ───────────────────────────────── */
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
-.about-body p{
-  font-size:15px;line-height:1.8;color:var(--ink-mid);
-  margin-bottom:1rem;font-weight:300;
-}
+.about-body p{font-size:15px;line-height:1.8;color:var(--ink-mid);margin-bottom:1rem;font-weight:300}
 .about-body p strong{color:var(--ink);font-weight:500}
 .about-body p em{font-family:var(--serif);font-style:italic;font-size:1.05em;color:var(--ink)}
 .pull-quote{
   font-family:var(--serif);font-size:clamp(1.2rem,2.5vw,1.8rem);
   font-weight:300;font-style:italic;line-height:1.4;
-  color:var(--ink);padding-left:1.5rem;
-  border-left:2px solid var(--rust);margin-bottom:2rem;
+  color:var(--ink);padding-left:1.5rem;border-left:2px solid var(--rust);margin-bottom:2rem;
 }
-
 .stats-col{display:flex;flex-direction:column;gap:1rem}
-.stat-row{
-  padding:1.25rem 0;border-bottom:1px solid var(--stone-light);
-  display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
-}
+.stat-row{padding:1.25rem 0;border-bottom:1px solid var(--stone-light);display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
 .stat-row:first-child{border-top:1px solid var(--stone-light)}
 .stat-num{font-family:var(--serif);font-size:2.5rem;font-weight:300;color:var(--ink);line-height:1;letter-spacing:-.02em}
 .stat-unit{font-family:var(--mono);font-size:11px;color:var(--rust);letter-spacing:.1em;margin-left:.2rem}
 .stat-label{font-size:13px;color:var(--ink-light);text-align:right;max-width:180px;line-height:1.4;font-weight:300}
+
+/* ─── TOOLKIT ─────────────────────────────── */
+.toolkit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.tk-card{border:1px solid var(--stone-light);padding:1.5rem;border-radius:4px;transition:border-color .2s}
+.tk-card:hover{border-color:var(--stone)}
+.tk-icon{font-size:1.5rem;margin-bottom:.5rem}
+.tk-card h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--ink);margin-bottom:.5rem}
+.tk-card p{font-size:12px;line-height:1.7;color:var(--ink-light);font-weight:300}
+
+/* ─── WORK / PROJECTS ─────────────────────── */
+.work-outer{background:var(--ink);padding:4rem 0}
+.work-inner{max-width:1200px;margin:0 auto;padding:0 3rem}
+.work-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--rust);margin-bottom:1rem}
+.work-heading{
+  font-family:var(--serif);font-size:clamp(1.8rem,4.5vw,3rem);
+  font-weight:300;color:var(--page);letter-spacing:-.01em;line-height:1.1;margin-bottom:3rem;
+}
+.domain-group{margin-bottom:3rem}
+.domain-group:last-child{margin-bottom:0}
+.domain-label{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--rust);margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.domain-label::after{content:'';flex:1;height:1px;background:#2a2a26}
+.proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.proj-card{
+  background:var(--surface,#1c1c19);border:1px solid #2a2a26;
+  padding:1.5rem;position:relative;transition:border-color .3s;border-radius:3px;
+}
+.proj-card:hover{border-color:var(--rust)}
+.proj-card-line{position:absolute;top:0;left:0;right:0;height:2px;background:var(--rust);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.proj-card:hover .proj-card-line{transform:scaleX(1)}
+.proj-category{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--rust);margin-bottom:.5rem}
+.proj-title{font-family:var(--serif);font-size:1.2rem;font-weight:400;color:var(--page);line-height:1.2;margin-bottom:.5rem;letter-spacing:-.01em}
+.proj-desc{font-size:13px;line-height:1.7;color:#a09c98;font-weight:300;margin-bottom:1rem}
+.proj-stack{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem}
+.proj-pill{font-family:var(--mono);font-size:9px;padding:.2rem .5rem;border:1px solid #2e2e2a;color:#6a6660;letter-spacing:.04em;border-radius:2px}
+.proj-link{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--ink-light);text-decoration:none;transition:color .2s}
+.proj-link:hover{color:var(--rust)}
 
 /* ─── EXPERIENCE ──────────────────────────── */
 .exp-grid{display:grid;grid-template-columns:180px 1fr;gap:0}
@@ -317,18 +201,10 @@ nav{
 /* ─── CONTACT ─────────────────────────────── */
 .contact-wrap{background:var(--sky);padding:6rem 3rem}
 .contact-inner{max-width:1200px;margin:0 auto}
-.contact-heading{
-  font-family:var(--serif);font-size:clamp(3rem,8vw,6rem);
-  font-weight:300;font-style:italic;color:var(--ink);
-  line-height:1;letter-spacing:-.02em;margin-bottom:3rem;
-}
+.contact-heading{font-family:var(--serif);font-size:clamp(3rem,8vw,6rem);font-weight:300;font-style:italic;color:var(--ink);line-height:1;letter-spacing:-.02em;margin-bottom:3rem}
 .contact-heading em{font-style:normal;color:var(--rust)}
 .contact-links{display:flex;flex-direction:column;gap:0;max-width:560px}
-.contact-link-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1rem 0;border-bottom:1px solid var(--stone);
-  text-decoration:none;color:var(--ink);transition:color .2s;
-}
+.contact-link-row{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;border-bottom:1px solid var(--stone);text-decoration:none;color:var(--ink);transition:color .2s}
 .contact-link-row:first-child{border-top:1px solid var(--stone)}
 .contact-link-row:hover .cl-text{color:var(--rust)}
 .contact-link-row:hover .cl-arrow{transform:translateX(4px)}
@@ -337,10 +213,7 @@ nav{
 .cl-arrow{font-size:18px;color:var(--stone);transition:transform .2s;display:inline-block}
 
 /* ─── FOOTER ──────────────────────────────── */
-footer{
-  padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;
-  border-top:1px solid var(--stone-light);
-}
+footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--stone-light)}
 .foot-copy{font-family:var(--mono);font-size:10px;color:var(--ink-light);letter-spacing:.08em}
 .foot-mark{font-family:var(--serif);font-size:13px;color:var(--stone);font-style:italic}
 
@@ -350,22 +223,18 @@ footer{
   .hero-right{justify-self:center}
   .profile-frame{width:150px;height:150px}
   .hero-tagline{margin-left:auto;margin-right:auto}
-  .hero-pills{justify-content:center}
-  .hero-cta{justify-content:center}
+  .hero-pills,.hero-cta{justify-content:center}
   .hero-scroll{display:none}
-  .skills-grid{grid-template-columns:repeat(2,1fr)}
+  .toolkit-grid,.proj-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:700px){
   nav{padding:.8rem 1.5rem}
   .hero{padding:5rem 1.5rem 3rem}
   .section{padding:4rem 1.5rem}
-  .about-grid,.exp-grid{grid-template-columns:1fr}
+  .about-grid,.exp-grid,.toolkit-grid,.proj-grid{grid-template-columns:1fr}
   .exp-year{padding-bottom:0;border-bottom:none !important;padding-top:1.75rem}
   .exp-content{padding-top:0 !important;border-top:none !important}
-  .skills-grid{grid-template-columns:1fr}
-  .filmstrip-header{padding:0 1.5rem 2rem;flex-direction:column;align-items:flex-start;gap:1rem}
-  .filmstrip-track,.sprockets{padding:0 1.5rem}
-  .film-frame{flex:0 0 280px}
+  .work-inner{padding:0 1.5rem}
   .contact-wrap{padding:4rem 1.5rem}
   footer{padding:1.5rem;flex-direction:column;gap:1rem;text-align:center}
   .nav-links{display:none}
@@ -374,13 +243,12 @@ footer{
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a class="nav-logo" href="#">Prashant Singh</a>
   <ul class="nav-links">
-    <li><a href="#work">Work</a></li>
-    <li><a href="#skills">Skills</a></li>
     <li><a href="#about">About</a></li>
+    <li><a href="#toolkit">Toolkit</a></li>
+    <li><a href="#work">Work</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -390,9 +258,7 @@ footer{
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-left">
-      <h1 class="hero-name">
-        Prashant<br/><em>Singh</em>
-      </h1>
+      <h1 class="hero-name">Prashant<br/><em>Singh</em></h1>
       <p class="hero-tagline">
         <strong>Physics at BHU.</strong> MBA in Business Analytics at BITS Pilani.
         I solve from first principles — connect the dots, extract the signal,
@@ -413,7 +279,7 @@ footer{
     </div>
     <div class="hero-right">
       <div class="profile-frame">
-        <img src="data:image/jpeg;base64,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" alt="Prashant Singh"/>
+        <img src="data:image/jpeg;base64,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" alt="Prashant Singh"/>
       </div>
     </div>
   </div>
@@ -431,166 +297,6 @@ footer{
   </div>
 </div>
 
-<!-- FILM-STRIP: WORK -->
-<div class="filmstrip-outer" id="work">
-  <div class="filmstrip-header reveal">
-    <div>
-      <div class="filmstrip-eyebrow">// selected work</div>
-      <h2 class="filmstrip-heading">Six projects.<br/>One through-line.</h2>
-    </div>
-    <div class="filmstrip-hint">
-      <span>Drag to explore</span>
-      <span class="filmstrip-hint-arrow">→</span>
-    </div>
-  </div>
-
-  <div class="sprockets" aria-hidden="true">
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div>
-  </div>
-
-  <div class="filmstrip-track" id="filmstrip" role="region" aria-label="Project film strip">
-    <!-- Frame 01 -->
-    <article class="film-frame">
-      <div class="film-frame-line" aria-hidden="true"></div>
-      <div class="film-frame-num"><span>Frame 01</span><span>●</span></div>
-      <div class="film-frame-category">Health Tech · Data Pipeline</div>
-      <h3 class="film-frame-title">OCIE — Guideline ↔ Pipeline Mapper</h3>
-      <p class="film-frame-desc">NSCLC drug-to-guideline mapping by biomarker and line of therapy. Next.js + Postgres dashboard showing standard-of-care drugs with pipeline overlay. NLP-tagged evidence from guideline text.</p>
-      <div class="film-frame-stack">
-        <span class="stack-pill">Next.js</span><span class="stack-pill">Postgres</span>
-        <span class="stack-pill">Python</span><span class="stack-pill">NLP</span>
-        <span class="stack-pill">TypeScript</span>
-      </div>
-      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/ocie" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/ocie</a>
-    </article>
-
-    <!-- Frame 02 -->
-    <article class="film-frame">
-      <div class="film-frame-line" aria-hidden="true"></div>
-      <div class="film-frame-num"><span>Frame 02</span><span>●</span></div>
-      <div class="film-frame-category">ML · Drug Approval</div>
-      <h3 class="film-frame-title">NSCLC Drug Approval Prediction Pipeline</h3>
-      <p class="film-frame-desc">Binary classifier predicting FDA approval probability. RF + XGBoost ensemble with GroupKFold drug-level leakage prevention and scispaCy NER gating.</p>
-      <div class="film-frame-stack">
-        <span class="stack-pill">XGBoost</span><span class="stack-pill">Random Forest</span>
-        <span class="stack-pill">scispaCy</span><span class="stack-pill">openFDA</span>
-        <span class="stack-pill">Python</span>
-      </div>
-    </article>
-
-    <!-- Frame 03 -->
-    <article class="film-frame">
-      <div class="film-frame-line" aria-hidden="true"></div>
-      <div class="film-frame-num"><span>Frame 03</span><span>●</span></div>
-      <div class="film-frame-category">Full-Stack · Clinical</div>
-      <h3 class="film-frame-title">Onco-Directory</h3>
-      <p class="film-frame-desc">Oncologist directory and real-time messaging platform for India. Next.js + Supabase with Clerk auth, postgres_changes subscriptions for live updates.</p>
-      <div class="film-frame-stack">
-        <span class="stack-pill">Next.js</span><span class="stack-pill">Supabase</span>
-        <span class="stack-pill">Clerk</span><span class="stack-pill">Vercel</span>
-        <span class="stack-pill">TypeScript</span>
-      </div>
-      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/onco-directory" target="_blank" rel="noopener">🔒 github.com/itsprashantsingh19-lab/onco-directory</a>
-    </article>
-
-    <!-- Frame 04 -->
-    <article class="film-frame">
-      <div class="film-frame-line" aria-hidden="true"></div>
-      <div class="film-frame-num"><span>Frame 04</span><span>●</span></div>
-      <div class="film-frame-category">NLP · Signals</div>
-      <h3 class="film-frame-title">AI Hiring Signals Pipeline</h3>
-      <p class="film-frame-desc">Tracked job postings across frontier AI labs to predict product announcements. BERTopic topic modeling + Granger causality to surface leading signals before public launches.</p>
-      <div class="film-frame-stack">
-        <span class="stack-pill">BERTopic</span><span class="stack-pill">Granger Causality</span>
-        <span class="stack-pill">JobSpy</span><span class="stack-pill">Python</span>
-      </div>
-    </article>
-
-    <!-- Frame 05 -->
-    <article class="film-frame">
-      <div class="film-frame-line" aria-hidden="true"></div>
-      <div class="film-frame-num"><span>Frame 05</span><span>●</span></div>
-      <div class="film-frame-category">NLP · Topic Modeling</div>
-      <h3 class="film-frame-title">Political Discourse Topic Modeling</h3>
-      <p class="film-frame-desc">LDA-based pipeline analyzing speeches of political leaders. NewsAPI data to surface common ground and divergence across party lines.</p>
-      <div class="film-frame-stack">
-        <span class="stack-pill">LDA</span><span class="stack-pill">NewsAPI</span>
-        <span class="stack-pill">scikit-learn</span><span class="stack-pill">Python</span>
-        <span class="stack-pill">Jupyter</span>
-      </div>
-      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/Topic-Modelling" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/Topic-Modelling</a>
-    </article>
-
-    <!-- Frame 06 -->
-    <article class="film-frame">
-      <div class="film-frame-line" aria-hidden="true"></div>
-      <div class="film-frame-num"><span>Frame 06</span><span>●</span></div>
-      <div class="film-frame-category">OncoAssistant · Dashboard</div>
-      <h3 class="film-frame-title">OncoAssistant — Clinical Analytics Dashboard</h3>
-      <p class="film-frame-desc">Immunotherapy analytics for 5 drugs across ~5,735 trials. Full-stack Next.js + Recharts + Supabase with cross-drug comparison and individual drug KPIs.</p>
-      <div class="film-frame-stack">
-        <span class="stack-pill">Next.js</span><span class="stack-pill">Recharts</span>
-        <span class="stack-pill">Supabase</span><span class="stack-pill">ECharts</span>
-      </div>
-      <a class="film-frame-link" href="https://github.com/itsprashantsingh19-lab/oncoassistant-" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/oncoassistant-</a>
-    </article>
-  </div>
-
-  <div class="sprockets" aria-hidden="true" style="margin-top:1rem;margin-bottom:0">
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
-    <div class="sprocket"></div><div class="sprocket"></div>
-  </div>
-</div>
-
-<!-- SKILLS -->
-<section class="section" id="skills">
-  <div class="section-eyebrow reveal">// toolkit</div>
-  <h2 class="section-heading reveal reveal-delay-1">Skills & <em>stack</em>.</h2>
-  <div class="skills-grid">
-    <div class="skill-card reveal reveal-delay-1">
-      <div class="skill-icon">🐍</div>
-      <h3>Data Engineering</h3>
-      <p>Python · Pandas · NumPy · SQL · Postgres · ETL pipelines · Data cleaning · API integration</p>
-    </div>
-    <div class="skill-card reveal reveal-delay-2">
-      <div class="skill-icon">📊</div>
-      <h3>Analytics & BI</h3>
-      <p>Dashboard design · KPI architecture · Recharts · ECharts · Tableau · Cohort analysis · Funnel metrics</p>
-    </div>
-    <div class="skill-card reveal reveal-delay-3">
-      <div class="skill-icon">🧠</div>
-      <h3>Machine Learning</h3>
-      <p>XGBoost · Random Forest · scikit-learn · BERTopic · LDA · scispaCy · NER · Classification · Forecasting</p>
-    </div>
-    <div class="skill-card reveal reveal-delay-1">
-      <div class="skill-icon">🌐</div>
-      <h3>Full-Stack</h3>
-      <p>Next.js · TypeScript · JavaScript · Tailwind CSS · Supabase · Clerk · Vercel · REST APIs</p>
-    </div>
-    <div class="skill-card reveal reveal-delay-2">
-      <div class="skill-icon">🔭</div>
-      <h3>First Principles</h3>
-      <p>Mathematical modeling · Statistical analysis · Hypothesis testing · Signal processing · Bayesian inference</p>
-    </div>
-    <div class="skill-card reveal reveal-delay-3">
-      <div class="skill-icon">📈</div>
-      <h3>Strategy & Product</h3>
-      <p>Competitive intelligence · Business implications · Unit economics · Product strategy · Consulting-grade BI</p>
-    </div>
-  </div>
-</section>
-
 <!-- ABOUT -->
 <section class="section" id="about">
   <div class="about-grid">
@@ -602,62 +308,107 @@ footer{
       <p class="reveal reveal-delay-3">My goal is <em>corporate finance consulting</em> — not as a pivot away from technical work, but as the place where the technical work finds its highest leverage. I want to be the person who designed the system <em>and</em> knows what it means for the business.</p>
     </div>
     <div class="reveal reveal-delay-2">
-      <blockquote class="pull-quote">
-        "Never mistake noise for implication."
-      </blockquote>
+      <blockquote class="pull-quote">"Never mistake noise for implication."</blockquote>
       <div class="stats-col">
-        <div class="stat-row">
-          <div><span class="stat-num">6</span><span class="stat-unit">+</span></div>
-          <div class="stat-label">end-to-end projects shipped</div>
-        </div>
-        <div class="stat-row">
-          <div><span class="stat-num">7</span></div>
-          <div class="stat-label">NSCLC biomarker categories mapped</div>
-        </div>
-        <div class="stat-row">
-          <div><span class="stat-num">~6K</span></div>
-          <div class="stat-label">production data pipelines built</div>
-        </div>
-        <div class="stat-row">
-          <div><span class="stat-num">2</span></div>
-          <div class="stat-label">degrees, 0 excuses</div>
-        </div>
+        <div class="stat-row"><div><span class="stat-num">6</span><span class="stat-unit">+</span></div><div class="stat-label">end-to-end projects shipped</div></div>
+        <div class="stat-row"><div><span class="stat-num">7</span></div><div class="stat-label">NSCLC biomarker categories mapped</div></div>
+        <div class="stat-row"><div><span class="stat-num">~6K</span></div><div class="stat-label">production data pipelines built</div></div>
+        <div class="stat-row"><div><span class="stat-num">2</span></div><div class="stat-label">degrees, 0 excuses</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="divider"/>
+<!-- TOOLKIT -->
+<section class="section" id="toolkit">
+  <div class="section-eyebrow reveal">// toolkit</div>
+  <h2 class="section-heading reveal reveal-delay-1">Skills & <em>stack</em>.</h2>
+  <div class="toolkit-grid">
+    <div class="tk-card reveal reveal-delay-1"><div class="tk-icon">🐍</div><h3>Data Engineering</h3><p>Python · Pandas · NumPy · SQL · Postgres · ETL pipelines · Data cleaning · API integration</p></div>
+    <div class="tk-card reveal reveal-delay-2"><div class="tk-icon">📊</div><h3>Analytics & BI</h3><p>Dashboard design · KPI architecture · Recharts · ECharts · Tableau · Cohort analysis · Funnel metrics</p></div>
+    <div class="tk-card reveal reveal-delay-3"><div class="tk-icon">🧠</div><h3>Machine Learning</h3><p>XGBoost · Random Forest · scikit-learn · BERTopic · LDA · scispaCy · NER · Classification · Forecasting</p></div>
+    <div class="tk-card reveal reveal-delay-1"><div class="tk-icon">🌐</div><h3>Full-Stack</h3><p>Next.js · TypeScript · JavaScript · Tailwind CSS · Supabase · Clerk · Vercel · REST APIs</p></div>
+    <div class="tk-card reveal reveal-delay-2"><div class="tk-icon">🔭</div><h3>First Principles</h3><p>Mathematical modeling · Statistical analysis · Hypothesis testing · Signal processing · Bayesian inference</p></div>
+    <div class="tk-card reveal reveal-delay-3"><div class="tk-icon">📈</div><h3>Strategy & Product</h3><p>Competitive intelligence · Business implications · Unit economics · Product strategy · Consulting-grade BI</p></div>
+  </div>
+</section>
+
+<!-- WORK -->
+<div class="work-outer" id="work">
+  <div class="work-inner">
+    <div class="work-eyebrow reveal">// selected work</div>
+    <h2 class="work-heading reveal reveal-delay-1">Projects organized by <em>domain</em>.</h2>
+
+    <!-- Health Tech -->
+    <div class="domain-group reveal">
+      <div class="domain-label">Health Tech & Clinical Analytics</div>
+      <div class="proj-grid">
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">Data Pipeline · Dashboard</div>
+          <h3 class="proj-title">OCIE — Guideline ↔ Pipeline Mapper</h3>
+          <p class="proj-desc">NSCLC drug-to-guideline mapping by biomarker and line of therapy. Next.js + Postgres dashboard with NLP-tagged evidence from guideline text.</p>
+          <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Postgres</span><span class="proj-pill">Python</span><span class="proj-pill">NLP</span><span class="proj-pill">TypeScript</span></div>
+          <a class="proj-link" href="https://github.com/itsprashantsingh19-lab/ocie" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/ocie</a>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">ML · Drug Approval</div>
+          <h3 class="proj-title">NSCLC Drug Approval Prediction</h3>
+          <p class="proj-desc">Binary classifier predicting FDA approval probability. RF + XGBoost ensemble with GroupKFold leakage prevention and scispaCy NER gating.</p>
+          <div class="proj-stack"><span class="proj-pill">XGBoost</span><span class="proj-pill">Random Forest</span><span class="proj-pill">scispaCy</span><span class="proj-pill">openFDA</span><span class="proj-pill">Python</span></div>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">Full-Stack · Platform</div>
+          <h3 class="proj-title">Onco-Directory</h3>
+          <p class="proj-desc">Oncologist directory and real-time messaging platform. Next.js + Supabase with Clerk auth and live postgres_changes subscriptions.</p>
+          <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Supabase</span><span class="proj-pill">Clerk</span><span class="proj-pill">Vercel</span><span class="proj-pill">TypeScript</span></div>
+          <a class="proj-link" href="https://github.com/itsprashantsingh19-lab/onco-directory" target="_blank" rel="noopener">🔒 Private repo</a>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">Dashboard · Analytics</div>
+          <h3 class="proj-title">OncoAssistant — Clinical Analytics Dashboard</h3>
+          <p class="proj-desc">Immunotherapy analytics for 5 drugs across ~5,735 trials. Next.js + Recharts + Supabase with cross-drug comparison.</p>
+          <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Recharts</span><span class="proj-pill">Supabase</span><span class="proj-pill">ECharts</span></div>
+          <a class="proj-link" href="https://github.com/itsprashantsingh19-lab/oncoassistant-" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/oncoassistant-</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- NLP & Signals -->
+    <div class="domain-group reveal reveal-delay-1">
+      <div class="domain-label">NLP & Signal Intelligence</div>
+      <div class="proj-grid">
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">NLP · Signals</div>
+          <h3 class="proj-title">AI Hiring Signals Pipeline</h3>
+          <p class="proj-desc">Job posting tracking across frontier AI labs. BERTopic + Granger causality to predict product announcements before public launches.</p>
+          <div class="proj-stack"><span class="proj-pill">BERTopic</span><span class="proj-pill">Granger Causality</span><span class="proj-pill">JobSpy</span><span class="proj-pill">Python</span></div>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">NLP · Topic Modeling</div>
+          <h3 class="proj-title">Political Discourse Topic Modeling</h3>
+          <p class="proj-desc">LDA-based pipeline analyzing speeches of political leaders. NewsAPI data surfaces common ground and divergence across party lines.</p>
+          <div class="proj-stack"><span class="proj-pill">LDA</span><span class="proj-pill">NewsAPI</span><span class="proj-pill">scikit-learn</span><span class="proj-pill">Python</span><span class="proj-pill">Jupyter</span></div>
+          <a class="proj-link" href="https://github.com/itsprashantsingh19-lab/Topic-Modelling" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/Topic-Modelling</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- EXPERIENCE -->
 <section class="section" id="experience">
   <div class="section-eyebrow reveal">// background</div>
   <h2 class="section-heading reveal reveal-delay-1">Where I've been.</h2>
   <div class="exp-grid">
-    <div class="exp-row">
-      <div class="exp-year reveal reveal-delay-1">May 2026 — Present</div>
-      <div class="exp-content reveal reveal-delay-2">
-        <div class="exp-role">Data Science Intern</div>
-        <div class="exp-place">Health Tech Company</div>
-        <div class="exp-desc">Designing data architecture, building analytics dashboards, and drawing business implications from complex data. From raw messy data to actionable strategic output.</div>
-      </div>
-    </div>
-    <div class="exp-row">
-      <div class="exp-year reveal reveal-delay-1">2025 — Present</div>
-      <div class="exp-content reveal reveal-delay-2">
-        <div class="exp-role">MBA — Business Analytics</div>
-        <div class="exp-place">BITS Pilani</div>
-        <div class="exp-desc">Quantitative strategy, marketing analytics, and corporate finance. Applying technical work as consulting-grade business intelligence. Where the equations meet the boardroom.</div>
-      </div>
-    </div>
-    <div class="exp-row">
-      <div class="exp-year reveal reveal-delay-1">2020 — 2023</div>
-      <div class="exp-content reveal reveal-delay-2">
-        <div class="exp-role">B.Sc.(Hons) Physics</div>
-        <div class="exp-place">Banaras Hindu University (BHU)</div>
-        <div class="exp-desc">First-principles reasoning, mathematical modeling, and comfort with ambiguity. The foundation for everything that came after.</div>
-      </div>
-    </div>
+    <div class="exp-row"><div class="exp-year reveal reveal-delay-1">May 2026 — Present</div><div class="exp-content reveal reveal-delay-2"><div class="exp-role">Data Science Intern</div><div class="exp-place">Health Tech Company</div><div class="exp-desc">Designing data architecture, building analytics dashboards, and drawing business implications from complex data. From raw messy data to actionable strategic output.</div></div></div>
+    <div class="exp-row"><div class="exp-year reveal reveal-delay-1">2025 — Present</div><div class="exp-content reveal reveal-delay-2"><div class="exp-role">MBA — Business Analytics</div><div class="exp-place">BITS Pilani</div><div class="exp-desc">Quantitative strategy, marketing analytics, and corporate finance. Applying technical work as consulting-grade business intelligence.</div></div></div>
+    <div class="exp-row"><div class="exp-year reveal reveal-delay-1">2020 — 2023</div><div class="exp-content reveal reveal-delay-2"><div class="exp-role">B.Sc.(Hons) Physics</div><div class="exp-place">Banaras Hindu University (BHU)</div><div class="exp-desc">First-principles reasoning, mathematical modeling, and comfort with ambiguity. The foundation for everything that came after.</div></div></div>
   </div>
 </section>
 
@@ -666,26 +417,13 @@ footer{
   <div class="contact-inner">
     <h2 class="contact-heading reveal">Let's<br/><em>talk.</em></h2>
     <div class="contact-links reveal reveal-delay-1">
-      <a class="contact-link-row" href="https://github.com/itsprashantsingh19-lab" target="_blank" rel="noopener">
-        <span class="cl-label">GitHub</span>
-        <span class="cl-text">github.com/itsprashantsingh19-lab</span>
-        <span class="cl-arrow">→</span>
-      </a>
-      <a class="contact-link-row" href="https://www.linkedin.com/in/prashant-singh-b8a613351" target="_blank" rel="noopener">
-        <span class="cl-label">LinkedIn</span>
-        <span class="cl-text">linkedin.com/in/prashant-singh-b8a613351</span>
-        <span class="cl-arrow">→</span>
-      </a>
-      <a class="contact-link-row" href="mailto:h20250845@pilani.bits-pilani.ac.in">
-        <span class="cl-label">Email</span>
-        <span class="cl-text">h20250845@pilani.bits-pilani.ac.in</span>
-        <span class="cl-arrow">→</span>
-      </a>
+      <a class="contact-link-row" href="https://github.com/itsprashantsingh19-lab" target="_blank" rel="noopener"><span class="cl-label">GitHub</span><span class="cl-text">github.com/itsprashantsingh19-lab</span><span class="cl-arrow">→</span></a>
+      <a class="contact-link-row" href="https://www.linkedin.com/in/prashant-singh-b8a613351" target="_blank" rel="noopener"><span class="cl-label">LinkedIn</span><span class="cl-text">linkedin.com/in/prashant-singh-b8a613351</span><span class="cl-arrow">→</span></a>
+      <a class="contact-link-row" href="mailto:h20250845@pilani.bits-pilani.ac.in"><span class="cl-label">Email</span><span class="cl-text">h20250845@pilani.bits-pilani.ac.in</span><span class="cl-arrow">→</span></a>
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <span class="foot-copy">Built from scratch · Prashant Singh · 2026</span>
   <span class="foot-mark">∂(insight)/∂(data)</span>
@@ -697,7 +435,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-const sections = document.querySelectorAll('section[id], .contact-wrap');
+const sections = document.querySelectorAll('section[id], .work-outer, .contact-wrap');
 const navAnchors = document.querySelectorAll('.nav-links a');
 function updateActiveNav(){
   const scrollY = window.scrollY + 100;
@@ -710,15 +448,6 @@ function updateActiveNav(){
   navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
 }
 window.addEventListener('scroll', updateActiveNav, {passive:true});
-
-const track = document.getElementById('filmstrip');
-let isDown = false, startX, scrollLeft;
-track.addEventListener('mousedown', e => { isDown=true; track.style.cursor='grabbing'; startX=e.pageX-track.offsetLeft; scrollLeft=track.scrollLeft; });
-track.addEventListener('mouseleave', () => { isDown=false; track.style.cursor='grab'; });
-track.addEventListener('mouseup', () => { isDown=false; track.style.cursor='grab'; });
-track.addEventListener('mousemove', e => { if(!isDown) return; e.preventDefault(); track.scrollLeft = scrollLeft - (e.pageX - track.offsetLeft - startX) * 1.4; });
-track.addEventListener('touchstart', e => { startX=e.touches[0].pageX-track.offsetLeft; scrollLeft=track.scrollLeft; }, {passive:true});
-track.addEventListener('touchmove', e => { track.scrollLeft = scrollLeft - (e.touches[0].pageX - track.offsetLeft - startX) * 1.2; }, {passive:true});
 </script>
 </body>
 </html>
