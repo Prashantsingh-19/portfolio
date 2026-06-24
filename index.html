@@ -53,8 +53,8 @@ nav{
 
 /* ─── HERO ────────────────────────────────── */
 .hero{
-  min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;
-  padding:6rem 3rem 4rem;position:relative;overflow:hidden;
+  min-height:100vh;display:flex;flex-direction:column;
+  padding:6rem 3rem;position:relative;overflow:hidden;
 }
 .hero-bg-text{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
@@ -66,39 +66,50 @@ nav{
   opacity:0;
 }
 @keyframes hero-bg-fade{0%{opacity:0;transform:translate(-50%,-50%) scale(.96)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-
-.hero-bottom{
-  position:relative;z-index:1;margin-left:auto;text-align:right;
-  max-width:700px;animation:hero-in .9s .3s both;
-}
 @keyframes hero-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
 .hero-equation{
-  font-family:var(--serif);font-size:clamp(1.3rem,3vw,2.2rem);
+  position:relative;z-index:1;
+  font-family:var(--serif);font-size:clamp(1.6rem,4vw,3.2rem);
   font-weight:300;font-style:italic;color:var(--ink);
-  letter-spacing:-.01em;line-height:1.1;margin-bottom:.75rem;
+  letter-spacing:-.01em;line-height:1.1;
+  animation:hero-in .9s .3s both;
+  max-width:700px;
 }
 .hero-equation .eq-rust{color:var(--rust);font-style:normal}
 .hero-equation .eq-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;font-style:italic}
 .eq-num,.eq-den{display:block;font-size:.8em;line-height:1.1}
 .eq-bar{display:block;width:100%;height:1px;background:currentColor;margin:.1em 0}
 
+.hero-footer{
+  position:absolute;bottom:3rem;right:3rem;z-index:1;
+  text-align:right;
+  animation:hero-in 1s .5s both;
+}
 .hero-physicist{
-  font-family:var(--serif);font-size:clamp(1rem,2vw,1.3rem);
-  color:var(--ink-mid);font-style:italic;margin-bottom:.15rem;
+  font-family:var(--serif);font-size:clamp(.9rem,1.5vw,1.1rem);
+  color:var(--ink-mid);font-style:italic;line-height:1.4;
 }
 .hero-uncertainty{
-  font-family:var(--serif);font-size:clamp(1rem,2vw,1.3rem);
-  color:var(--ink-mid);font-style:italic;margin-bottom:1rem;
+  font-family:var(--serif);font-size:clamp(.9rem,1.5vw,1.1rem);
+  color:var(--ink-mid);font-style:italic;margin-bottom:.5rem;
 }
 .hero-einstein{
-  font-family:var(--serif);font-size:clamp(1.2rem,2.5vw,1.6rem);
+  font-family:var(--serif);font-size:clamp(1rem,1.8vw,1.3rem);
   color:var(--ink);font-style:italic;
 }
 .hero-einstein-note{
   font-style:normal;font-family:var(--mono);font-size:.65em;
   color:var(--ink-light);letter-spacing:.04em;
 }
+
+.hero-scroll{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  animation:hero-in 1s .8s both;opacity:.4;
+}
+.scroll-line{width:1px;height:32px;background:var(--stone);display:block}
+.scroll-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--ink-light);text-transform:uppercase}
 
 /* ─── MARQUEE ─────────────────────────────── */
 .marquee-wrap{background:var(--ink);overflow:hidden;padding:.6rem 0;border-top:1px solid #2a2a26;border-bottom:1px solid #2a2a26}
@@ -211,6 +222,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 
 /* ─── RESPONSIVE ──────────────────────────── */
 @media(max-width:900px){
+  .hero-scroll{display:none}
   .toolkit-grid,.proj-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:700px){
@@ -243,19 +255,23 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg-text" aria-hidden="true">PS</div>
-  <div class="hero-bottom">
-    <div class="hero-equation" aria-label="The derivative of insight with respect to data">
-      <span class="eq-frac" aria-hidden="true">
-        <span class="eq-num">∂ insight</span>
-        <span class="eq-bar"></span>
-        <span class="eq-den">∂ data</span>
-      </span>
-      <span style="margin:0 .2em"> = </span>
-      <span class="eq-rust">f</span>(physics, analytics, strategy)
-    </div>
+  <div class="hero-equation" aria-label="The derivative of insight with respect to data">
+    <span class="eq-frac" aria-hidden="true">
+      <span class="eq-num">∂ insight</span>
+      <span class="eq-bar"></span>
+      <span class="eq-den">∂ data</span>
+    </span>
+    <span style="margin:0 .2em"> = </span>
+    <span class="eq-rust">f</span>(physics, analytics, strategy)
+  </div>
+  <div class="hero-footer">
     <p class="hero-physicist">Data Science with a physicist's touch:</p>
     <p class="hero-uncertainty">We leave the uncertainty principle at the door.</p>
     <p class="hero-einstein">E = mc² <span class="hero-einstein-note">(Enterprise = Metrics × Clarity²)</span></p>
+  </div>
+  <div class="hero-scroll" aria-hidden="true">
+    <span class="scroll-line"></span>
+    <span class="scroll-label">Scroll</span>
   </div>
 </section>
 
