@@ -69,17 +69,13 @@ nav{
 @keyframes hero-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
 .hero-equation{
-  position:relative;z-index:1;
+  position:absolute;top:55%;left:3rem;z-index:1;transform:translateY(-50%);
   font-family:var(--serif);font-size:clamp(1.6rem,4vw,3.2rem);
   font-weight:300;font-style:italic;color:var(--ink);
-  letter-spacing:-.01em;line-height:1.1;
+  letter-spacing:-.01em;line-height:1.1;white-space:nowrap;
   animation:hero-in .9s .3s both;
-  max-width:700px;
 }
 .hero-equation .eq-rust{color:var(--rust);font-style:normal}
-.hero-equation .eq-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;font-style:italic}
-.eq-num,.eq-den{display:block;font-size:.8em;line-height:1.1}
-.eq-bar{display:block;width:100%;height:1px;background:currentColor;margin:.1em 0}
 
 .hero-footer{
   position:absolute;bottom:3rem;right:3rem;z-index:1;
@@ -228,6 +224,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 @media(max-width:700px){
   nav{padding:.8rem 1.5rem}
   .hero{padding:5rem 1.5rem 3rem}
+  .hero-equation{left:1.5rem}
+  .hero-footer{right:1.5rem;bottom:2rem}
   .section,.about-photo-wrap{padding:4rem 1.5rem}
   .about-grid,.exp-grid,.toolkit-grid,.proj-grid{grid-template-columns:1fr}
   .exp-year{padding-bottom:0;border-bottom:none !important;padding-top:1.75rem}
@@ -256,13 +254,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <section class="hero">
   <div class="hero-bg-text" aria-hidden="true">PS</div>
   <div class="hero-equation" aria-label="The derivative of insight with respect to data">
-    <span class="eq-frac" aria-hidden="true">
-      <span class="eq-num">∂ insight</span>
-      <span class="eq-bar"></span>
-      <span class="eq-den">∂ data</span>
-    </span>
-    <span style="margin:0 .2em"> = </span>
-    <span class="eq-rust">f</span>(physics, analytics, strategy)
+    &part; insight / &part; data = <span class="eq-rust">f</span>(physics, analytics, strategy)
   </div>
   <div class="hero-footer">
     <p class="hero-physicist">Data Science with a physicist's touch:</p>
