@@ -497,28 +497,34 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   const pupils = cursor.querySelectorAll('.pupil');
   const claws = cursor.querySelectorAll('.claw');
 
-  let mx = -200, my = -200, cx = -200, cy = -200;
+  let tx = -200, ty = -200;   // target = mouse position
+  let cx = -200, cy = -200;   // crab position
   let lastMove = performance.now();
+  const HUNT_DELAY = 350;     // ms before crab starts chasing
+
+  function lookAt(targetX, targetY, crabX, crabY) {
+    // Eyes always track the mouse, not the crab's movement direction
+    const dx = targetX - crabX;
+    const dy = targetY - crabY;
+    const dist = Math.min(Math.sqrt(dx*dx + dy*dy), 60);
+    const angle = Math.atan2(dy, dx);
+    const t = Math.min(dist / 60, 1);
+    const ox = Math.cos(angle) * t * 2;
+    const oy = Math.sin(angle) * t * 2;
+    pupils.forEach((p, i) => {
+      p.setAttribute('cx', (i === 0 ? 14.5 : 31.5) + ox);
+      p.setAttribute('cy', 13 + oy);
+    });
+  }
 
   document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
+    tx = e.clientX; ty = e.clientY;
     lastMove = performance.now();
+    lookAt(tx, ty, cx, cy);
 
-    const rect = cursor.getBoundingClientRect();
-    const cxC = rect.left + 22, cyC = rect.top + 28;
-    const dx = mx - cxC, dy = my - cyC;
-    const dist = Math.min(Math.sqrt(dx*dx + dy*dy), 30);
-    const angle = Math.atan2(dy, dx);
-    const t = Math.min(dist / 30, 1);
-    const maxMove = 1.8;
-
-    const ox = Math.cos(angle) * t * maxMove;
-    const oy = Math.sin(angle) * t * maxMove;
-
-    pupils.forEach((p, i) => {
-      const bx = i === 0 ? 14.5 : 31.5;
-      p.setAttribute('cx', bx + ox);
-      p.setAttribute('cy', 13 + oy);
+    const dist = Math.sqrt((tx - cx)**2 + (ty - cy)**2);
+    claws.forEach(c => {
+      c.style.transform = dist > 120 ? 'rotate(14deg)' : '';
     });
   });
 
@@ -526,16 +532,24 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
     claws.forEach(c => { c.style.transform = 'scale(0.8) rotate(8deg)'; });
   });
   document.addEventListener('mouseup', () => {
-    claws.forEach(c => { c.style.transform = ''; });
+    claws.forEach(c => c.style.transform = '');
   });
 
   (function anim(){
-    const dt = Math.min((performance.now() - lastMove) / 1000, 1);
-    const catchup = dt > 0.3 ? 0.25 : 0.1;
-    cx += (mx - cx) * catchup;
-    cy += (my - cy) * catchup;
+    const now = performance.now();
+    const dt = now - lastMove;
+    const dist = Math.sqrt((tx - cx)**2 + (ty - cy)**2);
+
+    // After a delay, slowly shuffle toward the mouse
+    if (dt > HUNT_DELAY && dist > 8) {
+      const speed = Math.min(0.05, 0.008 + dist * 0.0004);
+      cx += (tx - cx) * speed;
+      cy += (ty - cy) * speed;
+    }
+
     cursor.style.left = cx + 'px';
     cursor.style.top = cy + 'px';
+    lookAt(tx, ty, cx, cy);
     requestAnimationFrame(anim);
   })();
 })();
