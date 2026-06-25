@@ -240,7 +240,7 @@ nav{
 /* ─── FOOTER ──────────────────────────────── */
 footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--stone-light)}
 .foot-copy{font-family:var(--mono);font-size:10px;color:var(--ink-light);letter-spacing:.08em}
-.foot-mark{font-family:var(--serif);font-size:13px;color:var(--stone);font-style:italic}
+.foot-mark{font-family:var(--serif);font-size:13px;color:var(--ink-mid);font-style:italic}
 
 /* ─── RESPONSIVE ──────────────────────────── */
 @media(max-width:900px){
@@ -818,8 +818,9 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     }
   });
 
-  // Mouse leaves window → Ari retreats to hole
-  document.addEventListener('mouseleave', () => {
+  // ─── Hole retreat / emerge ────────────────────
+  function retreatToHole() {
+    if (isInHole) return;
     const pos = getHolePos();
     tx = pos.x; ty = pos.y;
     isInHole = true;
@@ -828,19 +829,24 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     showBubble(true);
     if (sectionTimer) clearTimeout(sectionTimer);
     if (pokeTimer) clearTimeout(pokeTimer);
-  });
+  }
 
-  // Mouse re-enters → Ari emerges
-  document.addEventListener('mouseenter', () => {
-    if (isInHole) {
-      cursor.classList.remove('in-hole');
-      isInHole = false;
-      // Turn off "Bye!" and pick up from current thought
-      thoughtIdx = (thoughtIdx + 1) % thoughts.length;
-      setThought(thoughts[thoughtIdx]);
-      lastThoughtTime = performance.now();
-    }
+  function emergeFromHole() {
+    if (!isInHole) return;
+    cursor.classList.remove('in-hole');
+    isInHole = false;
+    thoughtIdx = (thoughtIdx + 1) % thoughts.length;
+    setThought(thoughts[thoughtIdx]);
+    lastThoughtTime = performance.now();
+  }
+
+  document.addEventListener('mouseleave', retreatToHole);
+  document.addEventListener('mouseenter', emergeFromHole);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) retreatToHole(); else emergeFromHole();
   });
+  window.addEventListener('blur', retreatToHole);
+  window.addEventListener('focus', emergeFromHole);
 
   document.addEventListener('mousedown', () => {
     claws.forEach(c => { c.style.transform = 'scale(0.8) rotate(8deg)'; });
