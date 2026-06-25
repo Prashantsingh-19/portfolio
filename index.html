@@ -783,6 +783,12 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   }
 
   document.addEventListener('mousemove', e => {
+    // Detect cursor at viewport top edge (leaving to title bar)
+    if (e.clientY <= 2 && hasMoved && !isInHole) { retreatToHole(); return; }
+    // Re-emerge if cursor comes back down into the page
+    if (e.clientY > 10 && isInHole) { emergeFromHole(); }
+    // Skip position updates while retreating
+    if (isInHole) return;
     if (!hasMoved) {
       hasMoved = true;
       cursor.classList.remove('in-hole');
