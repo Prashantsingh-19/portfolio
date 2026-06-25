@@ -692,15 +692,43 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     }, SECTION_THOUGHT_DURATION);
   }
 
-  // ─── IntersectionObserver for sections ─────────
-  const sectionObserver = new IntersectionObserver((entries) => {
-    let best = null;
-    entries.forEach(e => {
-      if (e.isIntersecting && (!best || e.intersectionRatio > best.intersectionRatio)) best = e;
+  // ─── Scroll-based section detection ─────────
+  // Only switches thought when the previous section has
+  // fully left the viewport (no part visible).
+  const sectionEls = document.querySelectorAll('section[id], .work-outer, .about-photo-wrap, .contact-wrap');
+  let scrollRaf = null;
+  window.addEventListener('scroll', () => {
+    if (initialLoad) return;
+    if (scrollRaf) cancelAnimationFrame(scrollRaf);
+    scrollRaf = requestAnimationFrame(() => {
+      scrollRaf = null;
+      const scrollY = window.scrollY;
+      const viewH = window.innerHeight;
+      const scrollBottom = scrollY + viewH;
+
+      // If we have a current section, check if it's still visible
+      if (lastActiveSection) {
+        let stillVisible = false;
+        sectionEls.forEach(sec => {
+          if (sec.getAttribute('id') === lastActiveSection) {
+            const top = sec.offsetTop;
+            const bot = top + sec.offsetHeight;
+            if (scrollBottom > top && scrollY < bot) stillVisible = true;
+          }
+        });
+        if (stillVisible) return; // Don't switch — old section still in view
+      }
+
+      // Previous section is gone — find the new dominant section
+      let current = '';
+      sectionEls.forEach(sec => {
+        const top = sec.offsetTop;
+        const bot = top + sec.offsetHeight;
+        if (scrollBottom > top && scrollY < bot) current = sec.getAttribute('id') || '';
+      });
+      if (current && current !== lastActiveSection) handleSectionChange(current);
     });
-    if (best) handleSectionChange(best.target.getAttribute('id') || '');
-  }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5] });
-  document.querySelectorAll('section[id], .work-outer, .about-photo-wrap, .contact-wrap').forEach(el => sectionObserver.observe(el));
+  }, { passive: true });
 
   // ─── Thought bubble helpers ───────────────────
   function showBubble(show) {
