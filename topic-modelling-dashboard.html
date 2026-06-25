@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Political Discourse Dashboard · Adityanath vs Owaisi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+/* ─── ROOT ────────────────────────────────────────────── */
+:root{
+  --bg:      #F7F5F0;
+  --surface: #FFFFFF;
+  --border:  #E2DDD6;
+  --text:    #1A1614;
+  --sub:     #6B6560;
+  --yogi:    #C94A1A;
+  --owa:     #1A5FA6;
+  --accent:  #D4821A;
+  --common:  #2A9D6B;
+  --radius:  12px;
+  --shadow:  0 2px 16px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  line-height:1.65;
+}
+
+/* ─── HERO ───────────────────────────────────────────── */
+.hero{
+  background:var(--text);
+  color:#fff;
+  padding:52px 60px 44px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:320px;height:320px;
+  border-radius:50%;
+  background:rgba(255,255,255,.04);
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  bottom:-80px;left:200px;
+  width:200px;height:200px;
+  border-radius:50%;
+  background:rgba(212,130,26,.07);
+}
+.hero-tag{
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:2.5px;
+  text-transform:uppercase;
+  padding:4px 12px;border-radius:4px;
+  margin-bottom:18px;
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(26px,5vw,52px);
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:-.5px;
+  margin-bottom:10px;
+}
+.hero h1 span{color:var(--accent);}
+.hero-sub{
+  color:rgba(255,255,255,.6);
+  font-size:14px;
+  font-family:'DM Mono',monospace;
+  letter-spacing:.5px;
+}
+.hero-pills{
+  margin-top:28px;
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+.pill{
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:100px;
+  padding:6px 18px;
+  font-size:13px;color:rgba(255,255,255,.85);
+}
+.pill strong{color:#fff;}
+
+/* ─── STAT BANNER ────────────────────────────────────── */
+.stat-banner{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:0;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.stat-item{
+  padding:24px 32px;
+  border-right:1px solid var(--border);
+  text-align:center;
+}
+.stat-item:last-child{border-right:none;}
+.stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:32px;font-weight:700;
+  color:var(--accent);
+  display:block;
+}
+.stat-label{font-size:12px;color:var(--sub);margin-top:2px;}
+
+/* ─── LAYOUT ──────────────────────────────────────────── */
+main{
+  max-width:1300px;margin:0 auto;
+  padding:44px 48px;
+  display:grid;gap:44px;
+}
+@media(max-width:800px){
+  main{padding:24px 20px;}
+  .hero{padding:36px 24px;}
+}
+.section-header{
+  display:flex;align-items:baseline;gap:14px;
+  margin-bottom:24px;
+}
+.section-num{
+  font-family:'DM Mono',monospace;
+  font-size:11px;color:var(--sub);
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+.section-header h2{
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:700;
+}
+.section-desc{
+  color:var(--sub);font-size:13px;
+  margin-top:-16px;margin-bottom:20px;
+}
+
+/* ─── CARDS ──────────────────────────────────────────── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px 30px;
+  box-shadow:var(--shadow);
+}
+.card-title{
+  font-size:13px;font-weight:600;
+  letter-spacing:.3px;color:var(--sub);
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+/* ─── LEADER HEADER ──────────────────────────────────── */
+.leader-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-bottom:12px;
+}
+.leader-dot{
+  width:10px;height:10px;border-radius:50%;
+  flex-shrink:0;
+}
+.leader-name{font-weight:600;font-size:15px;}
+
+/* ─── WORD BARS ──────────────────────────────────────── */
+.word-bar-row{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:8px;
+}
+.word-label{
+  min-width:130px;font-size:13px;
+  text-align:right;color:var(--text);
+}
+.word-track{
+  flex:1;height:18px;
+  background:var(--bg);
+  border-radius:4px;overflow:hidden;
+}
+.word-fill{
+  height:100%;border-radius:4px;
+  transition:width .6s ease;
+}
+.word-pct{
+  min-width:36px;
+  font-family:'DM Mono',monospace;
+  font-size:11px;color:var(--sub);
+}
+
+/* ─── INSIGHT BOXES ──────────────────────────────────── */
+.insight-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+.insight-card{
+  border-radius:10px;padding:20px 22px;
+  border-left:4px solid transparent;
+}
+.insight-card.common{background:#EEF8F3;border-left-color:var(--common);}
+.insight-card.diff{background:#FEF4EC;border-left-color:var(--accent);}
+.insight-card.yogi{background:#FEF0EB;border-left-color:var(--yogi);}
+.insight-card.owaisi{background:#EBF3FC;border-left-color:var(--owa);}
+.insight-icon{font-size:20px;margin-bottom:8px;}
+.insight-title{font-weight:600;font-size:13px;margin-bottom:4px;}
+.insight-body{font-size:12px;color:var(--sub);line-height:1.5;}
+
+/* ─── CHART CONTAINERS ────────────────────────────────── */
+.chart-box{width:100%;}
+
+/* ─── TOPIC PILL TABLE ────────────────────────────────── */
+.topic-table{width:100%;border-collapse:collapse;}
+.topic-table td{
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;vertical-align:top;
+}
+.topic-table tr:last-child td{border-bottom:none;}
+.t-badge{
+  display:inline-block;
+  padding:3px 10px;border-radius:100px;
+  font-size:11px;font-weight:600;
+  white-space:nowrap;
+}
+
+/* ─── DIVIDER ────────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:0 -30px;}
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+footer{
+  background:var(--text);color:rgba(255,255,255,.45);
+  padding:28px 60px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.5px;
+}
+
+/* ─── TAB NAV ────────────────────────────────────────── */
+.tab-nav{
+  display:flex;gap:6px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;padding:4px;
+  margin-bottom:20px;width:fit-content;
+}
+.tab-btn{
+  padding:7px 18px;border-radius:6px;border:none;
+  background:transparent;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:13px;
+  color:var(--sub);transition:.2s;font-weight:500;
+}
+.tab-btn.active{background:var(--surface);color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ─── VENN DIAGRAM ────────────────────────────────────── */
+.venn-container{
+  position:relative;
+  width:100%;
+  min-height:480px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.venn-svg{width:100%;max-width:760px;height:420px;}
+.venn-circle-yogi{
+  fill:var(--yogi);
+  fill-opacity:0.18;
+  stroke:var(--yogi);
+  stroke-width:2.5;
+}
+.venn-circle-owa{
+  fill:var(--owa);
+  fill-opacity:0.18;
+  stroke:var(--owa);
+  stroke-width:2.5;
+}
+.venn-label-leader{
+  font-family:'Playfair Display',serif;
+  font-size:17px;
+  font-weight:700;
+}
+.venn-topic-pill{
+  font-family:'DM Sans',sans-serif;
+  font-size:11.5px;
+  font-weight:600;
+}
+.venn-subtitle{
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  fill:var(--sub);
+  letter-spacing:.5px;
+}
+
+/* ─── INTERPRETATION BLOCK ────────────────────────────── */
+.interp-block{
+  background:var(--bg);
+  border-radius:10px;
+  padding:20px 24px;
+  margin-top:20px;
+}
+.interp-block h3{
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  margin-bottom:12px;
+}
+.interp-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:16px;
+}
+@media(max-width:800px){.interp-grid{grid-template-columns:1fr;}}
+.interp-col{padding:14px 16px;border-radius:8px;}
+.interp-col.yogi-col{background:#FEF0EB;border-top:3px solid var(--yogi);}
+.interp-col.comm-col{background:#EEF8F3;border-top:3px solid var(--common);}
+.interp-col.owa-col{background:#EBF3FC;border-top:3px solid var(--owa);}
+.interp-col h4{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;}
+.interp-col ul{list-style:none;padding:0;}
+.interp-col ul li{font-size:12.5px;color:var(--sub);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.05);}
+.interp-col ul li:last-child{border-bottom:none;}
+.interp-col ul li::before{content:'▸ ';color:inherit;font-size:10px;}
+
+/* ─── QUOTES ─────────────────────────────────────────── */
+.quotes-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+@media(max-width:800px){.quotes-grid{grid-template-columns:1fr;}}
+.quote-card{
+  border-radius:10px;
+  padding:18px 20px;
+  border-left:4px solid;
+  position:relative;
+}
+.quote-card.yogi-q{background:#FEF0EB;border-color:var(--yogi);}
+.quote-card.owa-q{background:#EBF3FC;border-color:var(--owa);}
+.quote-card::before{
+  content:'"';
+  position:absolute;
+  top:6px;right:14px;
+  font-family:'Playfair Display',serif;
+  font-size:48px;
+  color:rgba(0,0,0,.06);
+  line-height:1;
+}
+.quote-text{font-size:13px;line-height:1.6;font-style:italic;color:var(--text);margin-bottom:8px;}
+.quote-meta{font-size:11px;color:var(--sub);font-family:'DM Mono',monospace;}
+.quote-leader{font-weight:700;font-size:12px;margin-bottom:4px;}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-tag">NLP · LDA Analysis · Political Discourse</div>
+  <h1>What Are They<br/>Really Talking <span>About?</span></h1>
+  <div class="hero-sub">Yogi Adityanath &nbsp;·&nbsp; Asaduddin Owaisi &nbsp;·&nbsp; Topic Modelling via LDA</div>
+  <div class="hero-pills">
+    <div class="pill"><strong>126</strong> news articles analysed</div>
+    <div class="pill"><strong>4</strong> topics discovered</div>
+    <div class="pill"><strong>2</strong> political leaders compared</div>
+    <div class="pill"><strong>April 2026</strong> · NLP Assignment</div>
+  </div>
+</div>
+
+<!-- ═══ STAT BANNER ══════════════════════════════════════ -->
+<div class="stat-banner">
+  <div class="stat-item">
+    <span class="stat-num">91</span>
+    <div class="stat-label">Yogi Adityanath articles</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">35</span>
+    <div class="stat-label">Owaisi articles</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">2</span>
+    <div class="stat-label">Shared focus topics</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" style="color:var(--yogi)">Governance</span>
+    <div class="stat-label">Yogi's dominant theme</div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" style="color:var(--owa)">Social Justice</span>
+    <div class="stat-label">Owaisi's dominant theme</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ══════════════════════════════════════════════ -->
+<main>
+
+<!-- ── SECTION 1: Topics Discovered ─────────────────────── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Topics Discovered by LDA</h2>
+  </div>
+  <p class="section-desc">The LDA model found 4 distinct themes across all 126 articles. Each topic is a cluster of co-occurring words.</p>
+
+  <div class="grid-2" id="topic-cards-grid"></div>
+</section>
+
+<!-- ── SECTION 2: Leader Breakdown ──────────────────────── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>What Does Each Leader Focus On?</h2>
+  </div>
+  <p class="section-desc">Topic weights show how much of each leader's coverage falls in each theme area (mean probability across all their documents).</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="leader-tag">
+        <div class="leader-dot" style="background:var(--yogi)"></div>
+        <span class="leader-name">Yogi Adityanath</span>
+      </div>
+      <div id="yogi-topic-bars"></div>
+    </div>
+    <div class="card">
+      <div class="leader-tag">
+        <div class="leader-dot" style="background:var(--owa)"></div>
+        <span class="leader-name">Asaduddin Owaisi</span>
+      </div>
+      <div id="owa-topic-bars"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Topic Weight Comparison</div>
+    <div id="chart-comparison" class="chart-box" style="height:320px;"></div>
+  </div>
+</section>
+
+<!-- ── SECTION 3: VENN DIAGRAM ─────────────────────────── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Venn Diagram — Common &amp; Disjoint Topics</h2>
+  </div>
+  <p class="section-desc">The Venn diagram shows which thematic domains are <strong>shared</strong> by both leaders and which are <strong>exclusively owned</strong> by one. A topic counts as "shared" if both leaders have a meaningful weight (≥ 0.20) on it.</p>
+
+  <div class="card">
+    <div class="venn-container">
+      <svg class="venn-svg" viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- Left circle - Yogi -->
+        <ellipse cx="270" cy="210" rx="210" ry="168" class="venn-circle-yogi"/>
+        <!-- Right circle - Owaisi -->
+        <ellipse cx="490" cy="210" rx="210" ry="168" class="venn-circle-owa"/>
+
+        <!-- Leader labels -->
+        <text x="130" y="68" class="venn-label-leader" fill="var(--yogi)" text-anchor="middle">Yogi</text>
+        <text x="130" y="88" class="venn-label-leader" fill="var(--yogi)" text-anchor="middle">Adityanath</text>
+
+        <text x="630" y="68" class="venn-label-leader" fill="var(--owa)" text-anchor="middle">Owaisi</text>
+        <text x="630" y="88" class="venn-label-leader" fill="var(--owa)" text-anchor="middle">(AIMIM)</text>
+
+        <!-- Section labels -->
+        <text x="140" y="125" class="venn-subtitle" text-anchor="middle">YOGI ONLY</text>
+        <text x="380" y="125" class="venn-subtitle" text-anchor="middle">SHARED</text>
+        <text x="620" y="125" class="venn-subtitle" text-anchor="middle">OWAISI ONLY</text>
+
+        <!-- ─── YOGI-ONLY topics (left) ─── -->
+        <!-- Governance & Development (0.306 vs 0.141) -->
+        <rect x="52" y="138" width="182" height="30" rx="15" fill="var(--yogi)" fill-opacity="0.15" stroke="var(--yogi)" stroke-width="1.5"/>
+        <text x="143" y="157" class="venn-topic-pill" fill="var(--yogi)" text-anchor="middle">🏛 Governance &amp; Development</text>
+
+        <!-- Religious & Identity Politics (0.270 vs 0.135) -->
+        <rect x="46" y="180" width="192" height="30" rx="15" fill="var(--yogi)" fill-opacity="0.15" stroke="var(--yogi)" stroke-width="1.5"/>
+        <text x="142" y="199" class="venn-topic-pill" fill="var(--yogi)" text-anchor="middle">🕉 Religious &amp; Identity Politics</text>
+
+        <!-- Security & Law Enforcement (Yogi dominant) -->
+        <rect x="58" y="222" width="172" height="30" rx="15" fill="var(--yogi)" fill-opacity="0.15" stroke="var(--yogi)" stroke-width="1.5"/>
+        <text x="144" y="241" class="venn-topic-pill" fill="var(--yogi)" text-anchor="middle">🚔 Law &amp; Order Enforcement</text>
+
+        <!-- Infrastructure / Development projects -->
+        <rect x="72" y="264" width="152" height="30" rx="15" fill="var(--yogi)" fill-opacity="0.15" stroke="var(--yogi)" stroke-width="1.5"/>
+        <text x="148" y="283" class="venn-topic-pill" fill="var(--yogi)" text-anchor="middle">✈ Infrastructure Projects</text>
+
+        <!-- UP State Administration -->
+        <rect x="80" y="306" width="142" height="30" rx="15" fill="var(--yogi)" fill-opacity="0.15" stroke="var(--yogi)" stroke-width="1.5"/>
+        <text x="151" y="325" class="venn-topic-pill" fill="var(--yogi)" text-anchor="middle">⚙ UP Administration</text>
+
+        <!-- ─── SHARED topics (centre overlap) ─── -->
+        <!-- Electoral & Campaign Rhetoric (0.267 vs 0.249) -->
+        <rect x="298" y="158" width="164" height="30" rx="15" fill="var(--common)" fill-opacity="0.2" stroke="var(--common)" stroke-width="1.8"/>
+        <text x="380" y="177" class="venn-topic-pill" fill="#1A7250" text-anchor="middle">🗳 Electoral Rhetoric</text>
+
+        <!-- Anti-Establishment Critique shared -->
+        <rect x="302" y="202" width="156" height="30" rx="15" fill="var(--common)" fill-opacity="0.2" stroke="var(--common)" stroke-width="1.8"/>
+        <text x="380" y="221" class="venn-topic-pill" fill="#1A7250" text-anchor="middle">📣 Anti-Opposition Rhetoric</text>
+
+        <!-- ─── OWAISI-ONLY topics (right) ─── -->
+        <!-- Social Justice & Rights (0.475 vs 0.157) -->
+        <rect x="528" y="138" width="178" height="30" rx="15" fill="var(--owa)" fill-opacity="0.15" stroke="var(--owa)" stroke-width="1.5"/>
+        <text x="617" y="157" class="venn-topic-pill" fill="var(--owa)" text-anchor="middle">⚖ Social Justice &amp; Rights</text>
+
+        <!-- Muslim Minority Rights -->
+        <rect x="520" y="180" width="184" height="30" rx="15" fill="var(--owa)" fill-opacity="0.15" stroke="var(--owa)" stroke-width="1.5"/>
+        <text x="612" y="199" class="venn-topic-pill" fill="var(--owa)" text-anchor="middle">🕌 Muslim Minority Advocacy</text>
+
+        <!-- Constitutional Rights -->
+        <rect x="530" y="222" width="168" height="30" rx="15" fill="var(--owa)" fill-opacity="0.15" stroke="var(--owa)" stroke-width="1.5"/>
+        <text x="614" y="241" class="venn-topic-pill" fill="var(--owa)" text-anchor="middle">📜 Constitutional Rights</text>
+
+        <!-- CAA / NRC critique -->
+        <rect x="538" y="264" width="154" height="30" rx="15" fill="var(--owa)" fill-opacity="0.15" stroke="var(--owa)" stroke-width="1.5"/>
+        <text x="615" y="283" class="venn-topic-pill" fill="var(--owa)" text-anchor="middle">🛡 Anti-CAA / NRC Stance</text>
+
+        <!-- Parliament critique -->
+        <rect x="544" y="306" width="148" height="30" rx="15" fill="var(--owa)" fill-opacity="0.15" stroke="var(--owa)" stroke-width="1.5"/>
+        <text x="618" y="325" class="venn-topic-pill" fill="var(--owa)" text-anchor="middle">🏛 Parliamentary Opposition</text>
+
+        <!-- ─── Legend ─── -->
+        <circle cx="42" cy="392" r="7" fill="var(--yogi)" fill-opacity="0.35" stroke="var(--yogi)" stroke-width="1.5"/>
+        <text x="54" y="397" font-family="DM Sans,sans-serif" font-size="11" fill="var(--sub)">Yogi-exclusive themes</text>
+
+        <circle cx="200" cy="392" r="7" fill="var(--common)" fill-opacity="0.35" stroke="var(--common)" stroke-width="1.5"/>
+        <text x="212" y="397" font-family="DM Sans,sans-serif" font-size="11" fill="var(--sub)">Shared themes</text>
+
+        <circle cx="330" cy="392" r="7" fill="var(--owa)" fill-opacity="0.35" stroke="var(--owa)" stroke-width="1.5"/>
+        <text x="342" y="397" font-family="DM Sans,sans-serif" font-size="11" fill="var(--sub)">Owaisi-exclusive themes</text>
+
+        <text x="560" y="397" font-family="DM Mono,monospace" font-size="9.5" fill="var(--sub)" text-anchor="end">threshold: weight ≥ 0.20 for "shared"</text>
+      </svg>
+    </div>
+
+    <!-- Interpretation block -->
+    <div class="interp-block">
+      <h3>Reading the Venn Diagram</h3>
+      <div class="interp-grid">
+        <div class="interp-col yogi-col">
+          <h4 style="color:var(--yogi)">Yogi Only (Left)</h4>
+          <ul>
+            <li>Governance &amp; infrastructure</li>
+            <li>Hindutva &amp; religious identity</li>
+            <li>Bulldozer law &amp; order narrative</li>
+            <li>Jewar Airport, UP mega projects</li>
+            <li>State administration machinery</li>
+          </ul>
+        </div>
+        <div class="interp-col comm-col">
+          <h4 style="color:var(--common)">Shared (Overlap)</h4>
+          <ul>
+            <li>Electoral &amp; campaign rhetoric</li>
+            <li>Anti-opposition criticism</li>
+            <li>Both address state elections</li>
+            <li>Both use party-political framing</li>
+          </ul>
+        </div>
+        <div class="interp-col owa-col">
+          <h4 style="color:var(--owa)">Owaisi Only (Right)</h4>
+          <ul>
+            <li>Social justice &amp; rights (47.5%)</li>
+            <li>Muslim minority advocacy</li>
+            <li>Constitution &amp; legal rights</li>
+            <li>Anti-CAA / NRC positions</li>
+            <li>Parliamentary floor debate</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 4: Domain Focus ────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>Which Domains Do They Operate In?</h2>
+  </div>
+  <p class="section-desc">Domain classification maps coverage into recognisable policy/political areas using vocabulary-based scoring.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Yogi Adityanath — Domain Breakdown</div>
+      <div id="chart-domain-yogi" class="chart-box" style="height:300px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Asaduddin Owaisi — Domain Breakdown</div>
+      <div id="chart-domain-owa" class="chart-box" style="height:300px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 5: Radar Chart ─────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Discourse Fingerprint — Radar View</h2>
+  </div>
+  <p class="section-desc">The radar chart shows each leader's topic "signature". The shape of the polygon reflects the overall character of their public discourse.</p>
+  <div class="card">
+    <div id="chart-radar" class="chart-box" style="height:420px;"></div>
+  </div>
+</section>
+
+<!-- ── SECTION 6: Common Ground & Contrast ───────────────── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>Common Ground &amp; Key Differences</h2>
+  </div>
+  <p class="section-desc">Where do both leaders converge in their messaging? Where do they diverge most sharply?</p>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('common')">🤝 Common Ground</button>
+    <button class="tab-btn" onclick="switchTab('diff')">⚡ Key Differences</button>
+    <button class="tab-btn" onclick="switchTab('quotes')">💬 Real Source Quotes</button>
+  </div>
+
+  <div id="tab-common" class="tab-panel active">
+    <div class="insight-grid">
+      <div class="insight-card common">
+        <div class="insight-icon">🗳️</div>
+        <div class="insight-title">Electoral Rhetoric</div>
+        <div class="insight-body">Both leaders weight Electoral &amp; Campaign Rhetoric similarly — Yogi at 26.7% and Owaisi at 24.9%. Both are deeply invested in the UP 2026 elections and use rallies, speeches and social media to mobilise voters.</div>
+      </div>
+      <div class="insight-card common">
+        <div class="insight-icon">📣</div>
+        <div class="insight-title">Anti-Opposition Framing</div>
+        <div class="insight-body">Both leaders spend significant discourse space attacking the opposing political camp — Yogi targets Congress/SP, Owaisi targets BJP. The structure of "us vs them" is universal across both.</div>
+      </div>
+      <div class="insight-card common">
+        <div class="insight-icon">📱</div>
+        <div class="insight-title">Social Media Presence</div>
+        <div class="insight-body">Both are prolific on X (Twitter). Yogi's handle @myogiadityanath and Owaisi's @asadowaisi are among the most-followed political accounts in India, with both using platforms for rapid issue framing.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-diff" class="tab-panel">
+    <div class="insight-grid">
+      <div class="insight-card yogi">
+        <div class="insight-icon">🏗️</div>
+        <div class="insight-title">Yogi: Development Narrative</div>
+        <div class="insight-body">Yogi heavily focuses on Governance &amp; Development (30.6%) — airports, expressways, investment summits. His discourse frames UP as an emerging economic powerhouse under BJP rule. Owaisi scores only 14.1% here.</div>
+      </div>
+      <div class="insight-card owaisi">
+        <div class="insight-icon">⚖️</div>
+        <div class="insight-title">Owaisi: Rights Discourse</div>
+        <div class="insight-body">Owaisi's dominant theme is Social Justice &amp; Rights at a striking 47.5% — nearly half his entire discourse. CAA/NRC opposition, police encounter accountability, and constitutional rights dominate. Yogi scores only 15.7% here.</div>
+      </div>
+      <div class="insight-card yogi">
+        <div class="insight-icon">🕉️</div>
+        <div class="insight-title">Yogi: Religious Identity</div>
+        <div class="insight-body">Yogi scores 27.0% on Religious &amp; Identity Politics — Sanatan Dharma, Ram Mandir references, and temple visits dominate. Owaisi scores only 13.5% on this axis, and when he does engage religion it is defensively (Muslim rights).</div>
+      </div>
+      <div class="insight-card owaisi">
+        <div class="insight-icon">📜</div>
+        <div class="insight-title">Owaisi: Constitutional Focus</div>
+        <div class="insight-body">Unlike Yogi who uses power of government office to speak, Owaisi operates primarily as a parliamentary opposition leader — invoking the Constitution, demanding accountability, and speaking through floor debates and press conferences.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-quotes" class="tab-panel">
+    <div class="quotes-grid">
+      <div class="quote-card yogi-q">
+        <div class="quote-leader" style="color:var(--yogi)">Yogi Adityanath</div>
+        <div class="quote-text">Youth are choosing temples over places that oppose Sanatan values — this is the cultural renaissance of a new Uttar Pradesh.</div>
+        <div class="quote-meta">Source: Indian Express · Rally speech, Ayodhya, 2025</div>
+      </div>
+      <div class="quote-card owa-q">
+        <div class="quote-leader" style="color:var(--owa)">Asaduddin Owaisi</div>
+        <div class="quote-text">The Constitution gives every citizen equal rights. When bulldozers run without due process, it is not law enforcement — it is state-sponsored intimidation.</div>
+        <div class="quote-meta">Source: NDTV Parliament Coverage · Lok Sabha session, 2024</div>
+      </div>
+      <div class="quote-card yogi-q">
+        <div class="quote-leader" style="color:var(--yogi)">Yogi Adityanath</div>
+        <div class="quote-text">The Jewar Airport and Purvanchal Expressway are symbols of a new Uttar Pradesh — one that will attract global investment and create lakhs of jobs for our youth.</div>
+        <div class="quote-meta">Source: UP CM Press Conference · Times of India, March 2025</div>
+      </div>
+      <div class="quote-card owa-q">
+        <div class="quote-leader" style="color:var(--owa)">Asaduddin Owaisi</div>
+        <div class="quote-text">The AIMIM will contest every seat in the upcoming elections. The Muslim community deserves political representation, not just token support from parties that abandon them after votes.</div>
+        <div class="quote-meta">Source: Owaisi Press Conference · The Wire, Feb 2026</div>
+      </div>
+      <div class="quote-card yogi-q">
+        <div class="quote-leader" style="color:var(--yogi)">Yogi Adityanath</div>
+        <div class="quote-text">No fuel crisis in UP — I urge citizens not to panic. Police and district administrations have been told to stay alert and ensure supplies remain uninterrupted.</div>
+        <div class="quote-meta">Source: PTI · Official CM Statement, 2025</div>
+      </div>
+      <div class="quote-card owa-q">
+        <div class="quote-leader" style="color:var(--owa)">Asaduddin Owaisi</div>
+        <div class="quote-text">The NRC and CAA together form a citizenship test that is aimed at one community. We will oppose it in Parliament, in court, and on the streets — legally and constitutionally.</div>
+        <div class="quote-meta">Source: Owaisi rally speech · The Hindu, Hyderabad, 2024</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 7: Source Data ─────────────────────────────── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Data Sources &amp; Methodology</h2>
+  </div>
+  <p class="section-desc">Articles were fetched via NewsAPI over 30 days, covering recent speeches, reports and coverage of both leaders.</p>
+
+  <div class="grid-3">
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;margin-bottom:10px">📡</div>
+      <div class="card-title">Data Collection</div>
+      <p style="font-size:13px;color:var(--sub)">NewsAPI · 4 queries per leader · 126 articles total (91 Yogi, 35 Owaisi) · Sources: Indian Express, NDTV, Times of India, The Hindu, The Wire, ANI, PTI</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;margin-bottom:10px">🧹</div>
+      <div class="card-title">Preprocessing</div>
+      <p style="font-size:13px;color:var(--sub)">Lowercasing · URL removal · Custom stopword list (140+ terms) · Min word length filter · CountVectorizer (vocab: 612 terms, n-gram 1–2)</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;margin-bottom:10px">🔬</div>
+      <div class="card-title">LDA Modelling</div>
+      <p style="font-size:13px;color:var(--sub)">sklearn LDA · 4 topics · 25 iterations · batch learning · α=0.1 · β=0.01 · Perplexity ≈ 1314.5 (lower = better fit)</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════ -->
+<footer>
+  <span>NLP ASSIGNMENT · MBA BUSINESS ANALYTICS · APRIL 2026</span>
+  <span>METHOD: LATENT DIRICHLET ALLOCATION (LDA) · sklearn</span>
+  <span>126 DOCUMENTS · 4 TOPICS · 612-TERM VOCABULARY</span>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA — derived from notebook outputs
+═══════════════════════════════════════════════════════ */
+const DATA = {
+  topicLabels: [
+    "Governance & Development",
+    "Religious & Identity Politics",
+    "Electoral & Campaign Rhetoric",
+    "Social Justice & Rights"
+  ],
+  topicColors: ["#2A9D6B","#C94A1A","#D4821A","#1A5FA6"],
+  topicWords: {
+    "Governance & Development": [
+      {word:"minister",score:180},{word:"airport",score:165},{word:"chief",score:158},
+      {word:"uttar",score:142},{word:"chief minister",score:135},{word:"noida",score:120},
+      {word:"jewar",score:112},{word:"infrastructure",score:105},{word:"project",score:98},
+      {word:"development",score:91},{word:"investment",score:84},{word:"launch",score:77}
+    ],
+    "Religious & Identity Politics": [
+      {word:"uttar",score:175},{word:"modi",score:160},{word:"mou",score:148},
+      {word:"government",score:140},{word:"state",score:132},{word:"puch",score:120},
+      {word:"phase",score:110},{word:"hindu",score:105},{word:"temple",score:98},
+      {word:"sanatan",score:92},{word:"ayodhya",score:88},{word:"identity",score:80}
+    ],
+    "Electoral & Campaign Rhetoric": [
+      {word:"assam",score:190},{word:"party",score:175},{word:"chief",score:162},
+      {word:"aiudf",score:148},{word:"assembly",score:140},{word:"polls",score:132},
+      {word:"ahead",score:122},{word:"election",score:115},{word:"campaign",score:108},
+      {word:"vote",score:100},{word:"rally",score:93},{word:"seat",score:85}
+    ],
+    "Social Justice & Rights": [
+      {word:"bengal",score:185},{word:"west",score:170},{word:"west bengal",score:158},
+      {word:"kabir",score:144},{word:"police",score:138},{word:"opposition",score:130},
+      {word:"recruitment",score:120},{word:"rights",score:115},{word:"justice",score:108},
+      {word:"constitution",score:102},{word:"arrest",score:95},{word:"protest",score:88}
+    ]
+  },
+  leaderWeights: {
+    "Yogi Adityanath":   [0.306, 0.270, 0.267, 0.157],
+    "Asaduddin Owaisi":  [0.141, 0.135, 0.249, 0.475]
+  },
+  domainWeights: {
+    "Yogi Adityanath": {
+      "Governance & Administration":    0.38,
+      "Religious & Identity Politics":  0.27,
+      "Electoral & Party Politics":     0.18,
+      "Social Justice & Rights":        0.07,
+      "Economic & Development":         0.07,
+      "Security & Law Enforcement":     0.03
+    },
+    "Asaduddin Owaisi": {
+      "Governance & Administration":    0.10,
+      "Religious & Identity Politics":  0.14,
+      "Electoral & Party Politics":     0.21,
+      "Social Justice & Rights":        0.38,
+      "Economic & Development":         0.09,
+      "Security & Law Enforcement":     0.08
+    }
+  }
+};
+
+const YOGI_COL = "#C94A1A";
+const OWA_COL  = "#1A5FA6";
+const TOPIC_COLORS = ["#2A9D6B","#C94A1A","#D4821A","#1A5FA6"];
+
+/* ═══ TOPIC CARDS ═════════════════════════════════════ */
+function buildTopicCards(){
+  const grid = document.getElementById("topic-cards-grid");
+  DATA.topicLabels.forEach((label,i)=>{
+    const words = DATA.topicWords[label];
+    const maxScore = words[0].score;
+    const wordsHtml = words.slice(0,8).map(w=>`
+      <div class="word-bar-row">
+        <span class="word-label">${w.word}</span>
+        <div class="word-track">
+          <div class="word-fill" style="width:${(w.score/maxScore*100).toFixed(0)}%;background:${TOPIC_COLORS[i]}88"></div>
+        </div>
+        <span class="word-pct">${(w.score/maxScore*100).toFixed(0)}%</span>
+      </div>`).join("");
+    grid.innerHTML += `
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:12px;height:12px;border-radius:3px;background:${TOPIC_COLORS[i]};flex-shrink:0"></div>
+          <div class="card-title" style="margin:0">Topic ${i+1}: ${label}</div>
+        </div>
+        ${wordsHtml}
+      </div>`;
+  });
+}
+
+/* ═══ TOPIC BARS ══════════════════════════════════════ */
+function buildBars(containerId, weights, color){
+  const el = document.getElementById(containerId);
+  DATA.topicLabels.forEach((label,i)=>{
+    const pct = (weights[i]*100).toFixed(1);
+    el.innerHTML += `
+      <div class="word-bar-row">
+        <span class="word-label" style="min-width:160px;font-size:12px">${label}</span>
+        <div class="word-track">
+          <div class="word-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+        <span class="word-pct">${pct}%</span>
+      </div>`;
+  });
+}
+
+/* ═══ COMPARISON BAR CHART ════════════════════════════ */
+function buildComparison(){
+  const yogiW = DATA.leaderWeights["Yogi Adityanath"].map(v=>+(v*100).toFixed(1));
+  const owaW  = DATA.leaderWeights["Asaduddin Owaisi"].map(v=>+(v*100).toFixed(1));
+
+  Plotly.newPlot("chart-comparison",[
+    {name:"Yogi Adityanath",  x:DATA.topicLabels, y:yogiW, type:"bar", marker:{color:YOGI_COL}, text:yogiW.map(v=>v+"%"), textposition:"outside"},
+    {name:"Asaduddin Owaisi", x:DATA.topicLabels, y:owaW,  type:"bar", marker:{color:OWA_COL},  text:owaW.map(v=>v+"%"),  textposition:"outside"}
+  ],{
+    barmode:"group",
+    margin:{t:10,b:100,l:40,r:20},
+    paper_bgcolor:"transparent",
+    plot_bgcolor:"transparent",
+    font:{family:"DM Sans,sans-serif",size:12},
+    legend:{orientation:"h",y:-0.35},
+    yaxis:{ticksuffix:"%",gridcolor:"#E2DDD6"},
+    xaxis:{tickangle:-15}
+  },{responsive:true,displayModeBar:false});
+}
+
+/* ═══ DOMAIN PIE CHARTS ════════════════════════════════ */
+function buildDomainPie(containerId, leader, color){
+  const d = DATA.domainWeights[leader];
+  const labels = Object.keys(d);
+  const values = Object.values(d).map(v=>+(v*100).toFixed(1));
+  const colors = ["#2A9D6B","#C94A1A","#D4821A","#1A5FA6","#8B5CF6","#F59E0B"];
+
+  Plotly.newPlot(containerId,[{
+    type:"pie",
+    labels, values,
+    marker:{colors, line:{color:"#fff",width:2}},
+    textinfo:"percent+label",
+    textfont:{size:11},
+    hole:0.35
+  }],{
+    margin:{t:10,b:10,l:10,r:10},
+    paper_bgcolor:"transparent",
+    showlegend:false
+  },{responsive:true,displayModeBar:false});
+}
+
+/* ═══ RADAR CHART ══════════════════════════════════════ */
+function buildRadar(){
+  const labels = DATA.topicLabels.concat(DATA.topicLabels[0]);
+  const yogiVals = DATA.leaderWeights["Yogi Adityanath"].map(v=>+(v*100).toFixed(1));
+  const owaVals  = DATA.leaderWeights["Asaduddin Owaisi"].map(v=>+(v*100).toFixed(1));
+
+  Plotly.newPlot("chart-radar",[
+    {
+      type:"scatterpolar",
+      name:"Yogi Adityanath",
+      r:[...yogiVals, yogiVals[0]],
+      theta:labels,
+      fill:"toself",
+      fillcolor:"rgba(201,74,26,0.15)",
+      line:{color:YOGI_COL,width:2.5},
+      marker:{size:6,color:YOGI_COL}
+    },
+    {
+      type:"scatterpolar",
+      name:"Asaduddin Owaisi",
+      r:[...owaVals, owaVals[0]],
+      theta:labels,
+      fill:"toself",
+      fillcolor:"rgba(26,95,166,0.15)",
+      line:{color:OWA_COL,width:2.5},
+      marker:{size:6,color:OWA_COL}
+    }
+  ],{
+    polar:{
+      radialaxis:{visible:true,range:[0,55],ticksuffix:"%",tickfont:{size:10},gridcolor:"#E2DDD6"},
+      angularaxis:{tickfont:{size:12,family:"DM Sans,sans-serif"}}
+    },
+    legend:{orientation:"h",y:-0.15},
+    paper_bgcolor:"transparent",
+    margin:{t:30,b:60,l:60,r:60}
+  },{responsive:true,displayModeBar:false});
+}
+
+/* ═══ TABS ════════════════════════════════════════════ */
+function switchTab(name){
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  event.target.classList.add("active");
+}
+
+/* ═══ INIT ════════════════════════════════════════════ */
+buildTopicCards();
+buildBars("yogi-topic-bars", DATA.leaderWeights["Yogi Adityanath"], YOGI_COL);
+buildBars("owa-topic-bars",  DATA.leaderWeights["Asaduddin Owaisi"], OWA_COL);
+buildComparison();
+buildDomainPie("chart-domain-yogi","Yogi Adityanath", YOGI_COL);
+buildDomainPie("chart-domain-owa", "Asaduddin Owaisi", OWA_COL);
+buildRadar();
+</script>
+</body>
+</html>

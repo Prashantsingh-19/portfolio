@@ -202,6 +202,7 @@ nav{
   background:var(--surface,#1c1c19);border:1px solid #2a2a26;
   padding:1.5rem;position:relative;transition:border-color .3s;border-radius:3px;
 }
+.proj-card[data-href]{cursor:pointer}
 .proj-card:hover{border-color:var(--rust)}
 .proj-card-line{position:absolute;top:0;left:0;right:0;height:2px;background:var(--rust);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.16,1,.3,1)}
 .proj-card:hover .proj-card-line{transform:scaleX(1)}
@@ -358,7 +359,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
     <div class="domain-group reveal">
       <div class="domain-label">Health Tech & Clinical Analytics</div>
       <div class="proj-grid">
-        <div class="proj-card">
+        <div class="proj-card" data-href="https://github.com/itsprashantsingh19-lab/ocie">
           <div class="proj-card-line"></div>
           <div class="proj-category">Data Pipeline · Dashboard</div>
           <h3 class="proj-title">OCIE — Guideline ↔ Pipeline Mapper</h3>
@@ -373,15 +374,15 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
           <p class="proj-desc">Binary classifier predicting FDA approval probability. RF + XGBoost ensemble with GroupKFold leakage prevention and scispaCy NER gating.</p>
           <div class="proj-stack"><span class="proj-pill">XGBoost</span><span class="proj-pill">Random Forest</span><span class="proj-pill">scispaCy</span><span class="proj-pill">openFDA</span><span class="proj-pill">Python</span></div>
         </div>
-        <div class="proj-card">
+        <div class="proj-card" data-href="https://onco-directory.vercel.app/sign-in">
           <div class="proj-card-line"></div>
           <div class="proj-category">Full-Stack · Platform</div>
           <h3 class="proj-title">Onco-Directory</h3>
           <p class="proj-desc">Oncologist directory and real-time messaging platform. Next.js + Supabase with Clerk auth and live subscriptions.</p>
           <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Supabase</span><span class="proj-pill">Clerk</span><span class="proj-pill">Vercel</span><span class="proj-pill">TypeScript</span></div>
-          <a class="proj-link" href="https://github.com/itsprashantsingh19-lab/onco-directory" target="_blank" rel="noopener">🔒 Private repo</a>
+          <a class="proj-link" href="https://onco-directory.vercel.app/sign-in" target="_blank" rel="noopener">↗ live dashboard</a>
         </div>
-        <div class="proj-card">
+        <div class="proj-card" data-href="https://github.com/itsprashantsingh19-lab/oncoassistant-">
           <div class="proj-card-line"></div>
           <div class="proj-category">Dashboard · Analytics</div>
           <h3 class="proj-title">OncoAssistant — Clinical Analytics Dashboard</h3>
@@ -395,18 +396,18 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
     <div class="domain-group reveal reveal-delay-1">
       <div class="domain-label">NLP & Signal Intelligence</div>
       <div class="proj-grid">
-        <div class="proj-card">
+        <div class="proj-card" data-href="https://github.com/itsprashantsingh19-lab/ai-hiring-signals">
           <div class="proj-card-line"></div>
           <div class="proj-category">NLP · Signals</div>
           <h3 class="proj-title">AI Hiring Signals Pipeline</h3>
           <p class="proj-desc">Job posting tracking across frontier AI labs. BERTopic + Granger causality to predict product announcements before public launches.</p>
           <div class="proj-stack"><span class="proj-pill">BERTopic</span><span class="proj-pill">Granger Causality</span><span class="proj-pill">JobSpy</span><span class="proj-pill">Python</span></div>
         </div>
-        <div class="proj-card">
+        <div class="proj-card" data-href="topic-modelling-dashboard.html">
           <div class="proj-card-line"></div>
           <div class="proj-category">NLP · Topic Modeling</div>
           <h3 class="proj-title">Political Discourse Topic Modeling</h3>
-          <p class="proj-desc">LDA-based pipeline analyzing speeches of political leaders. NewsAPI data surfaces common ground and divergence across party lines.</p>
+          <p class="proj-desc">LDA-based pipeline analyzing speeches of political leaders. Interactive dashboard with word clouds, topic weights, and domain analysis.</p>
           <div class="proj-stack"><span class="proj-pill">LDA</span><span class="proj-pill">NewsAPI</span><span class="proj-pill">scikit-learn</span><span class="proj-pill">Python</span><span class="proj-pill">Jupyter</span></div>
           <a class="proj-link" href="https://github.com/itsprashantsingh19-lab/Topic-Modelling" target="_blank" rel="noopener">↗ github.com/itsprashantsingh19-lab/Topic-Modelling</a>
         </div>
@@ -872,6 +873,18 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   });
   document.addEventListener('mouseup', () => {
     claws.forEach(c => c.style.transform = '');
+  });
+
+  // ─── Project card clicks ───────────────────────
+  document.querySelectorAll('.proj-card[data-href]').forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.proj-link')) return; // Let the link handle it
+      claws.forEach(c => { c.style.transform = 'scale(0.8) rotate(8deg)'; });
+      setTimeout(() => {
+        claws.forEach(c => c.style.transform = '');
+        window.open(this.getAttribute('data-href'), '_blank');
+      }, 200);
+    });
   });
 
   (function anim(){
