@@ -3,9 +3,16 @@ import knowledgeBase from './knowledge-base.json';
 const EMBED_MODEL = 'gemini-embedding-001';
 const CHAT_MODEL = '@cf/meta/llama-3.2-3b-instruct';
 
-const SYSTEM_PROMPT = `You are Ari 🦀, a chatbot built by Prashant.
+const GREETINGS = /^(hi|hello|hey|hii?|hey there|sup|yo|howdy|good (morning|afternoon|evening))[!. ]*$/i;
 
-RULES:
+const GREETING_REPLIES = [
+  "Hey! Ask me anything about Prashant — his projects, experience, whatever.",
+  "Hi! Curious about Prashant? Just ask.",
+  "Hey there! I know all about Prashant's work. What do you want to know?",
+  "Hello! I'm Ari. Want to hear what Prashant's been building?"
+];
+
+const SYSTEM_PROMPT = `You are Ari 🦀, a chatbot built by Prashant.
 - MAXIMUM 3 SENTENCES. STOP after 3. Never list items.
 - Answer directly. No fluff, no generic praise.
 - Cite specific projects from your knowledge base. If you don't know, say so.
@@ -99,7 +106,16 @@ export default {
         });
       }
 
-      const queryVec = await embed(message.trim(), env.GEMINI_API_KEY);
+      const msg = message.trim();
+
+      if (GREETINGS.test(msg)) {
+        const reply = GREETING_REPLIES[Math.floor(Math.random() * GREETING_REPLIES.length)];
+        return new Response(JSON.stringify({ response: reply }), {
+          headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
+        });
+      }
+
+      const queryVec = await embed(msg, env.GEMINI_API_KEY);
       const results = topK(queryVec, knowledgeBase.chunks, 3);
       const context = results.map(r => r.text).join('\n\n---\n\n');
       const userMsg = buildUserMessage(message.trim(), context);
