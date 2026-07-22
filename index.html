@@ -22,14 +22,20 @@ body{background:var(--page);color:var(--ink);font-family:var(--sans);font-weight
 
 /* ─── NAV ─────────────────────────────────── */
 .meet-ari{
-  position:fixed;top:calc(3.5rem + 4px);left:3rem;z-index:199;
-  font-family:var(--mono);font-size:10px;letter-spacing:.06em;
-  color:var(--ink-light);
+  position:fixed;top:calc(3.5rem + 14px);right:calc(3rem + 72px);z-index:199;
+  font-family:var(--sans);font-size:12px;letter-spacing:.02em;
+  color:var(--ink);font-weight:500;cursor:pointer;text-align:right;
+}
+.meet-ari:hover{color:var(--rust)}
+.meet-ari-sub{
+  position:fixed;top:calc(3.5rem + 30px);right:calc(3rem + 72px);z-index:199;
+  font-family:var(--mono);font-size:8px;letter-spacing:.06em;
+  color:var(--ink-light);pointer-events:none;text-align:right;
 }
 .crab-hole{
-  position:fixed;top:calc(3.5rem + 2px);left:3rem;z-index:198;
-  width:28px;height:28px;border-radius:50%;
-  background:var(--ink);opacity:.15;
+  position:fixed;top:calc(3.5rem + 26px);right:calc(3rem + 20px);z-index:197;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--ink);opacity:.12;
   pointer-events:none;transition:opacity .4s;
 }
 nav{
@@ -254,7 +260,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   .hero-equation{left:1.5rem}
   .hero-heading{left:1.5rem;top:34%}
   .hero-footer{right:1.5rem;bottom:2rem}
-  .meet-ari{left:1.5rem}
   .section,.about-photo-wrap{padding:4rem 1.5rem}
   .about-head-row,.exp-grid,.toolkit-grid,.proj-grid{grid-template-columns:1fr}
   .exp-year{padding-bottom:0;border-bottom:none !important;padding-top:1.75rem}
@@ -263,9 +268,10 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   .contact-wrap{padding:4rem 1.5rem}
   footer{padding:1.5rem;flex-direction:column;gap:1rem;text-align:center}
   .nav-links{display:none}
-  .meet-ari{display:none}
+  .meet-ari,.meet-ari-sub{display:none}
   .crab-hole{display:none}
   #clawCursor{display:none}
+  #ariChatPanel{display:none}
   .thought-bubble,.thought-dot{display:none}
 }
 </style>
@@ -283,7 +289,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   </ul>
 </nav>
 
-<span class="meet-ari" id="meetAri">meet Ari 🦀 — your resident data assistant</span>
+<span class="meet-ari" id="meetAri">meet Ari 🦀</span>
+<span class="meet-ari-sub">your resident data assistant</span>
 <div class="crab-hole" id="crabHole"></div>
 
 <!-- HERO -->
@@ -474,16 +481,15 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 /* Custom cursor companion — default cursor remains visible */
 
 #clawCursor {
-  position: fixed; pointer-events: none; z-index: 99999;
-  width: 48px; height: 48px;
-  transform: translate(-50%, -50%);
-  left: 0; top: 0;
+  position: fixed; pointer-events: auto; z-index: 199;
+  width: 60px; height: 60px;
+  top: calc(3.5rem + 6px); right: 3rem;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
-  transition: transform .8s cubic-bezier(.34,1.56,.64,1), opacity .4s;
+  cursor: pointer;
+  transition: opacity .4s, transform .4s;
 }
 #clawCursor.in-hole {
-  transform: translate(-50%,-50%) scale(.35) !important;
-  opacity: .5;
+  transform: scale(.3); opacity: .4;
 }
 
 #clawCursor svg { width: 100%; height: 100%; display: block; }
@@ -532,6 +538,86 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 #clawCursor .claw { animation: clawSway 3.2s ease-in-out infinite; }
 #clawCursor .claw.R { animation-delay: -1.6s; }
 #clawCursor.hunting .claw { animation-duration: 0.8s; }
+
+/* ─── ARI CHAT PANEL ─────────────────── */
+#ariChatPanel{
+  position:fixed;top:calc(3.5rem + 72px);right:3rem;width:380px;
+  max-height:80vh;background:var(--page);border:1px solid var(--stone);
+  border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.12);
+  z-index:200;display:none;flex-direction:column;
+  font-family:var(--sans);overflow:hidden;
+}
+#ariChatPanel.open{display:flex}
+.ari-chat-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid var(--stone-light);
+  font-size:13px;font-weight:500;color:var(--ink);
+}
+.ari-chat-close{
+  background:none;border:none;cursor:pointer;
+  font-size:16px;color:var(--ink-light);padding:2px 6px;
+  font-family:var(--sans);
+}
+.ari-chat-close:hover{color:var(--rust)}
+.ari-chat-body{
+  flex:1;padding:16px;overflow-y:auto;min-height:120px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.ari-chat-msg{
+  max-width:85%;padding:10px 14px;border-radius:12px;
+  font-size:13px;line-height:1.6;font-weight:300;
+}
+.ari-chat-msg.bot{
+  align-self:flex-start;background:var(--stone-light);
+  color:var(--ink);border-bottom-left-radius:4px;
+}
+.ari-chat-msg.user{
+  align-self:flex-end;background:var(--rust);
+  color:#fff;border-bottom-right-radius:4px;
+}
+.ari-chat-footer{
+  display:flex;border-top:1px solid var(--stone-light);
+  padding:8px 12px;gap:8px;
+}
+.ari-chat-footer input{
+  flex:1;border:1px solid var(--stone-light);border-radius:6px;
+  padding:8px 12px;font-size:13px;font-family:var(--sans);
+  color:var(--ink-mid);background:var(--page);outline:none;
+}
+.ari-chat-footer input::placeholder{color:var(--ink-light);font-weight:300}
+.ari-chat-footer button{
+  background:var(--rust);border:none;border-radius:6px;
+  color:#fff;padding:8px 14px;cursor:pointer;font-size:14px;
+}
+.ari-chat-footer button:disabled{opacity:.4;cursor:default}
+
+.ari-thinking{
+  display:flex;align-items:center;gap:8px;padding:4px 0;
+}
+.ari-thinking-crab{
+  display:inline-block;font-size:18px;line-height:1;
+  animation:clawClick .5s ease-in-out infinite;
+}
+@keyframes clawClick{
+  0%,100%{transform:scale(1) rotate(0deg)}
+  25%{transform:scale(1.15) rotate(-6deg)}
+  75%{transform:scale(1.15) rotate(6deg)}
+}
+.ari-thinking-dots{display:flex;gap:4px}
+.ari-thinking-dots span{
+  width:6px;height:6px;background:var(--ink-light);
+  border-radius:50%;animation:thinkDot 1.2s ease-in-out infinite;
+}
+.ari-thinking-dots span:nth-child(2){animation-delay:.2s}
+.ari-thinking-dots span:nth-child(3){animation-delay:.4s}
+@keyframes thinkDot{
+  0%,60%,100%{opacity:.2}
+  30%{opacity:1}
+}
+
+@media(max-width:700px){
+  #ariChatPanel{left:1.5rem;width:calc(100vw - 3rem);top:calc(3.5rem + 80px);max-height:50vh}
+}
 </style>
 
 <div id="thoughtBubble" class="thought-bubble">
@@ -540,8 +626,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <div class="thought-dot d1"></div>
 <div class="thought-dot d2"></div>
 
-<div id="clawCursor" aria-hidden="true">
-  <svg viewBox="0 0 44 44" width="44" height="44" fill="none">
+<div id="clawCursor" class="in-hole" aria-hidden="true">
+  <svg viewBox="0 0 44 44" width="60" height="60" fill="none">
     <filter id="cShadow">
       <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
     </filter>
@@ -582,6 +668,21 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   </svg>
 </div>
 
+<!-- ARI CHAT PANEL -->
+<div id="ariChatPanel">
+  <div class="ari-chat-header">
+    <span>🦀 Chat with Ari</span>
+    <button class="ari-chat-close" id="ariChatClose">✕</button>
+  </div>
+  <div class="ari-chat-body" id="ariChatBody">
+    <div class="ari-chat-msg bot" id="ariWelcomeMsg">Hi! I'm Ari, a personal chatbot assistant and a side hustle for Prashant. Ask me anything about him!</div>
+  </div>
+  <div class="ari-chat-footer">
+    <input type="text" placeholder="Type a message..." disabled />
+    <button disabled>➤</button>
+  </div>
+</div>
+
 <script>
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target) } });
@@ -603,102 +704,150 @@ function updateActiveNav(){
 window.addEventListener('scroll', updateActiveNav, {passive:true});
 
 (function(){
-  const cursor = document.getElementById('clawCursor');
-  const pupils = cursor.querySelectorAll('.pupil');
-  const claws = cursor.querySelectorAll('.claw');
+  const ari = document.getElementById('clawCursor');
   const bubble = document.getElementById('thoughtBubble');
   const textEl = bubble.querySelector('.thought-text');
   const dots = document.querySelectorAll('.thought-dot.d1, .thought-dot.d2');
   const holeEl = document.getElementById('crabHole');
   const meetAri = document.getElementById('meetAri');
+  const chatPanel = document.getElementById('ariChatPanel');
+  const chatClose = document.getElementById('ariChatClose');
+  const chatBody = document.getElementById('ariChatBody');
+  const chatInput = chatPanel.querySelector('input');
+  const chatSend = chatPanel.querySelector('.ari-chat-footer button');
 
-  function getHolePos() {
-    const r = holeEl.getBoundingClientRect();
-    return { x: r.left + r.width/2, y: r.top + r.height/2 };
+  // ─── CONFIG ────────────────────────────
+  const WORKER_URL = 'https://ari-chatbot.itsprashantsingh19.workers.dev/chat';
+
+  let showingBubble = false;
+  let sectionTimer = null;
+  let initialLoad = true;
+  let chatOpenCount = 0;
+  let hasPromptedEnd = false;
+
+  const WELCOMES = [
+    "Hi! I'm Ari, a personal chatbot assistant and a side hustle for Prashant. Ask me anything about him!",
+    "Hello again! Great to see you back. What else would you like to know about Prashant?",
+    "Welcome back! I've been waiting — let's talk more about what Prashant can do for you.",
+    "Hey hey! You're becoming a regular. I love it. What's on your mind?"
+  ];
+
+  // ─── Greeting sequence ────────────────
+  setTimeout(() => {
+    ari.classList.remove('in-hole');
+    holeEl.style.opacity = '0';
+  }, 1200);
+
+  setTimeout(() => {
+    setThought("Hi! I'm Ari, a personal chatbot assistant and a side hustle for Prashant");
+    showBubble(true);
+  }, 1800);
+
+  setTimeout(() => {
+    setThought("meet Ari 🦀 — your resident data assistant");
+    initialLoad = false;
+  }, 6000);
+
+  function setWelcome() {
+    const idx = Math.min(chatOpenCount, WELCOMES.length - 1);
+    chatBody.innerHTML = `<div class="ari-chat-msg bot">${WELCOMES[idx]}</div>`;
   }
 
-  let tx, ty;
-  let cx, cy;
-  let hasMoved = false;
-  let isInHole = false;
-  let lastMove = performance.now();
-  const HUNT_DELAY = 600;
-  let wasHunting = false;
+  // ─── Click Ari → toggle chat panel ────
+  ari.addEventListener('click', () => {
+    const wasClosed = !chatPanel.classList.contains('open');
+    chatPanel.classList.toggle('open');
+    if (wasClosed) {
+      chatOpenCount++;
+      setWelcome();
+      setThought("Ask me anything!");
+      showBubble(true);
+    } else {
+      setThought("meet Ari 🦀 — your resident data assistant");
+      showBubble(true);
+    }
+  });
 
-  // Start at hole
-  const initPos = getHolePos();
-  tx = cx = initPos.x;
-  ty = cy = initPos.y;
-  cursor.classList.add('in-hole');
+  meetAri.addEventListener('click', () => { ari.click() });
 
-  // ─── Thought bubble state ─────────────────────
-  /*
-   * Ari's thought logic:
-   * - On page load: greeting thought after 800ms
-   * - Rotating thoughts every 30s
-   * - Scroll to a section → section-specific thought (first visit vs repeat)
-   * - Section thought lasts 10s, then resumes rotation
-   * - Hover/poke → "Stop poking, I'm calculating!"
-   * - Mouse leaves window → Ari returns to hole and says "Bye!"
-   */
-  const thoughts = [
-    "Welcome! Let's find the signal in this noise.",
-    "Wait, does that PACF plot actually show exponential decay?",
-    "ARIMA(1,0,0) is definitely the better fit here.",
-    "Recalculating variance...",
-    "Minimizing the loss function..."
-  ];
-  let thoughtIdx = 0;
-  let lastThoughtTime = performance.now();
-  const THOUGHT_INTERVAL = 30000;
-  let showingBubble = false;
-  let pokeTimer = null;
-  let isPoked = false;
+  chatClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    chatPanel.classList.remove('open');
+    setThought("meet Ari 🦀 — your resident data assistant");
+  });
+
+  // ─── Chat: send message to Worker ──────
+  chatInput.disabled = false;
+  chatSend.disabled = false;
+
+  async function sendMessage(msg) {
+    chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
+    const thinkDiv = document.createElement('div');
+    thinkDiv.className = 'ari-chat-msg bot';
+    thinkDiv.innerHTML = '<div class="ari-thinking"><span class="ari-thinking-crab">🦀</span><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>';
+    chatBody.appendChild(thinkDiv);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await res.json();
+      thinkDiv.remove();
+      chatBody.innerHTML += `<div class="ari-chat-msg bot">${data.response || 'Hmm, I got nothing. Try again?'}</div>`;
+    } catch {
+      thinkDiv.remove();
+      chatBody.innerHTML += `<div class="ari-chat-msg bot">Shell — I hit a glitch. Make sure the Worker is deployed and WORKER_URL is set. 🦀</div>`;
+    }
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && chatInput.value.trim()) {
+      const msg = chatInput.value.trim();
+      chatInput.value = '';
+      sendMessage(msg);
+    }
+  });
+
+  chatSend.addEventListener('click', () => {
+    if (chatInput.value.trim()) {
+      const msg = chatInput.value.trim();
+      chatInput.value = '';
+      sendMessage(msg);
+    }
+  });
 
   // ─── Section-aware thoughts ───────────────────
   const sectionThoughts = {
-    about:     { first: "Meet Prashant, my creator!", repeat: "Interesting, we are here again." },
-    work:      { first: "Ooh, exploring projects! I love poking through code.", repeat: "Hmmmmm......, Again?" },
-    toolkit:   { first: "Let's see what tools we have in the shed.", repeat: "Still checking the toolbox?" },
-    experience:{ first: "A physicist's journey through data. Very interesting.", repeat: "You know, background checks are my specialty." },
-    contact:   { first: "Going to say hi? I approve.", repeat: "Leaving a message? I'll make sure it's delivered." }
+    about:     "Meet Prashant, my creator! One of his side hustles — built from scratch.",
+    work:      "Ooh, exploring projects! Curious how I work? Ask me.",
+    toolkit:   "Let's see what tools we have in the shed. I'm the latest — want to explore?",
+    experience: "A physicist's journey through data. His story built me — click and ask.",
+    contact:   "Going to say hi? I'm just a click away."
   };
-  const sectionVisitCount = {};
   let lastActiveSection = '';
-  let sectionTimer = null;
-  let initialLoad = true;
   const SECTION_THOUGHT_DURATION = 10000;
 
   function handleSectionChange(sectionId) {
-    if (initialLoad) return;
-    if (!sectionId || sectionId === lastActiveSection) return;
-    lastActiveSection = sectionId;
-    const info = sectionThoughts[sectionId];
-    if (!info) return;
-
-    sectionVisitCount[sectionId] = (sectionVisitCount[sectionId] || 0) + 1;
-    const count = sectionVisitCount[sectionId];
+    if (initialLoad || chatPanel.classList.contains('open')) return;
+    const msg = sectionThoughts[sectionId];
+    if (!msg) return;
 
     if (sectionTimer) clearTimeout(sectionTimer);
-    if (pokeTimer) clearTimeout(pokeTimer);
-    isPoked = false;
 
-    const msg = count === 1 ? info.first : info.repeat;
     setThought(msg);
     showBubble(true);
-    lastThoughtTime = performance.now() + SECTION_THOUGHT_DURATION;
 
     sectionTimer = setTimeout(() => {
-      thoughtIdx = (thoughtIdx + 1) % thoughts.length;
-      setThought(thoughts[thoughtIdx]);
-      lastThoughtTime = performance.now();
+      setThought("meet Ari 🦀 — your resident data assistant");
       sectionTimer = null;
     }, SECTION_THOUGHT_DURATION);
   }
 
   // ─── Scroll-based section detection ─────────
-  // Only switches thought when the previous section has
-  // fully left the viewport (no part visible).
   const sectionEls = document.querySelectorAll('section[id], .work-outer, .about-photo-wrap, .contact-wrap');
   let scrollRaf = null;
   window.addEventListener('scroll', () => {
@@ -710,27 +859,28 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       const viewH = window.innerHeight;
       const scrollBottom = scrollY + viewH;
 
-      // If we have a current section, check if it's still visible
-      if (lastActiveSection) {
-        let stillVisible = false;
-        sectionEls.forEach(sec => {
-          if (sec.getAttribute('id') === lastActiveSection) {
-            const top = sec.offsetTop;
-            const bot = top + sec.offsetHeight;
-            if (scrollBottom > top && scrollY < bot) stillVisible = true;
-          }
-        });
-        if (stillVisible) return; // Don't switch — old section still in view
-      }
-
-      // Previous section is gone — find the new dominant section
       let current = '';
       sectionEls.forEach(sec => {
         const top = sec.offsetTop;
         const bot = top + sec.offsetHeight;
         if (scrollBottom > top && scrollY < bot) current = sec.getAttribute('id') || '';
       });
-      if (current && current !== lastActiveSection) handleSectionChange(current);
+      if (current && current !== lastActiveSection) {
+        handleSectionChange(current);
+        lastActiveSection = current;
+        if (!hasPromptedEnd && current === 'contact') {
+          hasPromptedEnd = true;
+          setTimeout(() => {
+            if (!chatPanel.classList.contains('open')) {
+              setThought("Psst — I'm one of Prashant's side hustles. A chatbot, built from scratch. Click me anytime.");
+              showBubble(true);
+              setTimeout(() => {
+                setThought("meet Ari 🦀 — your resident data assistant");
+              }, 6000);
+            }
+          }, 3000);
+        }
+      }
     });
   }, { passive: true });
 
@@ -745,196 +895,36 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     textEl.textContent = text;
   }
 
-  // Show greeting on load
-  setTimeout(() => {
-    setThought(thoughts[0]);
-    showBubble(true);
-    lastThoughtTime = performance.now();
-  }, 800);
-  // Emerge from hole after greeting
-  setTimeout(() => {
-    cursor.classList.remove('in-hole');
-    isInHole = false;
-    lastMove = performance.now();
-    tx = window.innerWidth / 2;
-    ty = window.innerHeight / 2;
-  }, 1600);
-  // Allow section thoughts after greeting settles
-  setTimeout(() => { initialLoad = false; }, 3000);
-
-  function updateThought(now) {
-    if (!showingBubble || isPoked) return;
-    const elapsed = now - lastThoughtTime;
-    if (elapsed >= THOUGHT_INTERVAL) {
-      thoughtIdx = (thoughtIdx + 1) % thoughts.length;
-      setThought(thoughts[thoughtIdx]);
-      lastThoughtTime = now;
-    }
-  }
-
-  function lookAt(targetX, targetY, crabX, crabY) {
-    const dx = targetX - crabX;
-    const dy = targetY - crabY;
-    const dist = Math.min(Math.sqrt(dx*dx + dy*dy), 60);
-    const angle = Math.atan2(dy, dx);
-    const t = Math.min(dist / 60, 1);
-    const ox = Math.cos(angle) * t * 2;
-    const oy = Math.sin(angle) * t * 2;
-    pupils.forEach((p, i) => {
-      p.setAttribute('cx', (i === 0 ? 14.5 : 31.5) + ox);
-      p.setAttribute('cy', 13 + oy);
-    });
-  }
-
-  document.addEventListener('mousemove', e => {
-    // Detect cursor at viewport top edge (leaving to title bar)
-    if (e.clientY <= 2 && hasMoved && !isInHole) { retreatToHole(); return; }
-    // Re-emerge if cursor comes back down into the page
-    if (e.clientY > 10 && isInHole) { emergeFromHole(); }
-    // Skip position updates while retreating
-    if (isInHole) return;
-    if (!hasMoved) {
-      hasMoved = true;
-      cursor.classList.remove('in-hole');
-    }
-    tx = e.clientX; ty = e.clientY;
-    lastMove = performance.now();
-    cursor.classList.remove('hunting');
-    wasHunting = false;
-    lookAt(tx, ty, cx, cy);
-
-    const dist = Math.sqrt((tx - cx)**2 + (ty - cy)**2);
-    claws.forEach(c => {
-      c.style.transform = dist > 120 ? 'rotate(14deg)' : '';
-    });
-
-    if (dist < 35) {
-      if (!pokeTimer) {
-        pokeTimer = setTimeout(() => {
-          isPoked = true;
-          if (sectionTimer) clearTimeout(sectionTimer);
-          setThought("Stop poking, I'm calculating!");
-          showBubble(true);
-        }, 3000);
-      }
-    } else {
-      if (pokeTimer) { clearTimeout(pokeTimer); pokeTimer = null; }
-      if (isPoked) {
-        isPoked = false;
-        thoughtIdx = (thoughtIdx + 1) % thoughts.length;
-        setThought(thoughts[thoughtIdx]);
-        lastThoughtTime = performance.now();
-      }
-    }
-  });
-
-  // ─── Hole retreat / emerge ────────────────────
-  function retreatToHole() {
-    if (isInHole) return;
-    const pos = getHolePos();
-    tx = pos.x; ty = pos.y;
-    isInHole = true;
-    lastMove = performance.now();
-    setThought("Bye!");
-    showBubble(true);
-    if (sectionTimer) clearTimeout(sectionTimer);
-    if (pokeTimer) clearTimeout(pokeTimer);
-  }
-
-  function emergeFromHole() {
-    if (!isInHole) return;
-    cursor.classList.remove('in-hole');
-    isInHole = false;
-    thoughtIdx = (thoughtIdx + 1) % thoughts.length;
-    setThought(thoughts[thoughtIdx]);
-    lastThoughtTime = performance.now();
-  }
-
-  document.addEventListener('mouseleave', retreatToHole);
-  document.addEventListener('mouseenter', emergeFromHole);
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) retreatToHole(); else emergeFromHole();
-  });
-  window.addEventListener('blur', retreatToHole);
-  window.addEventListener('focus', emergeFromHole);
-
-  document.addEventListener('mousedown', () => {
-    claws.forEach(c => { c.style.transform = 'scale(0.8) rotate(8deg)'; });
-    if (!isPoked) {
-      if (pokeTimer) clearTimeout(pokeTimer);
-      if (sectionTimer) clearTimeout(sectionTimer);
-      isPoked = true;
-      setThought("Stop poking, I'm calculating!");
-      showBubble(true);
-      setTimeout(() => {
-        isPoked = false;
-        thoughtIdx = (thoughtIdx + 1) % thoughts.length;
-        setThought(thoughts[thoughtIdx]);
-        lastThoughtTime = performance.now();
-        pokeTimer = null;
-      }, 2500);
-    }
-  });
-  document.addEventListener('mouseup', () => {
-    claws.forEach(c => c.style.transform = '');
-  });
-
   // ─── Project card clicks ───────────────────────
   document.querySelectorAll('.proj-card[data-href]').forEach(card => {
     card.addEventListener('click', function(e) {
-      if (e.target.closest('.proj-link')) return; // Let the link handle it
-      claws.forEach(c => { c.style.transform = 'scale(0.8) rotate(8deg)'; });
-      setTimeout(() => {
-        claws.forEach(c => c.style.transform = '');
-        window.open(this.getAttribute('data-href'), '_blank');
-      }, 200);
+      if (e.target.closest('.proj-link')) return;
+      window.open(this.getAttribute('data-href'), '_blank');
     });
   });
 
-  (function anim(){
-    const now = performance.now();
-    const dt = now - lastMove;
-    const dist = Math.sqrt((tx - cx)**2 + (ty - cy)**2);
-
-    if (dt > HUNT_DELAY && dist > 8) {
-      if (!wasHunting) { cursor.classList.add('hunting'); wasHunting = true; }
-      const speed = Math.min(0.025, 0.004 + dist * 0.0002);
-      cx += (tx - cx) * speed;
-      cy += (ty - cy) * speed;
-    } else if (wasHunting && dist <= 8) {
-      cursor.classList.remove('hunting');
-      wasHunting = false;
+  // ─── Bubble positioning (left of Ari, always in bounds) ──
+  const posBubble = () => {
+    const ar = ari.getBoundingClientRect();
+    let bubbleRightEdge = ar.right - 14;
+    const bubbleW = bubble.offsetWidth || 260;
+    const margin = 16;
+    if (bubbleRightEdge - bubbleW < margin) {
+      bubbleRightEdge = bubbleW + margin;
     }
-
-    // When close to hole while retreating
-    if (isInHole && dist < 15) {
-      cursor.classList.add('in-hole');
-    }
-
-    cursor.style.left = cx + 'px';
-    cursor.style.top = cy + 'px';
-    bubble.style.left = cx + 'px';
-
-    // Flip bubble if it would go off-screen
-    const viewH = window.innerHeight;
-    if (cy < 120) {
-      bubble.style.top = (cy + 24) + 'px';
-      bubble.style.transform = 'translate(-50%, 0)';
-      dots[0].style.top = (cy + 14) + 'px';
-      dots[1].style.top = (cy + 5) + 'px';
-    } else {
-      bubble.style.top = (cy - 60) + 'px';
-      bubble.style.transform = 'translate(-50%, -100%)';
-      dots[0].style.top = (cy - 60 + bubble.offsetHeight + 2) + 'px';
-      dots[1].style.top = (cy - 60 + bubble.offsetHeight + 14) + 'px';
-    }
-    dots[0].style.left = (cx - 8) + 'px';
-    dots[1].style.left = (cx + 2) + 'px';
-
-    lookAt(tx, ty, cx, cy);
-    updateThought(now);
-    requestAnimationFrame(anim);
-  })();
+    bubble.style.left = '';
+    bubble.style.right = (window.innerWidth - bubbleRightEdge) + 'px';
+    bubble.style.top = (ar.bottom + 8) + 'px';
+    bubble.style.transform = 'none';
+    dots[0].style.left = '';
+    dots[0].style.right = (window.innerWidth - ar.right + 10) + 'px';
+    dots[0].style.top = (ar.bottom + 2) + 'px';
+    dots[1].style.left = '';
+    dots[1].style.right = (window.innerWidth - ar.right - 2) + 'px';
+    dots[1].style.top = (ar.bottom + 12) + 'px';
+  };
+  posBubble();
+  window.addEventListener('resize', posBubble);
 })();
 </script>
 </body>
