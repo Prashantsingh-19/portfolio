@@ -455,119 +455,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 </footer>
 
 <style>
-/* ─── ARI THOUGHT BUBBLE ───────────────── */
-.thought-bubble{
-  position:fixed;pointer-events:none;z-index:99998;
-  max-width:260px;
-  background:#fff;border-radius:16px;
-  padding:10px 14px;
-  font-family:var(--sans);font-size:11px;line-height:1.5;
-  color:var(--ink-mid);
-  box-shadow:0 4px 20px rgba(0,0,0,0.08);
-  border:1px solid var(--stone-light);
-  opacity:0;transition:opacity .4s;
-}
-.thought-bubble.show{opacity:1}
-.thought-bubble .thought-text{display:block}
-.thought-dot{
-  position:fixed;pointer-events:none;z-index:99997;
-  background:#fff;border:1px solid var(--stone-light);
-  border-radius:50%;opacity:0;transition:opacity .4s;
-}
-.thought-dot.show{opacity:1}
-.thought-dot.d1{width:10px;height:10px}
-.thought-dot.d2{width:7px;height:7px}
-
-/* Custom cursor companion — default cursor remains visible */
-
-#clawCursor {
-  position: relative; pointer-events: auto;
-  width: 60px; height: 60px;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
-  cursor: pointer;
-  transition: opacity .4s, transform .4s;
-  flex-shrink: 0;
-}
-#clawCursor.in-hole {
-  transform: scale(.3); opacity: .4;
-}
-
-#clawCursor svg { width: 100%; height: 100%; display: block; }
-
-#clawCursor .claw {
-  transition: transform 0.15s cubic-bezier(.34,1.56,.64,1);
-  transform-origin: var(--origin);
-}
-#clawCursor .claw.L { --origin: 10px 28px; }
-#clawCursor .claw.R { --origin: 34px 28px; }
-
-#clawCursor .pupil {
-  transition: cx 0.15s ease-out, cy 0.15s ease-out;
-}
-
-#clawCursor .leg {
-  stroke: #B85C38; stroke-width: 2.5; fill: none;
-  stroke-linecap: round;
-  transform-origin: var(--lo);
-}
-#clawCursor .leg.L1 { --lo: 13px 30px; }
-#clawCursor .leg.L2 { --lo: 13px 33px; }
-#clawCursor .leg.L3 { --lo: 13px 36px; }
-#clawCursor .leg.R1 { --lo: 31px 30px; }
-#clawCursor .leg.R2 { --lo: 31px 33px; }
-#clawCursor .leg.R3 { --lo: 31px 36px; }
-
-@keyframes legWalk {
-  0%, 100% { transform: rotate(-6deg); }
-  50% { transform: rotate(6deg); }
-}
-@keyframes legWalkR {
-  0%, 100% { transform: rotate(6deg); }
-  50% { transform: rotate(-6deg); }
-}
-#clawCursor .leg { animation: legWalk 1.8s ease-in-out infinite; }
-#clawCursor .leg.R { animation-name: legWalkR; }
-#clawCursor .leg.L2, #clawCursor .leg.R2 { animation-delay: -0.6s; }
-#clawCursor .leg.L3, #clawCursor .leg.R3 { animation-delay: -1.2s; }
-#clawCursor.hunting .leg { animation-duration: 0.5s; }
-
-@keyframes clawSway {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(5deg); }
-}
-#clawCursor .claw { animation: clawSway 3.2s ease-in-out infinite; }
-#clawCursor .claw.R { animation-delay: -1.6s; }
-#clawCursor.hunting .claw { animation-duration: 0.8s; }
-
-/* ─── CRAB SEARCHING ANIMATION ──────── */
-@keyframes clawSnapL {
-  0%, 100% { transform: rotate(0deg); }
-  40% { transform: rotate(-10deg); }
-  60% { transform: rotate(-10deg); }
-}
-@keyframes clawSnapR {
-  0%, 100% { transform: rotate(0deg); }
-  40% { transform: rotate(10deg); }
-  60% { transform: rotate(10deg); }
-}
-#clawCursor.searching .claw.L {
-  animation: clawSnapL 0.4s ease-in-out infinite;
-  animation-delay: 0s;
-}
-#clawCursor.searching .claw.R {
-  animation: clawSnapR 0.4s ease-in-out infinite;
-  animation-delay: 0.2s;
-}
-#clawCursor.searching .leg { animation-duration: 0.4s; }
-
-/* ─── ASSISTANT WIDGET ──────────────── */
-.assistant-widget {
-  position: fixed;
-  top: calc(3.5rem + 6px); right: 3rem;
-  width: 380px;
-  z-index: 201;
-}
-
 /* ─── ARI MASCOT (floating launch button) ─── */
 #clawCursor {
   position: absolute;
@@ -755,15 +642,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   #ariChatPanel{max-height:50vh}
   .meet-ari,.meet-ari-sub{display:none}
   .crab-hole{display:none}
-  .thought-bubble,.thought-dot{display:none}
 }
 </style>
-
-<div id="thoughtBubble" class="thought-bubble">
-  <span class="thought-text">Welcome! Let's find the signal in this noise.</span>
-</div>
-<div class="thought-dot d1"></div>
-<div class="thought-dot d2"></div>
 
 <!-- ASSISTANT WIDGET: crab + chat panel -->
 <div class="assistant-widget">
@@ -841,9 +721,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
 (function(){
   const ari = document.getElementById('clawCursor');
-  const bubble = document.getElementById('thoughtBubble');
-  const textEl = bubble.querySelector('.thought-text');
-  const dots = document.querySelectorAll('.thought-dot.d1, .thought-dot.d2');
   const holeEl = document.getElementById('crabHole');
   const meetAri = document.getElementById('meetAri');
   const chatPanel = document.getElementById('ariChatPanel');
@@ -860,11 +737,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     return '<svg viewBox="0 0 44 44" width="24" height="24" fill="none"><path class="leg" d="M12 30Q9 28 7 32"/><path class="leg" d="M12 33Q8 31 6 36"/><path class="leg" d="M12 36Q9 35 7 40"/><path class="leg" d="M32 30Q35 28 37 32"/><path class="leg" d="M32 33Q36 31 38 36"/><path class="leg" d="M32 36Q35 35 37 40"/><ellipse class="body" cx="22" cy="28" rx="10" ry="8.5"/><ellipse class="body-shine" cx="22" cy="29" rx="7" ry="4"/><line class="stalk" x1="17" y1="20" x2="14" y2="15"/><line class="stalk" x1="27" y1="20" x2="30" y2="15"/><circle class="eye" cx="14" cy="14" r="3.5"/><circle class="pupil" cx="15" cy="14" r="1.8"/><circle class="eye" cx="30" cy="14" r="3.5"/><circle class="pupil" cx="31" cy="14" r="1.8"/><path class="claw" d="M11 28C6 25 4 20 7 17 9 20 10 23 12 26Z"/><path class="claw-dark" d="M12 31C8 34 7 37 10 38 12 35 12 33 13 31Z"/><path class="claw" d="M33 28C38 25 40 20 37 17 35 20 34 23 32 26Z"/><path class="claw-dark" d="M32 31C36 34 37 37 34 38 32 35 32 33 31 31Z"/></svg>';
   }
 
-  let showingBubble = false;
-  let sectionTimer = null;
-  let initialLoad = true;
   let chatOpenCount = 0;
-  let hasPromptedEnd = false;
   let classifyActive = false;
 
   function getSessionId() {
@@ -998,7 +871,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
     const thinkDiv = document.createElement('div');
     thinkDiv.className = 'ari-chat-msg bot';
-    thinkDiv.innerHTML = '<span class="ari-msg-avatar">${miniAriSvg()}</span><div class="ari-thinking"><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>';
+    thinkDiv.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><div class="ari-thinking"><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>`;
     chatBody.appendChild(thinkDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = true;
