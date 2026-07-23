@@ -3,6 +3,8 @@ import { ARI_PERSONA_PROMPT } from './persona.js';
 import { HIGHLIGHTS, CLASSIFY_QUESTION } from './highlights.js';
 
 const NIM_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
+const CHAT_MODEL = 'deepseek-ai/deepseek-v4-flash';
+const FALLBACK_MODEL = 'abacusai/dracarys-llama-3.1-70b-instruct';
 const EMBED_MODEL = 'gemini-embedding-001';
 
 function corsHeaders() {
@@ -44,7 +46,7 @@ async function embed(text, apiKey) {
   return data.embedding.values;
 }
 
-async function retrieve(env, query, topKCount = 4) {
+async function retrieve(env, query, topKCount = 5) {
   const queryVec = await embed(query, env.GEMINI_API_KEY);
   const results = topK(queryVec, knowledgeBase.chunks, topKCount);
   if (!results.length) return '(no matching context found)';
@@ -52,30 +54,37 @@ async function retrieve(env, query, topKCount = 4) {
 }
 
 async function callDeepSeek(env, messages, { maxTokens = 400 } = {}) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000);
-  const res = await fetch(NIM_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${env.NVIDIA_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'deepseek-ai/deepseek-v4-flash',
-      messages,
-      temperature: 0.9,
-      top_p: 0.95,
-      max_tokens: maxTokens,
-      stream: false,
-    }),
-    signal: controller.signal,
-  });
-  clearTimeout(timeout);
-  if (!res.ok) {
-    throw new Error(`NIM error: ${res.status} ${await res.text()}`);
+  for (const model of [CHAT_MODEL, FALLBACK_MODEL]) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 55000);
+      const res = await fetch(NIM_URL, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${env.NVIDIA_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.9,
+          top_p: 0.95,
+          max_tokens: maxTokens,
+          stream: false,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (!res.ok && model === FALLBACK_MODEL) {
+        throw new Error(`NIM error: ${res.status} ${await res.text()}`);
+      }
+      if (!res.ok) continue;
+      const data = await res.json();
+      return data.choices[0].message.content;
+    } catch (e) {
+      if (model === FALLBACK_MODEL) throw e;
+    }
   }
-  const data = await res.json();
-  return data.choices[0].message.content;
 }
 
 function maybePickHighlight(visitorType, chance = 0.4) {

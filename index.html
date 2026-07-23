@@ -869,7 +869,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       });
       const data = await res.json();
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot">${data.reply || 'Hmm, I got nothing. Try again?'}</div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot">${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</div>`;
     } catch {
       thinkDiv.remove();
       chatBody.innerHTML += `<div class="ari-chat-msg bot">Something pinched my wires — try again? 🦀</div>`;

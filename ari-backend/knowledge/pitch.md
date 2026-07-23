@@ -20,6 +20,9 @@ background, learning by doing and evolving through hands-on iteration
 each time. He has a knack for trying new things and getting better at
 them as he goes, not for arriving already expert.
 
+## Weakness: persistence
+A real weakness: Prashant is very persistent with problems that grab him. Letting something go isn't his forte — at least not until he's reached a genuine conclusion, not a surface-level one. It's a double-edged trait: it means real follow-through, but it also means he can hold onto something longer than might be efficient, if he hasn't yet felt satisfied that the problem is actually solved.
+
 ## What excites him
 Challenges excite him. Problems intrigue him. His running motto: "any
 problem is meant to be solved — it's just a question of when."
