@@ -443,38 +443,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 
 <style>
 /* ─── ARI SPEECH BUBBLE ─────────────── */
-.ari-speech-bubble {
-  position: fixed;
-  z-index: 201;
-  pointer-events: none;
-  max-width: 220px;
-  background: #fff;
-  border-radius: 14px;
-  padding: 10px 14px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  border: 1px solid #E4DFD4;
-  font-family: var(--sans, system-ui);
-  font-size: 12px;
-  line-height: 1.5;
-  color: #5A5A50;
-  opacity: 0;
-  transition: opacity .35s ease;
-}
-.ari-speech-bubble.show { opacity: 1; }
-
-/* Tail pointing at the crab (right side) */
-.ari-speech-bubble::after {
-  content: '';
-  position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0; height: 0;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
-  border-left: 8px solid #fff;
-  filter: drop-shadow(1px 0 1px rgba(0,0,0,0.04));
-}
 
 /* ─── ARI MASCOT (floating launch button) ─── */
 #clawCursor {
@@ -687,15 +655,10 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   #clawCursor{width:48px;height:48px;top:-8px;right:-8px}
   .assistant-widget.is-open #clawCursor{width:32px;height:32px;top:8px;right:10px}
   #ariChatPanel{max-height:50vh}
-  .ari-speech-bubble{max-width:160px;font-size:11px;padding:8px 12px}
   .crab-hole{display:none}
 }
 </style>
 
-<!-- ─── ARI SPEECH BUBBLE ─────────────── -->
-<div class="ari-speech-bubble" id="ariSpeechBubble">
-  <span class="ari-speech-text" id="ariSpeechText">meet Ari 🦀 — your resident data assistant</span>
-</div>
 
 <!-- ASSISTANT WIDGET: crab + chat panel -->
 <div class="assistant-widget">
@@ -780,8 +743,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   const chatInput = chatPanel.querySelector('input');
   const chatSend = chatPanel.querySelector('.ari-chat-footer button');
   const widget = document.querySelector('.assistant-widget');
-  const speechBubble = document.getElementById('ariSpeechBubble');
-  const speechText = document.getElementById('ariSpeechText');
 
   // ─── CONFIG ────────────────────────────
   const WORKER_BASE = 'https://ari-chatbot.itsprashantsingh19.workers.dev';
@@ -802,44 +763,11 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     return id;
   }
 
-  // ─── Speech bubble helpers ────────────
-  function showSpeech(text) {
-    speechText.textContent = text;
-    positionSpeechBubble();
-    speechBubble.classList.add('show');
-  }
-
-  function hideSpeech() {
-    speechBubble.classList.remove('show');
-  }
-
-  function positionSpeechBubble() {
-    const ar = ari.getBoundingClientRect();
-    const bubbleW = 220;
-    const gap = 12;
-    let left = ar.right + gap;
-    let top = ar.top + (ar.height / 2) - 20;
-    const margin = 14;
-    if (left + bubbleW > window.innerWidth - margin) {
-      left = ar.left - bubbleW - gap;
-    }
-    speechBubble.style.left = left + 'px';
-    speechBubble.style.top = top + 'px';
-  }
-
   // ─── Greeting sequence ────────────────
   setTimeout(() => {
     ari.classList.remove('in-hole');
     holeEl.style.opacity = '0';
   }, 1200);
-
-  setTimeout(() => {
-    showSpeech("Hi! I'm Ari, a personal chatbot assistant and a side hustle for Prashant");
-  }, 1800);
-
-  setTimeout(() => {
-    showSpeech("meet Ari 🦀 — your resident data assistant");
-  }, 6000);
 
   function clearQuickReplies() {
     document.querySelectorAll('.ari-quick-reply').forEach(el => el.remove());
@@ -918,14 +846,12 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     if (widget.classList.contains('is-open')) return;
     widget.classList.add('is-open');
     chatOpenCount++;
-    hideSpeech();
     greetAri();
     chatInput.focus();
   }
 
   function closeChat() {
     widget.classList.remove('is-open');
-    showSpeech("meet Ari 🦀 — your resident data assistant");
   }
 
   ari.addEventListener('click', openChat);
@@ -1000,7 +926,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     });
   });
 
-  window.addEventListener('resize', positionSpeechBubble);
 })();
 </script>
 </body>
