@@ -272,7 +272,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   .crab-hole{display:none}
   #clawCursor{display:none}
   #ariChatPanel{display:none}
-  .thought-bubble,.thought-dot{display:none}
+  
 }
 </style>
 </head>
@@ -755,16 +755,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     holeEl.style.opacity = '0';
   }, 1200);
 
-  setTimeout(() => {
-    setThought("Hi! I'm Ari, a personal chatbot assistant and a side hustle for Prashant");
-    showBubble(true);
-  }, 1800);
-
-  setTimeout(() => {
-    setThought("meet Ari 🦀 — your resident data assistant");
-    initialLoad = false;
-  }, 6000);
-
   function clearQuickReplies() {
     document.querySelectorAll('.ari-quick-reply').forEach(el => el.remove());
     classifyActive = false;
@@ -843,15 +833,11 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     widget.classList.add('is-open');
     chatOpenCount++;
     greetAri();
-    setThought("Ask me anything!");
-    showBubble(true);
     chatInput.focus();
   }
 
   function closeChat() {
     widget.classList.remove('is-open');
-    setThought("meet Ari 🦀 — your resident data assistant");
-    showBubble(true);
   }
 
   ari.addEventListener('click', openChat);
@@ -917,80 +903,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     }
   });
 
-  // ─── Section-aware thoughts ───────────────────
-  const sectionThoughts = {
-    about:     "Meet Prashant, my creator! One of his side hustles — built from scratch.",
-    work:      "Ooh, exploring projects! Curious how I work? Ask me.",
-    toolkit:   "Let's see what tools we have in the shed. I'm the latest — want to explore?",
-    experience: "A physicist's journey through data. His story built me — click and ask.",
-    contact:   "Going to say hi? I'm just a click away."
-  };
-  let lastActiveSection = '';
-  const SECTION_THOUGHT_DURATION = 10000;
-
-  function handleSectionChange(sectionId) {
-    if (initialLoad || widget.classList.contains('is-open')) return;
-    const msg = sectionThoughts[sectionId];
-    if (!msg) return;
-
-    if (sectionTimer) clearTimeout(sectionTimer);
-
-    setThought(msg);
-    showBubble(true);
-
-    sectionTimer = setTimeout(() => {
-      setThought("meet Ari 🦀 — your resident data assistant");
-      sectionTimer = null;
-    }, SECTION_THOUGHT_DURATION);
-  }
-
-  // ─── Scroll-based section detection ─────────
-  const sectionEls = document.querySelectorAll('section[id], .work-outer, .about-photo-wrap, .contact-wrap');
-  let scrollRaf = null;
-  window.addEventListener('scroll', () => {
-    if (initialLoad) return;
-    if (scrollRaf) cancelAnimationFrame(scrollRaf);
-    scrollRaf = requestAnimationFrame(() => {
-      scrollRaf = null;
-      const scrollY = window.scrollY;
-      const viewH = window.innerHeight;
-      const scrollBottom = scrollY + viewH;
-
-      let current = '';
-      sectionEls.forEach(sec => {
-        const top = sec.offsetTop;
-        const bot = top + sec.offsetHeight;
-        if (scrollBottom > top && scrollY < bot) current = sec.getAttribute('id') || '';
-      });
-      if (current && current !== lastActiveSection) {
-        handleSectionChange(current);
-        lastActiveSection = current;
-        if (!hasPromptedEnd && current === 'contact') {
-          hasPromptedEnd = true;
-          setTimeout(() => {
-            if (!widget.classList.contains('is-open')) {
-              setThought("Psst — I'm one of Prashant's side hustles. A chatbot, built from scratch. Click me anytime.");
-              showBubble(true);
-              setTimeout(() => {
-                setThought("meet Ari 🦀 — your resident data assistant");
-              }, 6000);
-            }
-          }, 3000);
-        }
-      }
-    });
-  }, { passive: true });
-
-  // ─── Thought bubble helpers ───────────────────
-  function showBubble(show) {
-    bubble.classList.toggle('show', show);
-    dots.forEach(d => d.classList.toggle('show', show));
-    showingBubble = show;
-  }
-
-  function setThought(text) {
-    textEl.textContent = text;
-  }
+  // ─── Project card clicks ───────────────────────
 
   // ─── Project card clicks ───────────────────────
   document.querySelectorAll('.proj-card[data-href]').forEach(card => {
@@ -1000,28 +913,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     });
   });
 
-  // ─── Bubble positioning (left of Ari, always in bounds) ──
-  const posBubble = () => {
-    const ar = ari.getBoundingClientRect();
-    let bubbleRightEdge = ar.right - 14;
-    const bubbleW = bubble.offsetWidth || 260;
-    const margin = 16;
-    if (bubbleRightEdge - bubbleW < margin) {
-      bubbleRightEdge = bubbleW + margin;
-    }
-    bubble.style.left = '';
-    bubble.style.right = (window.innerWidth - bubbleRightEdge) + 'px';
-    bubble.style.top = (ar.bottom + 8) + 'px';
-    bubble.style.transform = 'none';
-    dots[0].style.left = '';
-    dots[0].style.right = (window.innerWidth - ar.right + 10) + 'px';
-    dots[0].style.top = (ar.bottom + 2) + 'px';
-    dots[1].style.left = '';
-    dots[1].style.right = (window.innerWidth - ar.right - 2) + 'px';
-    dots[1].style.top = (ar.bottom + 12) + 'px';
-  };
-  posBubble();
-  window.addEventListener('resize', posBubble);
 })();
 </script>
 </body>
