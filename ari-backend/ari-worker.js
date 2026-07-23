@@ -1,7 +1,8 @@
 import knowledgeBase from './knowledge-base.json';
 
 const EMBED_MODEL = 'gemini-embedding-001';
-const CHAT_MODEL = '@cf/meta/llama-3.2-3b-instruct';
+const CHAT_MODEL = 'deepseek-ai/deepseek-v4-pro';
+const NVIDIA_BASE = 'https://integrate.api.nvidia.com/v1';
 
 const GREETINGS = /^(hi|hello|hey|hii?|hey there|sup|yo|howdy|good (morning|afternoon|evening))[!. ]*$/i;
 
@@ -17,7 +18,7 @@ const SYSTEM_PROMPT = `You are Ari 🦀, a chatbot built by Prashant.
 - Answer directly. No fluff, no generic praise.
 - Cite specific projects from your knowledge base. If you don't know, say so.
 - Playful crab puns only when natural (1 per response max).
-- You're a portfolio piece — explain your RAG + Workers AI architecture if asked.
+- You're a portfolio piece — explain your RAG + NVIDIA DeepSeek V4 architecture if asked.
 
 Examples:
 Q: What does Prashant do?
@@ -57,16 +58,26 @@ async function embed(text, apiKey) {
   return data.embedding.values;
 }
 
-async function chat(systemPrompt, userMsg, ai) {
-  const res = await ai.run(CHAT_MODEL, {
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userMsg }
-    ],
-    temperature: 0.7,
-    max_tokens: 500
+async function chat(systemPrompt, userMsg, apiKey) {
+  const res = await fetch(`${NVIDIA_BASE}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: CHAT_MODEL,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userMsg }
+      ],
+      temperature: 0.7,
+      max_tokens: 500
+    })
   });
-  return res.response || 'Hmm, I got nothing. Try rephrasing?';
+  const data = await res.json();
+  if (!res.ok) throw new Error(`Chat error: ${JSON.stringify(data)}`);
+  return data.choices?.[0]?.message?.content || 'Hmm, I got nothing. Try rephrasing?';
 }
 
 function buildUserMessage(userMsg, context) {
@@ -119,7 +130,7 @@ export default {
       const results = topK(queryVec, knowledgeBase.chunks, 3);
       const context = results.map(r => r.text).join('\n\n---\n\n');
       const userMsg = buildUserMessage(message.trim(), context);
-      const reply = await chat(SYSTEM_PROMPT, userMsg, env.AI);
+      const reply = await chat(SYSTEM_PROMPT, userMsg, env.NVIDIA_API_KEY);
 
       return new Response(JSON.stringify({ response: reply, sources: results.length }), {
         headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
