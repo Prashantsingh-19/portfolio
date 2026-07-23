@@ -8,13 +8,48 @@ const FALLBACK_MODEL = 'google/gemma-4-26b-a4b-it:free';
 const EMBED_MODEL = 'gemini-embedding-001';
 
 const TYPED_GREETINGS = {
-  recruiter:
+  recruiter: [
     "Hi! I'm Ari, Prashant's resident crab. He built me for portfolios like this — ask me anything about his work, and I'll pinch up the answers.",
-  builder:
+    "Oh, a recruiter! Shell yeah — I'm Ari, the crab who lives in this portfolio. Dig into anything you want to know about Prashant.",
+  ],
+  builder: [
     "Hey builder! I'm Ari, a little crab chatbot Prashant made. Peek under my shell — ask me anything about his stack or projects.",
-  curious:
+    "A fellow builder! Love it. I'm Ari — Prashant's crab sidekick. Ask me about the tech or the projects, I've watched him build it all.",
+  ],
+  curious: [
     "Hey there! I'm Ari, the crab living in Prashant's portfolio. Curious minds welcome — ask me anything about him!",
+    "A curious visitor — my favorite kind! I'm Ari, the resident crab. Prashant's my maker, and I know all about his work. What do you want to know?",
+  ],
 };
+
+const RETURN_GREETINGS = [
+  "Welcome back! Ready to crab more about Prashant?",
+  "You're back! I was just shell-fing through some memories of Prashant. What next?",
+  "Hey again! My claws have been idle — ask me something about Prashant!",
+  "Back for more? I've got plenty of crabby stories about Prashant. Shoot!",
+  "Welcome back to the shell — Prashant's portfolio, that is. What's on your mind?",
+];
+
+function pickRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function greetForType(visitorType, isReturning) {
+  if (isReturning) return pickRandom(RETURN_GREETINGS);
+  const pool = TYPED_GREETINGS[visitorType];
+  if (pool && pool.length) return pickRandom(pool);
+  return "Hi, I'm Ari! Ask me anything about Prashant.";
+}
+
+async function maybeSaveUserName(env, sessionId, message, currentName) {
+  if (currentName || !sessionId) return;
+  const lower = message.trim();
+  const nameMatch = lower.match(/^(?:i(?:')?m |my name(?:')?s |call me |it'?s |name(?:')?s )(.+?)(?:\s*[.!?]?\s*)$/i);
+  if (nameMatch) {
+    const name = nameMatch[1].trim().split(/\s+/)[0];
+    if (name.length < 30) await saveUserName(env, sessionId, name);
+  }
+}
 
 function corsHeaders() {
   return {
@@ -128,6 +163,32 @@ async function saveVisitorType(env, sessionId, visitorType) {
   });
 }
 
+async function getUserName(env, sessionId) {
+  if (!sessionId) return null;
+  return await env.SESSIONS.get(`name:${sessionId}`);
+}
+
+async function saveUserName(env, sessionId, name) {
+  if (!sessionId) return;
+  await env.SESSIONS.put(`name:${sessionId}`, name, {
+    expirationTtl: 60 * 60 * 6,
+  });
+}
+
+async function getMsgCount(env, sessionId) {
+  if (!sessionId) return 0;
+  const raw = await env.SESSIONS.get(`count:${sessionId}`);
+  return raw ? parseInt(raw, 10) : 0;
+}
+
+async function incrementMsgCount(env, sessionId) {
+  if (!sessionId) return;
+  const count = await getMsgCount(env, sessionId);
+  await env.SESSIONS.put(`count:${sessionId}`, String(count + 1), {
+    expirationTtl: 60 * 60 * 6,
+  });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
@@ -152,9 +213,7 @@ export default {
           );
         }
 
-        const greeting = isReturning
-          ? "Welcome back! Ready to crab more about Prashant?"
-          : TYPED_GREETINGS[visitorType] || "Hi, I'm Ari! Ask me anything about Prashant.";
+        const greeting = greetForType(visitorType, isReturning);
 
         return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
       }
@@ -169,7 +228,7 @@ export default {
         }
 
         await saveVisitorType(env, sessionId, visitorType);
-        const greeting = TYPED_GREETINGS[visitorType] || "Hi, I'm Ari! Ask me anything about Prashant.";
+        const greeting = greetForType(visitorType, false);
 
         return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
       }
@@ -184,16 +243,27 @@ export default {
           });
         }
 
-        const [context, history, visitorType] = await Promise.all([
+        const [context, history, visitorType, msgCount, userName] = await Promise.all([
           retrieve(env, message),
           getHistory(env, sessionId),
           getVisitorType(env, sessionId),
+          getMsgCount(env, sessionId),
+          getUserName(env, sessionId),
         ]);
 
         const highlight = maybePickHighlight(visitorType, 0.25);
+
+        let identityPrompt = '';
+        if (!userName && msgCount >= 1) {
+          identityPrompt = '\n\nYou have been chatting a bit but dont know their name yet. Casually ask who they are with a crab pun — e.g. "By the way, I dont think I caught your name — unless you\'re a ghost crab?" Keep it natural and brief.';
+        }
+        if (userName) {
+          identityPrompt = `\n\nYou are talking to ${userName}. Use their name naturally in your reply.`;
+        }
+
         const messages = [
           { role: 'system', content: ARI_PERSONA_PROMPT },
-          { role: 'system', content: `Some things I remember about him:\n${context}\n\n(Use this to answer, but keep your crabby voice — pun in every reply.)` },
+          { role: 'system', content: `Some things I remember about him:\n${context}\n\n(Use this to answer, but keep your crabby voice — pun in every reply.)${identityPrompt}` },
           {
             role: 'system',
             content: visitorType
@@ -210,7 +280,11 @@ export default {
 
         history.push({ role: 'user', content: message });
         history.push({ role: 'assistant', content: reply });
-        await saveHistory(env, sessionId, history);
+        await Promise.all([
+          saveHistory(env, sessionId, history),
+          incrementMsgCount(env, sessionId),
+          maybeSaveUserName(env, sessionId, message, userName),
+        ]);
 
         return new Response(JSON.stringify({ reply }), { headers: jsonHeaders });
       }
