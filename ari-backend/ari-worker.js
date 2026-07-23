@@ -2,9 +2,9 @@ import knowledgeBase from './knowledge-base.json';
 import { ARI_PERSONA_PROMPT } from './persona.js';
 import { HIGHLIGHTS, CLASSIFY_QUESTION } from './highlights.js';
 
-const NIM_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
-const CHAT_MODEL = 'deepseek-ai/deepseek-v4-flash';
-const FALLBACK_MODEL = 'abacusai/dracarys-llama-3.1-70b-instruct';
+const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const CHAT_MODEL = 'nvidia/nemotron-3-ultra-550b-a55b:free';
+const FALLBACK_MODEL = 'google/gemma-4-26b-a4b-it:free';
 const EMBED_MODEL = 'gemini-embedding-001';
 
 const TYPED_GREETINGS = {
@@ -62,15 +62,15 @@ async function retrieve(env, query, topKCount = 5) {
   return results.map(r => r.text).join('\n\n---\n\n');
 }
 
-async function callDeepSeek(env, messages, { maxTokens = 400 } = {}) {
+async function callLLM(env, messages, { maxTokens = 200 } = {}) {
   for (const model of [CHAT_MODEL, FALLBACK_MODEL]) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 20000);
-      const res = await fetch(NIM_URL, {
+      const res = await fetch(OR_URL, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${env.NVIDIA_API_KEY}`,
+          Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -85,7 +85,7 @@ async function callDeepSeek(env, messages, { maxTokens = 400 } = {}) {
       });
       clearTimeout(timeout);
       if (!res.ok && model === FALLBACK_MODEL) {
-        throw new Error(`NIM error: ${res.status} ${await res.text()}`);
+        throw new Error(`LLM error: ${res.status} ${await res.text()}`);
       }
       if (!res.ok) continue;
       const data = await res.json();
@@ -204,7 +204,7 @@ export default {
           { role: 'user', content: message },
         ];
 
-        const reply = await callDeepSeek(env, messages, {
+        const reply = await callLLM(env, messages, {
           maxTokens: 200,
         });
 
