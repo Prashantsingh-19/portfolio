@@ -862,11 +862,15 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatSend.disabled = true;
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 25000);
       const res = await fetch(`${WORKER_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, sessionId: getSessionId() })
+        body: JSON.stringify({ message: msg, sessionId: getSessionId() }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       const data = await res.json();
       thinkDiv.remove();
       chatBody.innerHTML += `<div class="ari-chat-msg bot">${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</div>`;

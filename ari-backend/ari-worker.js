@@ -7,6 +7,15 @@ const CHAT_MODEL = 'deepseek-ai/deepseek-v4-flash';
 const FALLBACK_MODEL = 'abacusai/dracarys-llama-3.1-70b-instruct';
 const EMBED_MODEL = 'gemini-embedding-001';
 
+const TYPED_GREETINGS = {
+  recruiter:
+    "Hi! I'm Ari, Prashant's resident crab. He built me for portfolios like this — ask me anything about his work, and I'll pinch up the answers.",
+  builder:
+    "Hey builder! I'm Ari, a little crab chatbot Prashant made. Peek under my shell — ask me anything about his stack or projects.",
+  curious:
+    "Hey there! I'm Ari, the crab living in Prashant's portfolio. Curious minds welcome — ask me anything about him!",
+};
+
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
@@ -57,7 +66,7 @@ async function callDeepSeek(env, messages, { maxTokens = 400 } = {}) {
   for (const model of [CHAT_MODEL, FALLBACK_MODEL]) {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 55000);
+      const timeout = setTimeout(() => controller.abort(), 20000);
       const res = await fetch(NIM_URL, {
         method: 'POST',
         headers: {
@@ -143,31 +152,9 @@ export default {
           );
         }
 
-        let greeting;
-        try {
-          const highlight = maybePickHighlight(visitorType);
-          greeting = await callDeepSeek(
-            env,
-            [
-              { role: 'system', content: ARI_PERSONA_PROMPT },
-              {
-                role: 'system',
-                content: visitorType
-                  ? `This visitor identified as: ${visitorType}. Match your tone/emphasis to that.${highlight ? ` You may naturally weave in this: "${highlight}"` : ''}`
-                  : 'No visitor type is known for this session.',
-              },
-              {
-                role: 'user',
-                content: isReturning
-                  ? 'Greet the visitor with a short, warm line — they have chatted with you before this session.'
-                  : 'Greet this visitor with a short, warm introduction.',
-              },
-            ],
-            { maxTokens: 80 }
-          );
-        } catch {
-          greeting = "Hi, I'm Ari! I live in Prashant's portfolio — ask me anything about him.";
-        }
+        const greeting = isReturning
+          ? "Welcome back! Ready to crab more about Prashant?"
+          : TYPED_GREETINGS[visitorType] || "Hi, I'm Ari! Ask me anything about Prashant.";
 
         return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
       }
@@ -182,25 +169,7 @@ export default {
         }
 
         await saveVisitorType(env, sessionId, visitorType);
-        const highlight = maybePickHighlight(visitorType);
-
-        let greeting;
-        try {
-          greeting = await callDeepSeek(
-            env,
-            [
-              { role: 'system', content: ARI_PERSONA_PROMPT },
-              {
-                role: 'system',
-                content: `This visitor just identified as: ${visitorType}. Greet them warmly with that in mind.${highlight ? ` You may naturally weave in this: "${highlight}"` : ''}`,
-              },
-              { role: 'user', content: 'Greet this visitor with a short, warm introduction.' },
-            ],
-            { maxTokens: 80 }
-          );
-        } catch {
-          greeting = "Hi, I'm Ari! Ask me anything about Prashant.";
-        }
+        const greeting = TYPED_GREETINGS[visitorType] || "Hi, I'm Ari! Ask me anything about Prashant.";
 
         return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
       }
@@ -224,7 +193,7 @@ export default {
         const highlight = maybePickHighlight(visitorType, 0.25);
         const messages = [
           { role: 'system', content: ARI_PERSONA_PROMPT },
-          { role: 'system', content: `Retrieved context about Prashant:\n\n${context}` },
+          { role: 'system', content: `CRITICAL: Answer in 1-3 short sentences max. No essays, no padding.\n\nRetrieved context about Prashant:\n\n${context}` },
           {
             role: 'system',
             content: visitorType
@@ -236,7 +205,7 @@ export default {
         ];
 
         const reply = await callDeepSeek(env, messages, {
-          maxTokens: 400,
+          maxTokens: 200,
         });
 
         history.push({ role: 'user', content: message });
