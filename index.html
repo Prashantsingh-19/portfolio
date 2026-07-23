@@ -481,12 +481,12 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 /* Custom cursor companion — default cursor remains visible */
 
 #clawCursor {
-  position: fixed; pointer-events: auto; z-index: 199;
+  position: relative; pointer-events: auto;
   width: 60px; height: 60px;
-  top: calc(3.5rem + 6px); right: 3rem;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
   cursor: pointer;
   transition: opacity .4s, transform .4s;
+  flex-shrink: 0;
 }
 #clawCursor.in-hole {
   transform: scale(.3); opacity: .4;
@@ -560,12 +560,22 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 }
 #clawCursor.searching .leg { animation-duration: 0.4s; }
 
+/* ─── ASSISTANT WIDGET ──────────────── */
+.assistant-widget {
+  position: fixed;
+  top: calc(3.5rem + 6px); right: 3rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  z-index: 201;
+}
+
 /* ─── ARI CHAT PANEL ─────────────────── */
 #ariChatPanel{
-  position:fixed;top:calc(3.5rem + 72px);right:3rem;width:380px;
+  width:380px;
   max-height:80vh;background:var(--page);border:1px solid var(--stone);
   border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.12);
-  z-index:200;display:none;flex-direction:column;
+  display:none;flex-direction:column;
   font-family:var(--sans);overflow:hidden;
 }
 #ariChatPanel.open{display:flex}
@@ -599,11 +609,19 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 }
 .ari-msg-avatar{
   flex-shrink:0;width:24px;height:24px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;margin-top:2px;
-  background:var(--page);border-radius:50%;
-  border:1px solid var(--stone-light);
+  margin-top:2px;
 }
+.ari-msg-avatar svg{width:100%;height:100%;display:block}
+
+/* Mini avatar legs */
+.ari-msg-avatar .leg{stroke:#B85C38;stroke-width:2.5;fill:none;stroke-linecap:round}
+.ari-msg-avatar .body{fill:#B85C38}
+.ari-msg-avatar .body-shine{fill:#C86E48;opacity:.5}
+.ari-msg-avatar .stalk{stroke:#B85C38;stroke-width:2.5;stroke-linecap:round}
+.ari-msg-avatar .eye{fill:white}
+.ari-msg-avatar .pupil{fill:#141412}
+.ari-msg-avatar .claw{fill:#B85C38}
+.ari-msg-avatar .claw-dark{fill:#9E4A2A}
 .ari-chat-footer{
   display:flex;border-top:1px solid var(--stone-light);
   padding:8px 12px;gap:8px;
@@ -623,15 +641,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 .ari-thinking{
   display:flex;align-items:center;gap:8px;padding:4px 0;
 }
-.ari-thinking-crab{
-  display:inline-block;font-size:18px;line-height:1;
-  animation:clawClick .5s ease-in-out infinite;
-}
-@keyframes clawClick{
-  0%,100%{transform:scale(1) rotate(0deg)}
-  25%{transform:scale(1.15) rotate(-6deg)}
-  75%{transform:scale(1.15) rotate(6deg)}
-}
 .ari-thinking-dots{display:flex;gap:4px}
 .ari-thinking-dots span{
   width:6px;height:6px;background:var(--ink-light);
@@ -645,7 +654,12 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 }
 
 @media(max-width:700px){
-  #ariChatPanel{left:1.5rem;width:calc(100vw - 3rem);top:calc(3.5rem + 80px);max-height:50vh}
+  .assistant-widget{right:1.5rem;gap:8px}
+  #ariChatPanel{width:calc(100vw - 3rem);max-height:50vh}
+  #clawCursor{width:40px;height:40px}
+  .meet-ari,.meet-ari-sub{display:none}
+  .crab-hole{display:none}
+  .thought-bubble,.thought-dot{display:none}
 }
 </style>
 
@@ -655,43 +669,38 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <div class="thought-dot d1"></div>
 <div class="thought-dot d2"></div>
 
+<!-- ASSISTANT WIDGET: crab + chat panel -->
+<div class="assistant-widget">
+
 <div id="clawCursor" class="in-hole" aria-hidden="true">
   <svg viewBox="0 0 44 44" width="60" height="60" fill="none">
     <filter id="cShadow">
       <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
     </filter>
     <g filter="url(#cShadow)">
-      <!-- legs left -->
       <path class="leg L L1" d="M12 30 Q8 28 5 33"/>
       <path class="leg L L2" d="M12 33 Q7 31 4 37"/>
       <path class="leg L L3" d="M12 36 Q8 35 5 41"/>
-      <!-- legs right -->
       <path class="leg R R1" d="M32 30 Q36 28 39 33"/>
       <path class="leg R R2" d="M32 33 Q37 31 40 37"/>
       <path class="leg R R3" d="M32 36 Q36 35 39 41"/>
-      <!-- body -->
       <ellipse cx="22" cy="28" rx="11" ry="9.5" fill="#B85C38"/>
       <ellipse cx="22" cy="29" rx="8" ry="5" fill="#C86E48" opacity="0.5"/>
-      <!-- eye stalks -->
       <line x1="17" y1="20" x2="13.5" y2="14" stroke="#B85C38" stroke-width="2.5" stroke-linecap="round"/>
       <line x1="27" y1="20" x2="30.5" y2="14" stroke="#B85C38" stroke-width="2.5" stroke-linecap="round"/>
-      <!-- left eye -->
       <circle cx="13.5" cy="13" r="4.2" fill="white"/>
       <circle class="pupil" cx="14.5" cy="13" r="2" fill="#141412"/>
       <circle r="0.6" cx="14" cy="12.4" fill="white" opacity="0.6"/>
-      <!-- right eye -->
       <circle cx="30.5" cy="13" r="4.2" fill="white"/>
       <circle class="pupil" cx="31.5" cy="13" r="2" fill="#141412"/>
       <circle r="0.6" cx="31" cy="12.4" fill="white" opacity="0.6"/>
-      <!-- left claw -->
       <g class="claw L">
-        <path d="M10 28 C4 24,2 18,6 15 C8 19,10 22,12 26Z" fill="#B85C38"/>
-        <path d="M11 31 C7 35,5 38,9 39 C11 35,12 33,13 31Z" fill="#9E4A2A"/>
+        <path class="pincer-top" d="M10 28 C4 24,2 18,6 15 C8 19,10 22,12 26Z" fill="#B85C38"/>
+        <path class="pincer-bottom" d="M11 31 C7 35,5 38,9 39 C11 35,12 33,13 31Z" fill="#9E4A2A"/>
       </g>
-      <!-- right claw -->
       <g class="claw R">
-        <path d="M34 28 C40 24,42 18,38 15 C36 19,34 22,32 26Z" fill="#B85C38"/>
-        <path d="M33 31 C37 35,39 38,35 39 C33 35,32 33,31 31Z" fill="#9E4A2A"/>
+        <path class="pincer-top" d="M34 28 C40 24,42 18,38 15 C36 19,34 22,32 26Z" fill="#B85C38"/>
+        <path class="pincer-bottom" d="M33 31 C37 35,39 38,35 39 C33 35,32 33,31 31Z" fill="#9E4A2A"/>
       </g>
     </g>
   </svg>
@@ -700,7 +709,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <!-- ARI CHAT PANEL -->
 <div id="ariChatPanel">
   <div class="ari-chat-header">
-    <span>🦀 Chat with Ari</span>
+    <span>Chat with Ari</span>
     <button class="ari-chat-close" id="ariChatClose">✕</button>
   </div>
   <div class="ari-chat-body" id="ariChatBody">
@@ -710,6 +719,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
     <input type="text" placeholder="Type a message..." disabled />
     <button disabled>➤</button>
   </div>
+</div>
+
 </div>
 
 <script>
@@ -747,6 +758,10 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
   // ─── CONFIG ────────────────────────────
   const WORKER_BASE = 'https://ari-chatbot.itsprashantsingh19.workers.dev';
+
+  function miniAriSvg() {
+    return '<svg viewBox="0 0 44 44" width="24" height="24" fill="none"><path class="leg" d="M12 30Q9 28 7 32"/><path class="leg" d="M12 33Q8 31 6 36"/><path class="leg" d="M12 36Q9 35 7 40"/><path class="leg" d="M32 30Q35 28 37 32"/><path class="leg" d="M32 33Q36 31 38 36"/><path class="leg" d="M32 36Q35 35 37 40"/><ellipse class="body" cx="22" cy="28" rx="10" ry="8.5"/><ellipse class="body-shine" cx="22" cy="29" rx="7" ry="4"/><line class="stalk" x1="17" y1="20" x2="14" y2="15"/><line class="stalk" x1="27" y1="20" x2="30" y2="15"/><circle class="eye" cx="14" cy="14" r="3.5"/><circle class="pupil" cx="15" cy="14" r="1.8"/><circle class="eye" cx="30" cy="14" r="3.5"/><circle class="pupil" cx="31" cy="14" r="1.8"/><path class="claw" d="M11 28C6 25 4 20 7 17 9 20 10 23 12 26Z"/><path class="claw-dark" d="M12 31C8 34 7 37 10 38 12 35 12 33 13 31Z"/><path class="claw" d="M33 28C38 25 40 20 37 17 35 20 34 23 32 26Z"/><path class="claw-dark" d="M32 31C36 34 37 37 34 38 32 35 32 33 31 31Z"/></svg>';
+  }
 
   let showingBubble = false;
   let sectionTimer = null;
@@ -818,13 +833,13 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       });
       const data = await res.json();
       if (data.needsClassification) {
-        chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${data.question}</span></div>`;
+        chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${data.question}</span></div>`;
         renderQuickReplies(data.options);
         return;
       }
-      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${data.greeting}</span></div>`;
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${data.greeting}</span></div>`;
     } catch {
-      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
     chatInput.disabled = false;
     chatSend.disabled = false;
@@ -843,9 +858,9 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
         body: JSON.stringify({ sessionId, visitorType }),
       });
       const { greeting } = await res.json();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${greeting}</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${greeting}</span></div>`;
     } catch {
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
@@ -884,7 +899,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
     const thinkDiv = document.createElement('div');
     thinkDiv.className = 'ari-chat-msg bot';
-    thinkDiv.innerHTML = '<span class="ari-msg-avatar">🦀</span><div class="ari-thinking"><span class="ari-thinking-crab">🦀</span><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>';
+    thinkDiv.innerHTML = '<span class="ari-msg-avatar">${miniAriSvg()}</span><div class="ari-thinking"><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>';
     chatBody.appendChild(thinkDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = true;
@@ -903,10 +918,10 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       clearTimeout(timeout);
       const data = await res.json();
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
     } catch {
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>Something pinched my wires — try again? 🦀</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>Something pinched my wires — try again?</span></div>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
