@@ -193,7 +193,7 @@ export default {
         const highlight = maybePickHighlight(visitorType, 0.25);
         const messages = [
           { role: 'system', content: ARI_PERSONA_PROMPT },
-          { role: 'system', content: `CRITICAL: Answer in 1-3 short sentences max. No essays, no padding.\n\nRetrieved context about Prashant:\n\n${context}` },
+          { role: 'system', content: `Some things I remember about him:\n${context}\n\n(Use this to answer, but keep your crabby voice — pun in every reply.)` },
           {
             role: 'system',
             content: visitorType
