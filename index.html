@@ -564,30 +564,128 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 .assistant-widget {
   position: fixed;
   top: calc(3.5rem + 6px); right: 3rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
+  width: 380px;
   z-index: 201;
 }
 
+/* ─── ARI MASCOT (floating launch button) ─── */
+#clawCursor {
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+  cursor: pointer;
+  transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 202;
+}
+#clawCursor.in-hole {
+  transform: scale(.3); opacity: .4;
+}
+
+/* Docked state: crab shrinks into chat header */
+.assistant-widget.is-open #clawCursor {
+  top: 10px; right: 14px;
+  width: 40px; height: 40px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1));
+}
+
+#clawCursor svg { width: 100%; height: 100%; display: block; }
+
+#clawCursor .claw {
+  transition: transform 0.15s cubic-bezier(.34,1.56,.64,1);
+  transform-origin: var(--origin);
+}
+#clawCursor .claw.L { --origin: 10px 28px; }
+#clawCursor .claw.R { --origin: 34px 28px; }
+#clawCursor .pincer-top, #clawCursor .pincer-bottom { transform-origin: inherit; }
+
+#clawCursor .pupil { transition: cx 0.15s ease-out, cy 0.15s ease-out; }
+
+#clawCursor .leg {
+  stroke: #B85C38; stroke-width: 2.5; fill: none;
+  stroke-linecap: round; transform-origin: var(--lo);
+}
+#clawCursor .leg.L1 { --lo: 13px 30px; }
+#clawCursor .leg.L2 { --lo: 13px 33px; }
+#clawCursor .leg.L3 { --lo: 13px 36px; }
+#clawCursor .leg.R1 { --lo: 31px 30px; }
+#clawCursor .leg.R2 { --lo: 31px 33px; }
+#clawCursor .leg.R3 { --lo: 31px 36px; }
+
+@keyframes legWalk {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+@keyframes legWalkR {
+  0%, 100% { transform: rotate(6deg); }
+  50% { transform: rotate(-6deg); }
+}
+#clawCursor .leg { animation: legWalk 1.8s ease-in-out infinite; }
+#clawCursor .leg.R { animation-name: legWalkR; }
+#clawCursor .leg.L2, #clawCursor .leg.R2 { animation-delay: -0.6s; }
+#clawCursor .leg.L3, #clawCursor .leg.R3 { animation-delay: -1.2s; }
+#clawCursor.hunting .leg { animation-duration: 0.5s; }
+
+@keyframes clawSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(5deg); }
+}
+#clawCursor .claw { animation: clawSway 3.2s ease-in-out infinite; }
+#clawCursor .claw.R { animation-delay: -1.6s; }
+#clawCursor.hunting .claw { animation-duration: 0.8s; }
+
+/* ─── PINCHING ANIMATION ──────────────── */
+@keyframes pinchLeftTop {
+  0%, 100% { transform: rotate(0deg); }
+  40%, 60% { transform: rotate(-18deg); }
+}
+@keyframes pinchLeftBottom {
+  0%, 100% { transform: rotate(0deg); }
+  40%, 60% { transform: rotate(12deg); }
+}
+@keyframes pinchRightTop {
+  0%, 100% { transform: rotate(0deg); }
+  40%, 60% { transform: rotate(18deg); }
+}
+@keyframes pinchRightBottom {
+  0%, 100% { transform: rotate(0deg); }
+  40%, 60% { transform: rotate(-12deg); }
+}
+#clawCursor.searching .claw.L .pincer-top { animation: pinchLeftTop 0.4s ease-in-out infinite; animation-delay: 0s; }
+#clawCursor.searching .claw.L .pincer-bottom { animation: pinchLeftBottom 0.4s ease-in-out infinite; animation-delay: 0s; }
+#clawCursor.searching .claw.R .pincer-top { animation: pinchRightTop 0.4s ease-in-out infinite; animation-delay: 0.2s; }
+#clawCursor.searching .claw.R .pincer-bottom { animation: pinchRightBottom 0.4s ease-in-out infinite; animation-delay: 0.2s; }
+#clawCursor.searching .leg { animation-duration: 0.4s; }
+#clawCursor.searching .claw { animation: none; }
+
 /* ─── ARI CHAT PANEL ─────────────────── */
 #ariChatPanel{
-  width:380px;
+  width: 100%;
   max-height:80vh;background:var(--page);border:1px solid var(--stone);
-  border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.12);
-  display:none;flex-direction:column;
+  border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.12);
+  display:flex;flex-direction:column;
   font-family:var(--sans);overflow:hidden;
+
+  /* Hidden by default */
+  opacity:0;transform:translateY(16px) scale(0.97);
+  pointer-events:none;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  margin-top: 68px;
 }
-#ariChatPanel.open{display:flex}
+.assistant-widget.is-open #ariChatPanel {
+  opacity:1;transform:translateY(0) scale(1);
+  pointer-events:auto;margin-top:0;
+}
 .ari-chat-header{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;border-bottom:1px solid var(--stone-light);
+  padding:12px 60px 12px 16px;
+  border-bottom:1px solid var(--stone-light);
   font-size:13px;font-weight:500;color:var(--ink);
+  min-height: 42px;
 }
 .ari-chat-close{
   background:none;border:none;cursor:pointer;
   font-size:16px;color:var(--ink-light);padding:2px 6px;
-  font-family:var(--sans);
+  font-family:var(--sans);position:relative;z-index:2;
 }
 .ari-chat-close:hover{color:var(--rust)}
 .ari-chat-body{
@@ -612,8 +710,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   margin-top:2px;
 }
 .ari-msg-avatar svg{width:100%;height:100%;display:block}
-
-/* Mini avatar legs */
 .ari-msg-avatar .leg{stroke:#B85C38;stroke-width:2.5;fill:none;stroke-linecap:round}
 .ari-msg-avatar .body{fill:#B85C38}
 .ari-msg-avatar .body-shine{fill:#C86E48;opacity:.5}
@@ -637,7 +733,6 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   color:#fff;padding:8px 14px;cursor:pointer;font-size:14px;
 }
 .ari-chat-footer button:disabled{opacity:.4;cursor:default}
-
 .ari-thinking{
   display:flex;align-items:center;gap:8px;padding:4px 0;
 }
@@ -654,9 +749,10 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 }
 
 @media(max-width:700px){
-  .assistant-widget{right:1.5rem;gap:8px}
-  #ariChatPanel{width:calc(100vw - 3rem);max-height:50vh}
-  #clawCursor{width:40px;height:40px}
+  .assistant-widget{right:1.5rem;width:calc(100vw - 3rem)}
+  #clawCursor{width:48px;height:48px;top:-8px;right:-8px}
+  .assistant-widget.is-open #clawCursor{width:32px;height:32px;top:8px;right:10px}
+  #ariChatPanel{max-height:50vh}
   .meet-ari,.meet-ari-sub{display:none}
   .crab-hole{display:none}
   .thought-bubble,.thought-dot{display:none}
@@ -672,7 +768,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 <!-- ASSISTANT WIDGET: crab + chat panel -->
 <div class="assistant-widget">
 
-<div id="clawCursor" class="in-hole" aria-hidden="true">
+<div id="clawCursor" class="in-hole">
   <svg viewBox="0 0 44 44" width="60" height="60" fill="none">
     <filter id="cShadow">
       <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
@@ -755,6 +851,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   const chatBody = document.getElementById('ariChatBody');
   const chatInput = chatPanel.querySelector('input');
   const chatSend = chatPanel.querySelector('.ari-chat-footer button');
+  const widget = document.querySelector('.assistant-widget');
 
   // ─── CONFIG ────────────────────────────
   const WORKER_BASE = 'https://ari-chatbot.itsprashantsingh19.workers.dev';
@@ -867,27 +964,29 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatSend.disabled = false;
   }
 
-  // ─── Click Ari → toggle chat panel ────
-  ari.addEventListener('click', () => {
-    const wasClosed = !chatPanel.classList.contains('open');
-    chatPanel.classList.toggle('open');
-    if (wasClosed) {
-      chatOpenCount++;
-      greetAri();
-      setThought("Ask me anything!");
-      showBubble(true);
-    } else {
-      setThought("meet Ari 🦀 — your resident data assistant");
-      showBubble(true);
-    }
-  });
+  // ─── Click Ari → open chat panel ────
+  function openChat() {
+    if (widget.classList.contains('is-open')) return;
+    widget.classList.add('is-open');
+    chatOpenCount++;
+    greetAri();
+    setThought("Ask me anything!");
+    showBubble(true);
+    chatInput.focus();
+  }
 
-  meetAri.addEventListener('click', () => { ari.click() });
+  function closeChat() {
+    widget.classList.remove('is-open');
+    setThought("meet Ari 🦀 — your resident data assistant");
+    showBubble(true);
+  }
+
+  ari.addEventListener('click', openChat);
+  meetAri.addEventListener('click', openChat);
 
   chatClose.addEventListener('click', (e) => {
     e.stopPropagation();
-    chatPanel.classList.remove('open');
-    setThought("meet Ari 🦀 — your resident data assistant");
+    closeChat();
   });
 
   // ─── Chat: send message to Worker ──────
@@ -957,7 +1056,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   const SECTION_THOUGHT_DURATION = 10000;
 
   function handleSectionChange(sectionId) {
-    if (initialLoad || chatPanel.classList.contains('open')) return;
+    if (initialLoad || widget.classList.contains('is-open')) return;
     const msg = sectionThoughts[sectionId];
     if (!msg) return;
 
@@ -996,7 +1095,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
         if (!hasPromptedEnd && current === 'contact') {
           hasPromptedEnd = true;
           setTimeout(() => {
-            if (!chatPanel.classList.contains('open')) {
+            if (!widget.classList.contains('is-open')) {
               setThought("Psst — I'm one of Prashant's side hustles. A chatbot, built from scratch. Click me anytime.");
               showBubble(true);
               setTimeout(() => {
