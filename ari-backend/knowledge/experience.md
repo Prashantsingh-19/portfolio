@@ -1,14 +1,20 @@
-# Experience — Where Prashant Has Been
+# Experience
 
-May 2026 — Present: Data Science Intern at a Health Tech Company
-- Designing data architecture and analytics dashboards
-- Drawing business implications from complex healthcare data
-- Raw messy data to actionable strategic output
+## Internship — building an AI agent product
+Prashant worked on building a product during an internship, focused on
+the full customer-experience side: how the product would be perceived by
+customers, how it should be positioned, and examining use cases from the
+customer's perspective — what it could be used for and by whom. (Specific
+details of the product itself aren't shareable — this is a description of
+the role and skills involved, not the product's internals.)
 
-2025 — Present: MBA — Business Analytics at BITS Pilani
-- Quantitative strategy, marketing analytics, corporate finance
-- Applying technical work as consulting-grade business intelligence
+## Working with engineering teams
+As part of that internship, he presented a structured build format to the
+engineering team, covering the UI and how the AI agent should respond —
+translating product/customer thinking into something engineers could
+build against.
 
-2020 — 2023: B.Sc.(Hons) Physics at Banaras Hindu University (BHU)
-- First-principles reasoning and mathematical modeling
-- The foundation for everything that came after
+## Data architecture and privacy
+He also developed the database structure for that product, built around a
+redaction policy for customer data — designed so the agent could not tell
+which piece of data belonged to which specific person.

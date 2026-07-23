@@ -1,32 +1,17 @@
 import knowledgeBase from './knowledge-base.json';
+import { ARI_PERSONA_PROMPT } from './persona.js';
+import { HIGHLIGHTS, CLASSIFY_QUESTION } from './highlights.js';
 
+const NIM_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const EMBED_MODEL = 'gemini-embedding-001';
-const CHAT_MODEL = 'deepseek-ai/deepseek-v4-pro';
-const NVIDIA_BASE = 'https://integrate.api.nvidia.com/v1';
 
-const GREETINGS = /^(hi|hello|hey|hii?|hey there|sup|yo|howdy|good (morning|afternoon|evening))[!. ]*$/i;
-
-const GREETING_REPLIES = [
-  "Hi! Pinch me, I'm dreaming — a new person to talk about Prashant!",
-  "Hey! Shell yeah, we've got company. What do you want to know?",
-  "Hi! Ready to claw through Prashant's work?"
-];
-
-const SYSTEM_PROMPT = `You are Ari 🦀, Prashant's chatbot.
-
-RULES:
-- MAXIMUM 2-3 SENTENCES. Never explain yourself or your architecture unless ASKED.
-- Answer the question directly. If someone greets you, just greet back.
-- Cite specific projects when relevant. If you don't know, say so plainly.
-- Keep it concise. No fluff, no generic praise, no listing things.
-- One crab pun per response max, only if natural.
-
-Examples:
-Q: What does Prashant do?
-A: He builds data products — most recently an AI hiring pipeline that scored candidates from job descriptions. It uses Gemini embeddings and XGBoost. Shell yeah, it works.
-
-Q: Tell me about yourself
-A: I'm Ari, a crab chatbot that answers questions about Prashant. I use vector search over his experience to give you specifics. Built as a side hustle.`;
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}
 
 function cosineSimilarity(a, b) {
   let dot = 0, normA = 0, normB = 0;
@@ -59,43 +44,70 @@ async function embed(text, apiKey) {
   return data.embedding.values;
 }
 
-async function chat(systemPrompt, userMsg, apiKey) {
-  const res = await fetch(`${NVIDIA_BASE}/chat/completions`, {
+async function retrieve(env, query, topKCount = 4) {
+  const queryVec = await embed(query, env.GEMINI_API_KEY);
+  const results = topK(queryVec, knowledgeBase.chunks, topKCount);
+  if (!results.length) return '(no matching context found)';
+  return results.map(r => r.text).join('\n\n---\n\n');
+}
+
+async function callDeepSeek(env, messages, { maxTokens = 400 } = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+  const res = await fetch(NIM_URL, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${env.NVIDIA_API_KEY}`,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: CHAT_MODEL,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMsg }
-      ],
-      temperature: 0.7,
-      max_tokens: 500
-    })
+      model: 'deepseek-ai/deepseek-v4-flash',
+      messages,
+      temperature: 0.9,
+      top_p: 0.95,
+      max_tokens: maxTokens,
+      stream: false,
+    }),
+    signal: controller.signal,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(`Chat error: ${JSON.stringify(data)}`);
-  return data.choices?.[0]?.message?.content || 'Hmm, I got nothing. Try rephrasing?';
-}
-
-function buildUserMessage(userMsg, context) {
-  let msg = '';
-  if (context) {
-    msg += `Here is what I know about Prashant:\n${context}\n\n`;
+  clearTimeout(timeout);
+  if (!res.ok) {
+    throw new Error(`NIM error: ${res.status} ${await res.text()}`);
   }
-  msg += `User's question: ${userMsg}`;
-  return msg;
+  const data = await res.json();
+  return data.choices[0].message.content;
 }
 
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+function maybePickHighlight(visitorType, chance = 0.4) {
+  const pool = HIGHLIGHTS[visitorType];
+  if (!pool || !pool.length || Math.random() > chance) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+async function getHistory(env, sessionId) {
+  if (!sessionId) return [];
+  const raw = await env.SESSIONS.get(`hist:${sessionId}`);
+  return raw ? JSON.parse(raw) : [];
+}
+
+async function saveHistory(env, sessionId, history) {
+  if (!sessionId) return;
+  const trimmed = history.slice(-10);
+  await env.SESSIONS.put(`hist:${sessionId}`, JSON.stringify(trimmed), {
+    expirationTtl: 60 * 60 * 6,
+  });
+}
+
+async function getVisitorType(env, sessionId) {
+  if (!sessionId) return null;
+  return await env.SESSIONS.get(`type:${sessionId}`);
+}
+
+async function saveVisitorType(env, sessionId, visitorType) {
+  if (!sessionId) return;
+  await env.SESSIONS.put(`type:${sessionId}`, visitorType, {
+    expirationTtl: 60 * 60 * 6,
+  });
 }
 
 export default {
@@ -104,45 +116,133 @@ export default {
       return new Response(null, { headers: corsHeaders() });
     }
 
-    if (request.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-        status: 405, headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
-      });
-    }
+    const url = new URL(request.url);
+    const jsonHeaders = { 'Content-Type': 'application/json', ...corsHeaders() };
 
     try {
-      const { message } = await request.json();
-      if (!message || !message.trim()) {
-        return new Response(JSON.stringify({ error: 'Message is required' }), {
-          status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
-        });
+      if (url.pathname === '/greet' && request.method === 'POST') {
+        const { sessionId } = await request.json();
+        const isReturning = sessionId
+          ? !!(await env.SESSIONS.get(`hist:${sessionId}`))
+          : false;
+        const visitorType = await getVisitorType(env, sessionId);
+
+        if (!isReturning && !visitorType) {
+          return new Response(
+            JSON.stringify({ needsClassification: true, ...CLASSIFY_QUESTION }),
+            { headers: jsonHeaders }
+          );
+        }
+
+        let greeting;
+        try {
+          const highlight = maybePickHighlight(visitorType);
+          greeting = await callDeepSeek(
+            env,
+            [
+              { role: 'system', content: ARI_PERSONA_PROMPT },
+              {
+                role: 'system',
+                content: visitorType
+                  ? `This visitor identified as: ${visitorType}. Match your tone/emphasis to that.${highlight ? ` You may naturally weave in this: "${highlight}"` : ''}`
+                  : 'No visitor type is known for this session.',
+              },
+              {
+                role: 'user',
+                content: isReturning
+                  ? 'Greet the visitor with a short, warm line — they have chatted with you before this session.'
+                  : 'Greet this visitor with a short, warm introduction.',
+              },
+            ],
+            { maxTokens: 80 }
+          );
+        } catch {
+          greeting = "Hi, I'm Ari! I live in Prashant's portfolio — ask me anything about him.";
+        }
+
+        return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
       }
 
-      const msg = message.trim();
+      if (url.pathname === '/classify' && request.method === 'POST') {
+        const { sessionId, visitorType } = await request.json();
+        if (!['recruiter', 'builder', 'curious'].includes(visitorType)) {
+          return new Response(JSON.stringify({ error: 'invalid visitorType' }), {
+            status: 400,
+            headers: jsonHeaders,
+          });
+        }
 
-      if (GREETINGS.test(msg)) {
-        const reply = GREETING_REPLIES[Math.floor(Math.random() * GREETING_REPLIES.length)];
-        return new Response(JSON.stringify({ response: reply }), {
-          headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
-        });
+        await saveVisitorType(env, sessionId, visitorType);
+        const highlight = maybePickHighlight(visitorType);
+
+        let greeting;
+        try {
+          greeting = await callDeepSeek(
+            env,
+            [
+              { role: 'system', content: ARI_PERSONA_PROMPT },
+              {
+                role: 'system',
+                content: `This visitor just identified as: ${visitorType}. Greet them warmly with that in mind.${highlight ? ` You may naturally weave in this: "${highlight}"` : ''}`,
+              },
+              { role: 'user', content: 'Greet this visitor with a short, warm introduction.' },
+            ],
+            { maxTokens: 80 }
+          );
+        } catch {
+          greeting = "Hi, I'm Ari! Ask me anything about Prashant.";
+        }
+
+        return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
       }
 
-      const queryVec = await embed(msg, env.GEMINI_API_KEY);
-      const results = topK(queryVec, knowledgeBase.chunks, 3);
-      const context = results.map(r => r.text).join('\n\n---\n\n');
-      const userMsg = buildUserMessage(message.trim(), context);
-      const reply = await chat(SYSTEM_PROMPT, userMsg, env.NVIDIA_API_KEY);
+      if (url.pathname === '/chat' && request.method === 'POST') {
+        const { message, sessionId } = await request.json();
 
-      return new Response(JSON.stringify({ response: reply, sources: results.length }), {
-        headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
-      });
+        if (!message || typeof message !== 'string') {
+          return new Response(JSON.stringify({ error: 'message is required' }), {
+            status: 400,
+            headers: jsonHeaders,
+          });
+        }
+
+        const [context, history, visitorType] = await Promise.all([
+          retrieve(env, message),
+          getHistory(env, sessionId),
+          getVisitorType(env, sessionId),
+        ]);
+
+        const highlight = maybePickHighlight(visitorType, 0.25);
+        const messages = [
+          { role: 'system', content: ARI_PERSONA_PROMPT },
+          { role: 'system', content: `Retrieved context about Prashant:\n\n${context}` },
+          {
+            role: 'system',
+            content: visitorType
+              ? `This visitor identified as: ${visitorType}. Keep matching tone/emphasis to that throughout the conversation.${highlight ? ` If it fits naturally, you may mention: "${highlight}"` : ''}`
+              : 'No visitor type is known for this session.',
+          },
+          ...history,
+          { role: 'user', content: message },
+        ];
+
+        const reply = await callDeepSeek(env, messages, {
+          maxTokens: 400,
+        });
+
+        history.push({ role: 'user', content: message });
+        history.push({ role: 'assistant', content: reply });
+        await saveHistory(env, sessionId, history);
+
+        return new Response(JSON.stringify({ reply }), { headers: jsonHeaders });
+      }
+
+      return new Response('Not found', { status: 404, headers: corsHeaders() });
     } catch (err) {
-      return new Response(JSON.stringify({
-        response: 'Shell — I hit a glitch. Try again in a moment? 🦀',
-        error: err.message
-      }), {
-        headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500,
+        headers: jsonHeaders,
       });
     }
-  }
+  },
 };

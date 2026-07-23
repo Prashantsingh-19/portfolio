@@ -717,20 +717,23 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   const chatSend = chatPanel.querySelector('.ari-chat-footer button');
 
   // ─── CONFIG ────────────────────────────
-  const WORKER_URL = 'https://ari-chatbot.itsprashantsingh19.workers.dev/chat';
+  const WORKER_BASE = 'https://ari-chatbot.itsprashantsingh19.workers.dev';
 
   let showingBubble = false;
   let sectionTimer = null;
   let initialLoad = true;
   let chatOpenCount = 0;
   let hasPromptedEnd = false;
+  let classifyActive = false;
 
-  const WELCOMES = [
-    "Hi! I'm Ari, a personal chatbot assistant and a side hustle for Prashant. Ask me anything about him!",
-    "Hello again! Great to see you back. What else would you like to know about Prashant?",
-    "Welcome back! I've been waiting — let's talk more about what Prashant can do for you.",
-    "Hey hey! You're becoming a regular. I love it. What's on your mind?"
-  ];
+  function getSessionId() {
+    let id = sessionStorage.getItem('ari_session_id');
+    if (!id) {
+      id = crypto.randomUUID();
+      sessionStorage.setItem('ari_session_id', id);
+    }
+    return id;
+  }
 
   // ─── Greeting sequence ────────────────
   setTimeout(() => {
@@ -748,9 +751,76 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     initialLoad = false;
   }, 6000);
 
-  function setWelcome() {
-    const idx = Math.min(chatOpenCount, WELCOMES.length - 1);
-    chatBody.innerHTML = `<div class="ari-chat-msg bot">${WELCOMES[idx]}</div>`;
+  function clearQuickReplies() {
+    document.querySelectorAll('.ari-quick-reply').forEach(el => el.remove());
+    classifyActive = false;
+  }
+
+  function renderQuickReplies(options) {
+    clearQuickReplies();
+    classifyActive = true;
+    const container = document.createElement('div');
+    container.className = 'ari-quick-reply';
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;padding:8px 12px;';
+    options.forEach(opt => {
+      const chip = document.createElement('button');
+      chip.textContent = opt.label;
+      chip.style.cssText = 'padding:6px 14px;border-radius:16px;border:1px solid var(--stone,#C8BFA8);background:var(--page,#F7F6F2);color:var(--ink,#141412);font-size:12px;font-family:var(--sans);cursor:pointer;transition:all .2s;';
+      chip.onmouseover = () => { chip.style.background = 'var(--stone-light,#E4DFD4)'; };
+      chip.onmouseout = () => { chip.style.background = 'var(--page,#F7F6F2)'; };
+      chip.onclick = () => classifyVisitor(opt.value);
+      row.appendChild(chip);
+    });
+    container.appendChild(row);
+    chatBody.appendChild(container);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  async function greetAri() {
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+    const sessionId = getSessionId();
+    try {
+      const res = await fetch(`${WORKER_BASE}/greet`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      });
+      const data = await res.json();
+      if (data.needsClassification) {
+        chatBody.innerHTML = `<div class="ari-chat-msg bot">${data.question}</div>`;
+        renderQuickReplies(data.options);
+        return;
+      }
+      chatBody.innerHTML = `<div class="ari-chat-msg bot">${data.greeting}</div>`;
+    } catch {
+      chatBody.innerHTML = `<div class="ari-chat-msg bot">Hi, I'm Ari! Ask me anything about Prashant.</div>`;
+    }
+    chatInput.disabled = false;
+    chatSend.disabled = false;
+  }
+
+  async function classifyVisitor(visitorType) {
+    clearQuickReplies();
+    chatBody.innerHTML += `<div class="ari-chat-msg user">${visitorType === 'recruiter' ? '👔 Hiring' : visitorType === 'builder' ? '🛠️ Fellow builder' : '👀 Just curious'}</div>`;
+    const sessionId = getSessionId();
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+    try {
+      const res = await fetch(`${WORKER_BASE}/classify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, visitorType }),
+      });
+      const { greeting } = await res.json();
+      chatBody.innerHTML += `<div class="ari-chat-msg bot">${greeting}</div>`;
+    } catch {
+      chatBody.innerHTML += `<div class="ari-chat-msg bot">Hi, I'm Ari! Ask me anything about Prashant.</div>`;
+    }
+    chatBody.scrollTop = chatBody.scrollHeight;
+    chatInput.disabled = false;
+    chatSend.disabled = false;
   }
 
   // ─── Click Ari → toggle chat panel ────
@@ -759,7 +829,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatPanel.classList.toggle('open');
     if (wasClosed) {
       chatOpenCount++;
-      setWelcome();
+      greetAri();
       setThought("Ask me anything!");
       showBubble(true);
     } else {
@@ -781,27 +851,32 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   chatSend.disabled = false;
 
   async function sendMessage(msg) {
+    if (classifyActive) { clearQuickReplies(); }
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
     const thinkDiv = document.createElement('div');
     thinkDiv.className = 'ari-chat-msg bot';
     thinkDiv.innerHTML = '<div class="ari-thinking"><span class="ari-thinking-crab">🦀</span><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>';
     chatBody.appendChild(thinkDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
+    chatInput.disabled = true;
+    chatSend.disabled = true;
 
     try {
-      const res = await fetch(WORKER_URL, {
+      const res = await fetch(`${WORKER_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg })
+        body: JSON.stringify({ message: msg, sessionId: getSessionId() })
       });
       const data = await res.json();
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot">${data.response || 'Hmm, I got nothing. Try again?'}</div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot">${data.reply || 'Hmm, I got nothing. Try again?'}</div>`;
     } catch {
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot">Shell — I hit a glitch. Make sure the Worker is deployed and WORKER_URL is set. 🦀</div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot">Something pinched my wires — try again? 🦀</div>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
+    chatInput.disabled = false;
+    chatSend.disabled = false;
   }
 
   chatInput.addEventListener('keydown', (e) => {

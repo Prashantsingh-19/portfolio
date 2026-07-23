@@ -1,3 +1,7 @@
 name = "ari-chatbot"
 main = "ari-worker.js"
 compatibility_date = "2025-04-01"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "143e974b20fa4156804ee85e0a0e5ed4"
