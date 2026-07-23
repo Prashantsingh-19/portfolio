@@ -832,7 +832,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
         body: JSON.stringify({ sessionId, visitorType }),
       });
       const { greeting } = await res.json();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${greeting}</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${greeting}</span></div>`;
     } catch {
       chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
@@ -846,7 +846,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     if (widget.classList.contains('is-open')) return;
     widget.classList.add('is-open');
     chatOpenCount++;
-    greetAri();
+    if (chatOpenCount === 1) greetAri();
     chatInput.focus();
   }
 
@@ -855,6 +855,29 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   }
 
   ari.addEventListener('click', openChat);
+
+  // ─── Eyes follow cursor ──────────────
+  const pupils = ari.querySelectorAll('.pupil');
+  const EYE_CENTERS = [
+    { cx: 13.5, cy: 13 },
+    { cx: 30.5, cy: 13 }
+  ];
+  const MAX_MOVE = 2.2;
+  document.addEventListener('mousemove', (e) => {
+    const r = ari.getBoundingClientRect();
+    const crabCx = r.left + r.width / 2;
+    const crabCy = r.top + r.height / 2;
+    const dx = e.clientX - crabCx;
+    const dy = e.clientY - crabCy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const normX = dist > 0 ? dx / dist : 0;
+    const normY = dist > 0 ? dy / dist : 0;
+    const move = Math.min(dist * 0.02, MAX_MOVE);
+    pupils.forEach((p, i) => {
+      p.setAttribute('cx', EYE_CENTERS[i].cx + normX * move);
+      p.setAttribute('cy', EYE_CENTERS[i].cy + normY * move);
+    });
+  });
 
   chatClose.addEventListener('click', (e) => {
     e.stopPropagation();
