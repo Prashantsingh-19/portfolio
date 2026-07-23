@@ -617,9 +617,23 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   font-size:13px;line-height:1.6;font-weight:300;
 }
 .ari-chat-msg.bot{
-  align-self:flex-start;background:var(--stone-light);
-  color:var(--ink);border-bottom-left-radius:4px;
-  display:flex;align-items:flex-start;gap:8px;
+  align-self:flex-start;
+  display:flex;align-items:flex-start;gap:6px;
+}
+.ari-chat-msg.bot .ari-bubble{
+  background:var(--stone-light);color:var(--ink);
+  padding:10px 14px;border-radius:12px;
+  font-size:13px;line-height:1.6;font-weight:300;
+  border-bottom-left-radius:4px;
+  position:relative;
+}
+.ari-chat-msg.bot .ari-bubble::before{
+  content:'';position:absolute;
+  left:-6px;top:12px;
+  width:0;height:0;
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+  border-right:6px solid var(--stone-light);
 }
 .ari-chat-msg.user{
   align-self:flex-end;background:var(--rust);
@@ -865,13 +879,13 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       });
       const data = await res.json();
       if (data.needsClassification) {
-        chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${data.question}</span></div>`;
+        chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.question}</span></div>`;
         renderQuickReplies(data.options);
         return;
       }
-      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${data.greeting}</span></div>`;
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.greeting}</span></div>`;
     } catch {
-      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
     chatInput.disabled = false;
     chatSend.disabled = false;
@@ -892,7 +906,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       const { greeting } = await res.json();
       chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${greeting}</span></div>`;
     } catch {
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
@@ -949,10 +963,10 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       clearTimeout(timeout);
       const data = await res.json();
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
     } catch {
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span>Something pinched my wires — try again?</span></div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Something pinched my wires — try again?</span></div>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
