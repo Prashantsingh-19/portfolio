@@ -752,7 +752,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   }
 
   let chatOpenCount = 0;
-  let classifyActive = false;
 
   function getSessionId() {
     let id = sessionStorage.getItem('ari_session_id');
@@ -769,32 +768,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     holeEl.style.opacity = '0';
   }, 1200);
 
-  function clearQuickReplies() {
-    document.querySelectorAll('.ari-quick-reply').forEach(el => el.remove());
-    classifyActive = false;
-  }
-
-  function renderQuickReplies(options) {
-    clearQuickReplies();
-    classifyActive = true;
-    const container = document.createElement('div');
-    container.className = 'ari-quick-reply';
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;padding:8px 12px;';
-    options.forEach(opt => {
-      const chip = document.createElement('button');
-      chip.textContent = opt.label;
-      chip.style.cssText = 'padding:6px 14px;border-radius:16px;border:1px solid var(--stone,#C8BFA8);background:var(--page,#F7F6F2);color:var(--ink,#141412);font-size:12px;font-family:var(--sans);cursor:pointer;transition:all .2s;';
-      chip.onmouseover = () => { chip.style.background = 'var(--stone-light,#E4DFD4)'; };
-      chip.onmouseout = () => { chip.style.background = 'var(--page,#F7F6F2)'; };
-      chip.onclick = () => classifyVisitor(opt.value);
-      row.appendChild(chip);
-    });
-    container.appendChild(row);
-    chatBody.appendChild(container);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
-
   async function greetAri() {
     chatInput.disabled = true;
     chatSend.disabled = true;
@@ -806,37 +779,10 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
         body: JSON.stringify({ sessionId }),
       });
       const data = await res.json();
-      if (data.needsClassification) {
-        chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.question}</span></div>`;
-        renderQuickReplies(data.options);
-        return;
-      }
       chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.greeting}</span></div>`;
     } catch {
       chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
-    chatInput.disabled = false;
-    chatSend.disabled = false;
-  }
-
-  async function classifyVisitor(visitorType) {
-    clearQuickReplies();
-    chatBody.innerHTML += `<div class="ari-chat-msg user">${visitorType === 'recruiter' ? '👔 Hiring' : visitorType === 'builder' ? '🛠️ Fellow builder' : '👀 Just curious'}</div>`;
-    const sessionId = getSessionId();
-    chatInput.disabled = true;
-    chatSend.disabled = true;
-    try {
-      const res = await fetch(`${WORKER_BASE}/classify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, visitorType }),
-      });
-      const { greeting } = await res.json();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${greeting}</span></div>`;
-    } catch {
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
-    }
-    chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
     chatSend.disabled = false;
   }
@@ -889,7 +835,6 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   chatSend.disabled = false;
 
   async function sendMessage(msg) {
-    if (classifyActive) { clearQuickReplies(); }
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
     const thinkDiv = document.createElement('div');
     thinkDiv.className = 'ari-chat-msg bot';

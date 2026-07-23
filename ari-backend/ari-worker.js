@@ -1,7 +1,5 @@
 import knowledgeBase from './knowledge-base.json';
 import { ARI_PERSONA_PROMPT } from './persona.js';
-import { HIGHLIGHTS, CLASSIFY_QUESTION } from './highlights.js';
-
 const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const NVIDIA_MODEL = 'deepseek-ai/deepseek-v4-pro';
@@ -115,13 +113,16 @@ async function callNVIDIA(env, messages, maxTokens) {
       top_p: 0.9,
       max_tokens: maxTokens,
       stream: false,
+      thinking: false,
     }),
     signal: controller.signal,
   });
   clearTimeout(timeout);
   if (!res.ok) throw new Error(`NVIDIA error: ${res.status} ${await res.text()}`);
   const data = await res.json();
-  return data.choices[0].message.content;
+  let content = data.choices[0].message.content;
+  content = content.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
+  return content;
 }
 
 async function callLLM(env, messages, { maxTokens = 200 } = {}) {
@@ -163,12 +164,6 @@ async function callLLM(env, messages, { maxTokens = 200 } = {}) {
       if (model === FALLBACK_MODEL) throw e;
     }
   }
-}
-
-function maybePickHighlight(visitorType, chance = 0.4) {
-  const pool = HIGHLIGHTS[visitorType];
-  if (!pool || !pool.length || Math.random() > chance) return null;
-  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 async function getHistory(env, sessionId) {
@@ -239,14 +234,6 @@ export default {
           ? !!(await env.SESSIONS.get(`hist:${sessionId}`))
           : false;
         const visitorType = await getVisitorType(env, sessionId);
-
-        if (!isReturning && !visitorType) {
-          return new Response(
-            JSON.stringify({ needsClassification: true, ...CLASSIFY_QUESTION }),
-            { headers: jsonHeaders }
-          );
-        }
-
         const greeting = greetForType(visitorType, isReturning);
 
         return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
@@ -277,20 +264,13 @@ export default {
           });
         }
 
-        const [context, history, visitorType, msgCount, userName] = await Promise.all([
+        const [context, history, userName] = await Promise.all([
           retrieve(env, message),
           getHistory(env, sessionId),
-          getVisitorType(env, sessionId),
-          getMsgCount(env, sessionId),
           getUserName(env, sessionId),
         ]);
 
-        const highlight = maybePickHighlight(visitorType, 0.25);
-
         let identityPrompt = '';
-        if (!userName && msgCount >= 1) {
-          identityPrompt = '\n\nYou have been chatting a bit but dont know their name yet. Casually ask who they are with a crab pun — e.g. "By the way, I dont think I caught your name — unless you\'re a ghost crab?" Keep it natural and brief.';
-        }
         if (userName) {
           identityPrompt = `\n\nYou are talking to ${userName}. Use their name naturally in your reply.`;
         }
@@ -298,12 +278,6 @@ export default {
         const messages = [
           { role: 'system', content: ARI_PERSONA_PROMPT },
           { role: 'system', content: `Context about Prashant:\n${context}\n\nOnly use this context. Never invent facts about Prashant.${identityPrompt}` },
-          {
-            role: 'system',
-            content: visitorType
-              ? `This visitor identified as: ${visitorType}. Keep matching tone/emphasis to that throughout the conversation.${highlight ? ` If it fits naturally, you may mention: "${highlight}"` : ''}`
-              : 'No visitor type is known for this session.',
-          },
           ...history,
           { role: 'user', content: message },
         ];
