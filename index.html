@@ -539,6 +539,27 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 #clawCursor .claw.R { animation-delay: -1.6s; }
 #clawCursor.hunting .claw { animation-duration: 0.8s; }
 
+/* ─── CRAB SEARCHING ANIMATION ──────── */
+@keyframes clawSnapL {
+  0%, 100% { transform: rotate(0deg); }
+  40% { transform: rotate(-10deg); }
+  60% { transform: rotate(-10deg); }
+}
+@keyframes clawSnapR {
+  0%, 100% { transform: rotate(0deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(10deg); }
+}
+#clawCursor.searching .claw.L {
+  animation: clawSnapL 0.4s ease-in-out infinite;
+  animation-delay: 0s;
+}
+#clawCursor.searching .claw.R {
+  animation: clawSnapR 0.4s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+#clawCursor.searching .leg { animation-duration: 0.4s; }
+
 /* ─── ARI CHAT PANEL ─────────────────── */
 #ariChatPanel{
   position:fixed;top:calc(3.5rem + 72px);right:3rem;width:380px;
@@ -570,10 +591,18 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 .ari-chat-msg.bot{
   align-self:flex-start;background:var(--stone-light);
   color:var(--ink);border-bottom-left-radius:4px;
+  display:flex;align-items:flex-start;gap:8px;
 }
 .ari-chat-msg.user{
   align-self:flex-end;background:var(--rust);
   color:#fff;border-bottom-right-radius:4px;
+}
+.ari-msg-avatar{
+  flex-shrink:0;width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;margin-top:2px;
+  background:var(--page);border-radius:50%;
+  border:1px solid var(--stone-light);
 }
 .ari-chat-footer{
   display:flex;border-top:1px solid var(--stone-light);
@@ -789,13 +818,13 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       });
       const data = await res.json();
       if (data.needsClassification) {
-        chatBody.innerHTML = `<div class="ari-chat-msg bot">${data.question}</div>`;
+        chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${data.question}</span></div>`;
         renderQuickReplies(data.options);
         return;
       }
-      chatBody.innerHTML = `<div class="ari-chat-msg bot">${data.greeting}</div>`;
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${data.greeting}</span></div>`;
     } catch {
-      chatBody.innerHTML = `<div class="ari-chat-msg bot">Hi, I'm Ari! Ask me anything about Prashant.</div>`;
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
     chatInput.disabled = false;
     chatSend.disabled = false;
@@ -814,9 +843,9 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
         body: JSON.stringify({ sessionId, visitorType }),
       });
       const { greeting } = await res.json();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot">${greeting}</div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${greeting}</span></div>`;
     } catch {
-      chatBody.innerHTML += `<div class="ari-chat-msg bot">Hi, I'm Ari! Ask me anything about Prashant.</div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
@@ -855,11 +884,12 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
     const thinkDiv = document.createElement('div');
     thinkDiv.className = 'ari-chat-msg bot';
-    thinkDiv.innerHTML = '<div class="ari-thinking"><span class="ari-thinking-crab">🦀</span><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>';
+    thinkDiv.innerHTML = '<span class="ari-msg-avatar">🦀</span><div class="ari-thinking"><span class="ari-thinking-crab">🦀</span><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>';
     chatBody.appendChild(thinkDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = true;
     chatSend.disabled = true;
+    ari.classList.add('searching');
 
     try {
       const controller = new AbortController();
@@ -873,14 +903,15 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       clearTimeout(timeout);
       const data = await res.json();
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot">${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
     } catch {
       thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot">Something pinched my wires — try again? 🦀</div>`;
+      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">🦀</span><span>Something pinched my wires — try again? 🦀</span></div>`;
     }
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
     chatSend.disabled = false;
+    ari.classList.remove('searching');
   }
 
   chatInput.addEventListener('keydown', (e) => {
