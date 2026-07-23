@@ -3,6 +3,8 @@ import { ARI_PERSONA_PROMPT } from './persona.js';
 import { HIGHLIGHTS, CLASSIFY_QUESTION } from './highlights.js';
 
 const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
+const NVIDIA_MODEL = 'deepseek-ai/deepseek-v4-pro';
 const CHAT_MODEL = 'nvidia/nemotron-3-ultra-550b-a55b:free';
 const FALLBACK_MODEL = 'google/gemma-4-26b-a4b-it:free';
 const EMBED_MODEL = 'gemini-embedding-001';
@@ -97,7 +99,39 @@ async function retrieve(env, query, topKCount = 5) {
   return results.map(r => r.text).join('\n\n---\n\n');
 }
 
+async function callNVIDIA(env, messages, maxTokens) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  const res = await fetch(NVIDIA_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.NVIDIA_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: NVIDIA_MODEL,
+      messages,
+      temperature: 0.7,
+      top_p: 0.9,
+      max_tokens: maxTokens,
+      stream: false,
+    }),
+    signal: controller.signal,
+  });
+  clearTimeout(timeout);
+  if (!res.ok) throw new Error(`NVIDIA error: ${res.status} ${await res.text()}`);
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
 async function callLLM(env, messages, { maxTokens = 200 } = {}) {
+  // Try NVIDIA (DeepSeek V4 Pro) first
+  try {
+    return await callNVIDIA(env, messages, maxTokens);
+  } catch (e) {
+    // fall through to OpenRouter
+  }
+  // Fallback: OpenRouter (Nemotron, then Gemma)
   for (const model of [CHAT_MODEL, FALLBACK_MODEL]) {
     try {
       const controller = new AbortController();
@@ -111,8 +145,8 @@ async function callLLM(env, messages, { maxTokens = 200 } = {}) {
         body: JSON.stringify({
           model,
           messages,
-          temperature: 0.9,
-          top_p: 0.95,
+          temperature: 0.7,
+          top_p: 0.9,
           max_tokens: maxTokens,
           stream: false,
         }),
@@ -263,7 +297,7 @@ export default {
 
         const messages = [
           { role: 'system', content: ARI_PERSONA_PROMPT },
-          { role: 'system', content: `Some things I remember about him:\n${context}\n\n(Use this to answer, but keep your crabby voice — pun in every reply.)${identityPrompt}` },
+          { role: 'system', content: `Context about Prashant:\n${context}\n\nOnly use this context. Never invent facts about Prashant.${identityPrompt}` },
           {
             role: 'system',
             content: visitorType
@@ -275,7 +309,7 @@ export default {
         ];
 
         const reply = await callLLM(env, messages, {
-          maxTokens: 200,
+          maxTokens: 120,
         });
 
         history.push({ role: 'user', content: message });
