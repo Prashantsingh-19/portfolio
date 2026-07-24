@@ -1,11 +1,9 @@
-import knowledgeBase from './knowledge-base.json';
 import { ARI_PERSONA_PROMPT } from './persona.js';
 const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const NVIDIA_MODEL = 'deepseek-ai/deepseek-v4-pro';
 const CHAT_MODEL = 'nvidia/nemotron-3-ultra-550b-a55b:free';
 const FALLBACK_MODEL = 'google/gemma-4-26b-a4b-it:free';
-const EMBED_MODEL = 'gemini-embedding-001';
 
 const TYPED_GREETINGS = {
   recruiter: [
@@ -59,46 +57,16 @@ function corsHeaders() {
   };
 }
 
-function cosineSimilarity(a, b) {
-  let dot = 0, normA = 0, normB = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
-}
-
-function topK(queryVec, chunks, k) {
-  const scored = chunks.map(c => ({
-    ...c,
-    score: cosineSimilarity(queryVec, c.embedding)
-  }));
-  scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, k);
-}
-
-async function embed(text, apiKey) {
-  const url = `https://generativelanguage.googleapis.com/v1/models/${EMBED_MODEL}:embedContent?key=${apiKey}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: `models/${EMBED_MODEL}`, content: { parts: [{ text }] } }),
-    signal: controller.signal,
-  });
-  clearTimeout(timeout);
-  const data = await res.json();
-  if (!res.ok) throw new Error(`Embedding error: ${res.status} ${JSON.stringify(data)}`);
-  return data.embedding.values;
+async function embed(text, env) {
+  const { data } = await env.AI.run('@cf/baai/bge-base-en-v1.5', { text: [text] });
+  return data[0];
 }
 
 async function retrieve(env, query, topKCount = 5) {
-  const queryVec = await embed(query, env.GEMINI_API_KEY);
-  const results = topK(queryVec, knowledgeBase.chunks, topKCount);
-  if (!results.length) return '(no matching context found)';
-  return results.map(r => r.text).join('\n\n---\n\n');
+  const queryVec = await embed(query, env);
+  const results = await env.VECTORIZE.query(queryVec, { topK: topKCount, returnMetadata: true });
+  if (!results.matches || !results.matches.length) return '(no matching context found)';
+  return results.matches.map(m => m.metadata.text).join('\n\n---\n\n');
 }
 
 function stripMeta(text) {
@@ -316,6 +284,24 @@ export default {
         ]);
 
         return new Response(JSON.stringify({ reply }), { headers: jsonHeaders });
+      }
+
+      if (url.pathname === '/seed-kb' && request.method === 'POST') {
+        const { chunks } = await request.json();
+        if (!chunks || !chunks.length) {
+          return new Response(JSON.stringify({ error: 'chunks array required' }), {
+            status: 400, headers: jsonHeaders,
+          });
+        }
+        const texts = chunks.map(c => c.text);
+        const { data } = await env.AI.run('@cf/baai/bge-base-en-v1.5', { text: texts });
+        const vectors = chunks.map((c, i) => ({
+          id: c.id || `chunk-${i}`,
+          values: data[i],
+          metadata: { text: c.text },
+        }));
+        await env.VECTORIZE.upsert(vectors);
+        return new Response(JSON.stringify({ seeded: vectors.length }), { headers: jsonHeaders });
       }
 
       return new Response('Not found', { status: 404, headers: corsHeaders() });
