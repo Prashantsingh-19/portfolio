@@ -869,11 +869,17 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
   async function sendMessage(msg) {
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
-    const thinkDiv = document.createElement('div');
-    thinkDiv.className = 'ari-chat-msg bot';
-    thinkDiv.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${pickRand(THINK_PHRASES)}</span>`;
-    chatBody.appendChild(thinkDiv);
-    chatBody.scrollTop = chatBody.scrollHeight;
+
+    const needsThink = msg.split(' ').length > 3 || msg.includes('?');
+
+    if (needsThink) {
+      const thinkDiv = document.createElement('div');
+      thinkDiv.className = 'ari-chat-msg bot';
+      thinkDiv.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${pickRand(THINK_PHRASES)}</span>`;
+      chatBody.appendChild(thinkDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
     chatInput.disabled = true;
     chatSend.disabled = true;
     ari.classList.add('searching');
@@ -889,7 +895,12 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       });
       clearTimeout(timeout);
       const data = await res.json();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${pickRand(HOOK_PREFIXES)}${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
+      const reply = data.reply || data.error || 'Hmm, I got nothing. Try again?';
+      if (needsThink) {
+        chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${pickRand(HOOK_PREFIXES)}${reply}</span></div>`;
+      } else {
+        chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${reply}</span></div>`;
+      }
     } catch {
       chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Something pinched my wires — try again?</span></div>`;
     }
