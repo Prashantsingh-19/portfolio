@@ -80,6 +80,18 @@ function stripMeta(text) {
   return result || text;
 }
 
+async function callCloudflare(env, messages, maxTokens) {
+  const result = await env.AI.run('@cf/moonshotai/kimi-k2.6', {
+    messages,
+    max_tokens: maxTokens,
+    temperature: 0.7,
+    reasoning_effort: 'none',
+  });
+  let content = result.choices?.[0]?.message?.content || result.response || '';
+  content = stripMeta(content);
+  return content;
+}
+
 async function callNVIDIA(env, messages, maxTokens) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -109,7 +121,13 @@ async function callNVIDIA(env, messages, maxTokens) {
 }
 
 async function callLLM(env, messages, { maxTokens = 200 } = {}) {
-  // Try NVIDIA (DeepSeek V4 Pro) first
+  // Try Cloudflare Workers AI (Kimi K2.6) first
+  try {
+    return await callCloudflare(env, messages, maxTokens);
+  } catch (e) {
+    // fall through to NVIDIA
+  }
+  // Fallback: NVIDIA (DeepSeek V4 Pro)
   try {
     return await callNVIDIA(env, messages, maxTokens);
   } catch (e) {
