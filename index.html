@@ -635,16 +635,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   color:#fff;padding:8px 14px;cursor:pointer;font-size:14px;
 }
 .ari-chat-footer button:disabled{opacity:.4;cursor:default}
-.ari-thinking{
-  display:flex;align-items:center;gap:8px;padding:4px 0;
-}
-.ari-thinking-dots{display:flex;gap:4px}
-.ari-thinking-dots span{
-  width:6px;height:6px;background:var(--ink-light);
-  border-radius:50%;animation:thinkDot 1.2s ease-in-out infinite;
-}
-.ari-thinking-dots span:nth-child(2){animation-delay:.2s}
-.ari-thinking-dots span:nth-child(3){animation-delay:.4s}
+
 @keyframes thinkDot{
   0%,60%,100%{opacity:.2}
   30%{opacity:1}
@@ -834,12 +825,54 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   chatInput.disabled = false;
   chatSend.disabled = false;
 
+  const THINK_PHRASES = [
+    "Ahh, let me pinch my brain for that...",
+    "Give me a sec, digging through the shell-ves...",
+    "One claw on it — let me crab through the details...",
+    "Hold on, let me scrape the barnacles off that memory...",
+    "Lemme molt through that thought for a moment...",
+    "Pincers crossed I can find the answer...",
+    "Let me sift through the sand for that one...",
+    "Hang on, just untangling my eyestalks...",
+    "Gimme a claw-second, rummaging through the knowledge nook...",
+    "Scuttling through the archives, hold tight...",
+    "Just got to crab-walk my way through this one...",
+    "One sec — the info's in here somewhere, buried under all these shells...",
+    "Crunching on the data now, give me a moment...",
+    "Let me claw that thought back up from the depths...",
+    "Hold your horses — I'm a crab, not a search engine (okay, maybe a little of both)...",
+    "Peeking under the rocks of my memory banks...",
+  ];
+
+  const HOOK_PREFIXES = [
+    "Hooked! ",
+    "Got it! ",
+    "There you go — ",
+    "Ah, here it is! ",
+    "Snagged it! ",
+    "Bingo! ",
+    "Caught one! ",
+    "Reeled it in! ",
+    "Claw-some, found it! ",
+    "Shell yeah, here we go — ",
+    "Pin-pointed it! ",
+    "Aha! ",
+    "Land ho! ",
+    "Crab to the rescue — ",
+    "Right on claw! ",
+    "Nailed it! ",
+  ];
+
+  function pickRand(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
   async function sendMessage(msg) {
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
-    const thinkDiv = document.createElement('div');
-    thinkDiv.className = 'ari-chat-msg bot';
-    thinkDiv.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><div class="ari-thinking"><div class="ari-thinking-dots"><span></span><span></span><span></span></div></div>`;
-    chatBody.appendChild(thinkDiv);
+    const botDiv = document.createElement('div');
+    botDiv.className = 'ari-chat-msg bot';
+    botDiv.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${pickRand(THINK_PHRASES)}</span>`;
+    chatBody.appendChild(botDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = true;
     chatSend.disabled = true;
@@ -847,7 +880,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 25000);
+      const timeout = setTimeout(() => controller.abort(), 30000);
       const res = await fetch(`${WORKER_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -856,11 +889,11 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       });
       clearTimeout(timeout);
       const data = await res.json();
-      thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
+      const bubble = botDiv.querySelector('.ari-bubble');
+      bubble.textContent = `${pickRand(HOOK_PREFIXES)}${data.reply || data.error || 'Hmm, I got nothing. Try again?'}`;
     } catch {
-      thinkDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Something pinched my wires — try again?</span></div>`;
+      const bubble = botDiv.querySelector('.ari-bubble');
+      bubble.textContent = 'Something pinched my wires — try again?';
     }
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;

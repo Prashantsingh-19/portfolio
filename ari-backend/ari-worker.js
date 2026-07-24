@@ -79,14 +79,18 @@ function topK(queryVec, chunks, k) {
 }
 
 async function embed(text, apiKey) {
-  const url = `https://generativelanguage.googleapis.com/v1/models/${EMBED_MODEL}:embedContent`;
+  const url = `https://generativelanguage.googleapis.com/v1/models/${EMBED_MODEL}:embedContent?key=${apiKey}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-    body: JSON.stringify({ model: `models/${EMBED_MODEL}`, content: { parts: [{ text }] } })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: `models/${EMBED_MODEL}`, content: { parts: [{ text }] } }),
+    signal: controller.signal,
   });
+  clearTimeout(timeout);
   const data = await res.json();
-  if (!res.ok) throw new Error(`Embedding error: ${JSON.stringify(data)}`);
+  if (!res.ok) throw new Error(`Embedding error: ${res.status} ${JSON.stringify(data)}`);
   return data.embedding.values;
 }
 
@@ -97,9 +101,24 @@ async function retrieve(env, query, topKCount = 5) {
   return results.map(r => r.text).join('\n\n---\n\n');
 }
 
+function stripMeta(text) {
+  const lines = text.split('\n').filter(l => {
+    const t = l.trim();
+    if (!t) return true;
+    if (/^(the user|the question|the context|the persona|i need to|i should|i'll|i will|i'm going to|from the context|based on|according to|here's|here is)/i.test(t)) return false;
+    if (/^(okay|ok|so|now|first|firstly|second|secondly)[':,\s]/i.test(t)) return false;
+    if (/^(let me|let's|my response|my reply|my answer)/i.test(t)) return false;
+    return true;
+  });
+  let result = lines.join('\n').trim();
+  result = result.replace(/^["']|["']$/g, '').trim();
+  result = result.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
+  return result || text;
+}
+
 async function callNVIDIA(env, messages, maxTokens) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
+  const timeout = setTimeout(() => controller.abort(), 8000);
   const res = await fetch(NVIDIA_URL, {
     method: 'POST',
     headers: {
@@ -121,7 +140,7 @@ async function callNVIDIA(env, messages, maxTokens) {
   if (!res.ok) throw new Error(`NVIDIA error: ${res.status} ${await res.text()}`);
   const data = await res.json();
   let content = data.choices[0].message.content;
-  content = content.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
+  content = stripMeta(content);
   return content;
 }
 
@@ -136,7 +155,7 @@ async function callLLM(env, messages, { maxTokens = 200 } = {}) {
   for (const model of [CHAT_MODEL, FALLBACK_MODEL]) {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 20000);
+      const timeout = setTimeout(() => controller.abort(), 8000);
       const res = await fetch(OR_URL, {
         method: 'POST',
         headers: {
@@ -159,7 +178,9 @@ async function callLLM(env, messages, { maxTokens = 200 } = {}) {
       }
       if (!res.ok) continue;
       const data = await res.json();
-      return data.choices[0].message.content;
+      let content = data.choices[0].message.content;
+      content = stripMeta(content);
+      return content;
     } catch (e) {
       if (model === FALLBACK_MODEL) throw e;
     }
@@ -283,7 +304,7 @@ export default {
         ];
 
         const reply = await callLLM(env, messages, {
-          maxTokens: 120,
+          maxTokens: 150,
         });
 
         history.push({ role: 'user', content: message });
