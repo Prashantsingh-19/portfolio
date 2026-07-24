@@ -73,7 +73,7 @@ function stripMeta(text) {
   const lines = text.split('\n').filter(l => {
     const t = l.trim();
     if (!t) return true;
-    if (/^(the user|the question|the context|the persona|i need to|i should|i'll|i will|i'm going to|from the context|based on|according to|here's|here is)/i.test(t)) return false;
+    if (/^(the user|the question|the context|the persona|i need to|i should|i'll|i will|i'm going to|from the context|based on|according to|here's|here is|the pool|correct answer|answer key)/i.test(t)) return false;
     if (/^(okay|ok|so|now|first|firstly|second|secondly)[':,\s]/i.test(t)) return false;
     if (/^(let me|let's|my response|my reply|my answer)/i.test(t)) return false;
     return true;
