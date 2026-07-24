@@ -70,17 +70,13 @@ async function retrieve(env, query, topKCount = 5) {
 }
 
 function stripMeta(text) {
-  const lines = text.split('\n').filter(l => {
-    const t = l.trim();
-    if (!t) return true;
-    if (/^(the user|the question|the context|the persona|i need to|i should|i'll|i will|i'm going to|from the context|based on|according to|here's|here is|the pool|correct answer|answer key|hold your horses)/i.test(t)) return false;
-    if (/^(okay|ok|so|now|first|firstly|second|secondly)[':,\s]/i.test(t)) return false;
-    if (/^(let me|let's|my response|my reply|my answer)/i.test(t)) return false;
-    return true;
-  });
-  let result = lines.join('\n').trim();
-  result = result.replace(/^["']|["']$/g, '').trim();
-  result = result.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
+  let result = text
+    .replace(/<thinking>[\s\S]*?<\/thinking>/g, '')
+    .replace(/^["']|["']$/g, '')
+    .replace(/^(the (?:user|question|context|persona|pool)|i (?:need to|should|will|'ll|'m going to)|from the context|based on|according to|here'?s|correct answer|answer key|hold your horses|crunching|scuttling|peeking|gimme|pincers)[^.!?\n]*[.!?]*\s*/gmi, '')
+    .replace(/^(okay|ok|so|now|first|firstly|second|secondly)[:,\s][^.!?\n]*[.!?]*\s*/gmi, '')
+    .replace(/\n\s*(the (?:user|question|context|persona|pool)|i (?:need to|should|will|'ll|'m going to)|from the context|based on|according to|here'?s|correct answer|answer key|hold your horses|crunching|scuttling|peeking|gimme|pincers)[^.!?\n]*[.!?]*\s*/gmi, '\n')
+    .trim();
   return result || text;
 }
 
