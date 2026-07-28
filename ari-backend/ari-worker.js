@@ -280,14 +280,14 @@ export default {
 
         const messages = [
           { role: 'system', content: ARI_PERSONA_PROMPT },
-          { role: 'system', content: `Context about Prashant:\n${context}\n\nOnly use this context. Never invent facts about Prashant.${identityPrompt}` },
+          { role: 'system', content: `Context about Prashant:\n${context}\n\nUse this for factual questions about Prashant. For follow-ups and clarifications about something you just said in chat, use our conversation history instead.${identityPrompt}` },
           ...history,
           { role: 'user', content: message },
         ];
 
         const startTime = Date.now();
         const reply = await callLLM(env, messages, {
-          maxTokens: 150,
+          maxTokens: 250,
         });
         const latencyMs = Date.now() - startTime;
 
