@@ -222,7 +222,7 @@ async function incrementMsgCount(env, sessionId) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders() });
     }
@@ -285,12 +285,24 @@ export default {
           { role: 'user', content: message },
         ];
 
+        const startTime = Date.now();
         const reply = await callLLM(env, messages, {
           maxTokens: 150,
         });
+        const latencyMs = Date.now() - startTime;
 
         history.push({ role: 'user', content: message });
         history.push({ role: 'assistant', content: reply });
+
+        ctx.waitUntil((async () => {
+          try {
+            await env.SESSIONS.put(
+              `log:${Date.now()}:${sessionId}`,
+              JSON.stringify({ ts: Date.now(), sessionId, message, reply, latencyMs }),
+              { expirationTtl: 86400 * 30 },
+            );
+          } catch {} // never block the user
+        })());
         await Promise.all([
           saveHistory(env, sessionId, history),
           incrementMsgCount(env, sessionId),
