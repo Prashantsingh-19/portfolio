@@ -461,14 +461,15 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 /* ─── Thought bubble ───────────── */
 #ariThought {
   position: absolute;
-  bottom: 78px; right: 8px;
+  top: -6px; left: 50%;
+  transform: translateX(-50%);
   background: var(--bg);
   border: 1px solid var(--line);
   color: var(--text);
-  font-size: 12px;
-  padding: 8px 12px;
-  border-radius: 14px 14px 14px 4px;
-  max-width: 180px;
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  max-width: 160px;
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.5s ease;
