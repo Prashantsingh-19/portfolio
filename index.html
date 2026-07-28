@@ -448,7 +448,7 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 #clawCursor {
   position: absolute;
   top: 0; right: 0;
-  width: 80px; height: 80px;
+  width: 88px; height: 88px;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
   cursor: pointer;
   transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -457,6 +457,28 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
 #clawCursor.in-hole {
   transform: scale(.3); opacity: .4;
 }
+
+/* ─── Thought bubble ───────────── */
+#ariThought {
+  position: absolute;
+  bottom: 78px; right: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 14px 14px 14px 4px;
+  max-width: 180px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 201;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+#clawCursor:not(.in-hole):not(.searching) + #ariThought,
+#clawCursor:not(.in-hole):not(.searching) ~ #ariThought { opacity: 1; }
+.assistant-widget.is-open #ariThought { opacity: 0; }
 
 /* Widget container: fixed bottom-right on desktop */
 .assistant-widget {
@@ -690,6 +712,8 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   </svg>
 </div>
 
+<div id="ariThought">Ask me about Prashant 🦀</div>
+
 <!-- ARI CHAT PANEL -->
 <div id="ariChatPanel">
   <div class="ari-chat-header">
@@ -753,6 +777,25 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       sessionStorage.setItem('ari_session_id', id);
     }
     return id;
+  }
+
+  // ─── Rotating thought bubble ─────────
+  const thoughtEl = document.getElementById('ariThought');
+  if (thoughtEl) {
+    const phrases = [
+      'Ask me about Prashant 🦀',
+      'Hey! Click me!',
+      'Got questions? 🦀',
+      'I know stuff about him',
+      'Recruiter? Builder? Curious?',
+      'Go on, click me 👆',
+      'Prm-PRM-PRM? more like PM',
+    ];
+    let idx = 0;
+    setInterval(() => {
+      idx = (idx + 1) % phrases.length;
+      thoughtEl.textContent = phrases[idx];
+    }, 5000);
   }
 
   // ─── Greeting sequence ────────────────
