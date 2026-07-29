@@ -232,13 +232,18 @@ export default {
 
     try {
       if (url.pathname === '/greet' && request.method === 'POST') {
-        const { sessionId } = await request.json();
+        const { sessionId, visitorId } = await request.json();
         const isReturning = sessionId
           ? !!(await env.SESSIONS.get(`hist:${sessionId}`))
           : false;
         const visitorType = await getVisitorType(env, sessionId);
-        const greeting = greetForType(visitorType, isReturning);
 
+        // Track unique visitor
+        if (visitorId) {
+          ctx.waitUntil(env.SESSIONS.put(`vid:${visitorId}`, '1', { expirationTtl: 86400 * 90 }));
+        }
+
+        const greeting = greetForType(visitorType, isReturning);
         return new Response(JSON.stringify({ greeting }), { headers: jsonHeaders });
       }
 
@@ -258,7 +263,7 @@ export default {
       }
 
       if (url.pathname === '/chat' && request.method === 'POST') {
-        const { message, sessionId } = await request.json();
+        const { message, sessionId, visitorId } = await request.json();
 
         if (!message || typeof message !== 'string') {
           return new Response(JSON.stringify({ error: 'message is required' }), {
@@ -298,7 +303,7 @@ export default {
           try {
             await env.SESSIONS.put(
               `log:${Date.now()}:${sessionId}`,
-              JSON.stringify({ ts: Date.now(), sessionId, message, reply, latencyMs }),
+              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs }),
               { expirationTtl: 86400 * 30 },
             );
           } catch {} // never block the user

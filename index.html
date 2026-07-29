@@ -771,11 +771,20 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
   let chatOpenCount = 0;
 
-  function getSessionId() {
-    let id = sessionStorage.getItem('ari_session_id');
+  function getVisitorId() {
+    let id = localStorage.getItem('ari_visitor_id');
     if (!id) {
       id = crypto.randomUUID();
-      sessionStorage.setItem('ari_session_id', id);
+      localStorage.setItem('ari_visitor_id', id);
+    }
+    return id;
+  }
+
+  function getSessionId() {
+    let id = localStorage.getItem('ari_session_id');
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem('ari_session_id', id);
     }
     return id;
   }
@@ -813,7 +822,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       const res = await fetch(`${WORKER_BASE}/greet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({ sessionId, visitorId: getVisitorId() }),
       });
       const data = await res.json();
       chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.greeting}</span></div>`;
@@ -890,7 +899,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       const res = await fetch(`${WORKER_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, sessionId: getSessionId() }),
+        body: JSON.stringify({ message: msg, sessionId: getSessionId(), visitorId: getVisitorId() }),
         signal: controller.signal,
       });
       clearTimeout(timeout);
