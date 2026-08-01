@@ -658,6 +658,19 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
   #ariChatPanel{max-height:50vh}
   .crab-hole{display:none}
 }
+
+.rating-row{display:flex;gap:6px;margin-top:6px;align-items:center;user-select:none}
+.rating-btn{border:none;background:var(--stone-light);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:3px;color:var(--ink-mid);transition:all .15s;border:1px solid transparent}
+.rating-btn:hover{background:var(--stone);color:var(--ink)}
+.rating-btn.up.tapped{background:#d1fae5;color:#065f46;border-color:#065f46}
+.rating-btn.down.tapped{background:#fee2e2;color:#991b1b;border-color:#991b1b}
+.review-inline{display:none;margin-top:6px;width:100%}
+.review-inline.show{display:flex;gap:4px}
+.review-inline input{flex:1;border:1px solid var(--stone);border-radius:5px;padding:4px 8px;font-size:11px;font-family:var(--sans);color:var(--ink);background:var(--page);outline:none}
+.review-inline input::placeholder{color:var(--ink-light);font-style:italic}
+.review-inline button{border:none;background:var(--rust);color:#fff;border-radius:5px;padding:4px 8px;font-size:11px;cursor:pointer}
+.feedback-sent{font-size:10px;color:var(--ink-light);margin-top:2px;font-style:italic}
+}
 </style>
 
 
@@ -755,6 +768,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   }
 
   let chatOpenCount = 0;
+  let msgIndex = 0;
 
   function getVisitorId() {
     let id = localStorage.getItem('ari_visitor_id');
@@ -867,6 +881,9 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
   async function sendMessage(msg) {
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
+    msgIndex++;
+
+    const postId = `${getSessionId()}-${msgIndex}-b`;
 
     const loaderDiv = document.createElement('div');
     loaderDiv.className = 'ari-chat-msg bot';
@@ -878,6 +895,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatSend.disabled = true;
     ari.classList.add('searching');
 
+    let replyText = '';
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000);
@@ -889,12 +907,24 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       });
       clearTimeout(timeout);
       const data = await res.json();
-      loaderDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.reply || data.error || 'Hmm, I got nothing. Try again?'}</span></div>`;
+      replyText = data.reply || data.error || 'Hmm, I got nothing. Try again?';
     } catch {
-      loaderDiv.remove();
-      chatBody.innerHTML += `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Something pinched my wires — try again?</span></div>`;
+      replyText = 'Something pinched my wires — try again?';
     }
+
+    loaderDiv.remove();
+    const ratingHTML = `<div class="rating-row">
+      <button class="rating-btn up" data-postid="${postId}" data-msg="${msg.replace(/"/g, '&quot;')}" data-rating="up">👍</button>
+      <button class="rating-btn down" data-postid="${postId}" data-msg="${msg.replace(/"/g, '&quot;')}" data-rating="down">👎</button>
+    </div>
+    <div class="review-inline" id="rev-${postId}">
+      <input type="text" placeholder="Any extra thoughts?" />
+      <button>Send</button>
+    </div>`;
+    const botDiv = document.createElement('div');
+    botDiv.className = 'ari-chat-msg bot';
+    botDiv.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble" data-postid="${postId}">${replyText}${ratingHTML}</span>`;
+    chatBody.appendChild(botDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
     chatInput.disabled = false;
     chatSend.disabled = false;
@@ -915,6 +945,64 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
       chatInput.value = '';
       sendMessage(msg);
     }
+  });
+
+  // ─── Rating (thumbs) and review submit ──
+  chatBody.addEventListener('click', (e) => {
+    const btn = e.target.closest('.rating-btn');
+    if (!btn || btn.disabled) return;
+    const postId = btn.dataset.postid;
+    const rating = btn.dataset.rating;
+    const msg = btn.dataset.msg;
+    const row = btn.closest('.rating-row');
+    const bubble = btn.closest('.ari-bubble');
+    const revDiv = bubble && bubble.querySelector('.review-inline');
+
+    // Disable all buttons in this row
+    row.querySelectorAll('.rating-btn').forEach(b => { b.disabled = true; b.classList.remove('tapped'); });
+    btn.classList.add('tapped');
+
+    fetch(`${WORKER_BASE}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: getSessionId(), visitorId: getVisitorId(), postId, message: msg, rating }),
+    }).catch(() => {});
+
+    // Show review input after rating
+    if (revDiv) {
+      revDiv.classList.add('show');
+      const input = revDiv.querySelector('input');
+      input.focus();
+    }
+  });
+
+  chatBody.addEventListener('click', (e) => {
+    const sendBtn = e.target.closest('.review-inline button');
+    if (!sendBtn) return;
+    const revDiv = sendBtn.closest('.review-inline');
+    const input = revDiv.querySelector('input');
+    const text = input.value.trim();
+    if (!text) return;
+    const bubble = revDiv.closest('.ari-bubble');
+    const postId = bubble ? bubble.dataset.postid : '';
+    if (!postId) return;
+
+    fetch(`${WORKER_BASE}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: getSessionId(), visitorId: getVisitorId(), postId, message: '[review]', rating: 'review', review: text }),
+    }).catch(() => {});
+
+    revDiv.innerHTML = '<span class="feedback-sent">Thanks! 🦀</span>';
+  });
+
+  chatBody.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const input = e.target.closest('.review-inline input');
+    if (!input) return;
+    e.preventDefault();
+    const revDiv = input.closest('.review-inline');
+    revDiv.querySelector('button').click();
   });
 
   // ─── Project card clicks ───────────────────────

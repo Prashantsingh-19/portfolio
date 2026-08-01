@@ -283,6 +283,10 @@ export default {
         ]);
         const found = topScore >= NOT_FOUND_THRESHOLD && context !== '(no matching context found)';
 
+        const msgCount = await incrementMsgCount(env, sessionId);
+        const reviewDone = sessionId ? !!(await env.SESSIONS.get(`rev:${sessionId}`)) : false;
+        const reviewTag = (!reviewDone && msgCount === 5) ? '\n\nREVIEW_REQUEST: Ask for feedback on your performance once, casually, in your reply.' : '';
+
         let identityPrompt = '';
         if (userName) {
           identityPrompt = `\n\nYou are talking to ${userName}. Use their name naturally in your reply.`;
@@ -295,7 +299,7 @@ export default {
           const contextTag = context === '(no matching context found)' ? 'NO_CONTEXT' : 'NOT_FOUND';
           const messages = [
             { role: 'system', content: ARI_PERSONA_PROMPT },
-            { role: 'system', content: `Context about Prashant: ${contextTag} (no relevant knowledge found for this query)\n\n${identityPrompt}` },
+            { role: 'system', content: `Context about Prashant: ${contextTag} (no relevant knowledge found for this query)\n\n${identityPrompt}${reviewTag}` },
             ...history,
             { role: 'user', content: message },
           ];
@@ -303,11 +307,16 @@ export default {
         } else {
           const messages = [
             { role: 'system', content: ARI_PERSONA_PROMPT },
-            { role: 'system', content: `Context about Prashant:\n${context}\n\nUse this for factual questions about Prashant. For follow-ups and clarifications about something you just said in chat, use our conversation history instead.${identityPrompt}` },
+            { role: 'system', content: `Context about Prashant:\n${context}\n\nUse this for factual questions about Prashant. For follow-ups and clarifications about something you just said in chat, use our conversation history instead.${identityPrompt}${reviewTag}` },
             ...history,
             { role: 'user', content: message },
           ];
           reply = await callLLM(env, messages, { maxTokens: 250 });
+        }
+
+        // Mark review as prompted
+        if (reviewTag) {
+          ctx.waitUntil(env.SESSIONS.put(`rev:${sessionId}`, '1', { expirationTtl: 60 * 60 * 6 }));
         }
         const latencyMs = Date.now() - startTime;
 
@@ -325,11 +334,29 @@ export default {
         })());
         await Promise.all([
           saveHistory(env, sessionId, history),
-          incrementMsgCount(env, sessionId),
           maybeSaveUserName(env, sessionId, message, userName),
         ]);
 
         return new Response(JSON.stringify({ reply }), { headers: jsonHeaders });
+      }
+
+      if (url.pathname === '/feedback' && request.method === 'POST') {
+        const { sessionId, visitorId, postId, message, rating, review } = await request.json();
+        if (!postId || !message || !rating) {
+          return new Response(JSON.stringify({ error: 'postId, message, and rating required' }), {
+            status: 400, headers: jsonHeaders,
+          });
+        }
+        ctx.waitUntil((async () => {
+          try {
+            await env.SESSIONS.put(
+              `fb:${postId}`,
+              JSON.stringify({ ts: Date.now(), sessionId, visitorId, postId, message, rating, review: review || '' }),
+              { expirationTtl: 86400 * 30 },
+            );
+          } catch {}
+        })());
+        return new Response(JSON.stringify({ ok: true }), { headers: jsonHeaders });
       }
 
       if (url.pathname === '/seed-kb' && request.method === 'POST') {
