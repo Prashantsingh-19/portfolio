@@ -62,11 +62,15 @@ async function embed(text, env) {
   return data[0];
 }
 
+const NOT_FOUND_THRESHOLD = 0.35;
+
 async function retrieve(env, query, topKCount = 5) {
   const queryVec = await embed(query, env);
-  const results = await env.VECTORIZE.query(queryVec, { topK: topKCount, returnMetadata: true });
-  if (!results.matches || !results.matches.length) return '(no matching context found)';
-  return results.matches.map(m => m.metadata.text).join('\n\n---\n\n');
+  const results = await env.VECTORIZE.query(queryVec, { topK: topKCount, returnMetadata: true, returnValues: true });
+  if (!results.matches || !results.matches.length) return { context: '(no matching context found)', topScore: 0 };
+  const topScore = results.matches[0].score || 0;
+  const context = results.matches.map(m => m.metadata.text).join('\n\n---\n\n');
+  return { context, topScore };
 }
 
 function stripMeta(text) {
@@ -272,28 +276,39 @@ export default {
           });
         }
 
-        const [context, history, userName] = await Promise.all([
-          retrieve(env, message),
+        const { context, topScore } = await retrieve(env, message);
+        let [history, userName] = await Promise.all([
           getHistory(env, sessionId),
           getUserName(env, sessionId),
         ]);
+        const found = topScore >= NOT_FOUND_THRESHOLD && context !== '(no matching context found)';
 
         let identityPrompt = '';
         if (userName) {
           identityPrompt = `\n\nYou are talking to ${userName}. Use their name naturally in your reply.`;
         }
 
-        const messages = [
-          { role: 'system', content: ARI_PERSONA_PROMPT },
-          { role: 'system', content: `Context about Prashant:\n${context}\n\nUse this for factual questions about Prashant. For follow-ups and clarifications about something you just said in chat, use our conversation history instead.${identityPrompt}` },
-          ...history,
-          { role: 'user', content: message },
-        ];
-
+        let reply;
         const startTime = Date.now();
-        const reply = await callLLM(env, messages, {
-          maxTokens: 250,
-        });
+
+        if (!found) {
+          const contextTag = context === '(no matching context found)' ? 'NO_CONTEXT' : 'NOT_FOUND';
+          const messages = [
+            { role: 'system', content: ARI_PERSONA_PROMPT },
+            { role: 'system', content: `Context about Prashant: ${contextTag} (no relevant knowledge found for this query)\n\n${identityPrompt}` },
+            ...history,
+            { role: 'user', content: message },
+          ];
+          reply = await callLLM(env, messages, { maxTokens: 250 });
+        } else {
+          const messages = [
+            { role: 'system', content: ARI_PERSONA_PROMPT },
+            { role: 'system', content: `Context about Prashant:\n${context}\n\nUse this for factual questions about Prashant. For follow-ups and clarifications about something you just said in chat, use our conversation history instead.${identityPrompt}` },
+            ...history,
+            { role: 'user', content: message },
+          ];
+          reply = await callLLM(env, messages, { maxTokens: 250 });
+        }
         const latencyMs = Date.now() - startTime;
 
         history.push({ role: 'user', content: message });
@@ -303,7 +318,7 @@ export default {
           try {
             await env.SESSIONS.put(
               `log:${Date.now()}:${sessionId}`,
-              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs }),
+              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs, found }),
               { expirationTtl: 86400 * 30 },
             );
           } catch {} // never block the user
