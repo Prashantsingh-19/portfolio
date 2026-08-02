@@ -64,7 +64,7 @@ async function embed(text, env) {
 
 const NOT_FOUND_THRESHOLD = 0.35;
 
-async function retrieve(env, query, topKCount = 5) {
+async function retrieve(env, query, topKCount = 8) {
   const queryVec = await embed(query, env);
   const results = await env.VECTORIZE.query(queryVec, { topK: topKCount, returnMetadata: true, returnValues: true });
   if (!results.matches || !results.matches.length) return { context: '(no matching context found)', topScore: 0 };
@@ -303,7 +303,7 @@ export default {
             ...history,
             { role: 'user', content: message },
           ];
-          reply = await callLLM(env, messages, { maxTokens: 250 });
+          reply = await callLLM(env, messages, { maxTokens: 400 });
         } else {
           const messages = [
             { role: 'system', content: ARI_PERSONA_PROMPT },
@@ -311,7 +311,7 @@ export default {
             ...history,
             { role: 'user', content: message },
           ];
-          reply = await callLLM(env, messages, { maxTokens: 250 });
+          reply = await callLLM(env, messages, { maxTokens: 400 });
         }
 
         // Mark review as prompted
@@ -341,7 +341,16 @@ export default {
       }
 
       if (url.pathname === '/feedback' && request.method === 'POST') {
-        const { sessionId, visitorId, postId, message, rating, review } = await request.json();
+        const { sessionId, visitorId, postId, message, rating, review, action } = await request.json();
+        if (action === 'delete') {
+          if (!postId) {
+            return new Response(JSON.stringify({ error: 'postId required' }), {
+              status: 400, headers: jsonHeaders,
+            });
+          }
+          await env.SESSIONS.delete(`fb:${postId}`);
+          return new Response(JSON.stringify({ ok: true, deleted: postId }), { headers: jsonHeaders });
+        }
         if (!postId || !message || !rating) {
           return new Response(JSON.stringify({ error: 'postId, message, and rating required' }), {
             status: 400, headers: jsonHeaders,
