@@ -396,6 +396,48 @@ footer{padding:1.5rem 3rem;display:flex;justify-content:space-between;align-item
         </div>
       </div>
     </div>
+  <div class="domain-group reveal reveal-delay-1">
+      <div class="domain-label">Quantitative Finance & ML</div>
+      <div class="proj-grid">
+        <div class="proj-card" data-href="https://github.com/Prashantsingh-19/finspark-fraud-engine">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">ML · Fraud Detection</div>
+          <h3 class="proj-title">FinSpark — Cross-Silo Fraud Detection Engine</h3>
+          <p class="proj-desc">Built for FinSpark'26, Bank of Maharashtra's Banking Cybersecurity Innovation Hackathon. A cross-silo correlation model using XGBoost with SHAP explainability that catches fraud patterns invisible in any single data silo — transactions, accounts, and channels that look clean individually but form a suspicious pattern together. <strong>Top 20 out of 5,000+ teams.</strong></p>
+          <div class="proj-stack"><span class="proj-pill">XGBoost</span><span class="proj-pill">SHAP</span><span class="proj-pill">Python</span><span class="proj-pill">scikit-learn</span></div>
+          <a class="proj-link" href="https://github.com/Prashantsingh-19/finspark-fraud-engine" target="_blank" rel="noopener">↗ github.com/Prashantsingh-19/finspark-fraud-engine</a>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">Quantitative Finance</div>
+          <h3 class="proj-title">Currency Risk Quantification — GJR-GARCH</h3>
+          <p class="proj-desc">Models and quantifies currency risk on the USD/INR pair using an adaptive GJR-GARCH(1,1) / GARCH(1,1) volatility model. Captures asymmetric volatility response to negative vs. positive shocks that plain GARCH misses. 10,000-path Monte Carlo simulation on 10 years of FRED data. Computes Value at Risk (VaR) and Expected Shortfall (ES) on a $1M notional exposure, output as a business-facing risk report with fan chart visualization.</p>
+          <div class="proj-stack"><span class="proj-pill">R</span><span class="proj-pill">GARCH</span><span class="proj-pill">quantmod</span><span class="proj-pill">Monte Carlo</span><span class="proj-pill">VaR</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="domain-group reveal reveal-delay-1">
+      <div class="domain-label">AI & Automation</div>
+      <div class="proj-grid">
+        <div class="proj-card" data-href="https://github.com/Prashantsingh-19/prashant-ai-os">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">AI Agents · Orchestration</div>
+          <h3 class="proj-title">Prashant AI OS</h3>
+          <p class="proj-desc">A personal AI agent orchestration system — a set of agents that aim to run continuously and handle recurring, mundane tasks on Prashant's own behalf. The flagship agent, ARES, retrieves structured information on request via Telegram. Planned extensions included MINERVA, HERMES, MENTOR, and AEGIS. A dashboard is planned to visualize agent performance in real time. Built as a product/orchestration exercise with PM-role sensibilities — sequencing, prioritization, and designing under real hardware constraints.</p>
+          <div class="proj-stack"><span class="proj-pill">Telegram Bot</span><span class="proj-pill">AI Agents</span><span class="proj-pill">Python</span><span class="proj-pill">Multi-Agent</span></div>
+          <a class="proj-link" href="https://github.com/Prashantsingh-19/prashant-ai-os" target="_blank" rel="noopener">↗ github.com/Prashantsingh-19/prashant-ai-os</a>
+        </div>
+        <div class="proj-card">
+          <div class="proj-card-line"></div>
+          <div class="proj-category">RAG · Cloudflare</div>
+          <h3 class="proj-title">Ari — Portfolio RAG Chatbot</h3>
+          <p class="proj-desc">A conversational advocate built into this portfolio site — a RAG (Retrieval-Augmented Generation) chatbot that answers questions about Prashant as though it were a real crab. Full RAG stack on Cloudflare Workers, Vectorize, and KV for session memory. Uses Kimi K2.6 as the primary LLM with NVIDIA NIM fallback. Live analytics dashboard tracks visitor counts, conversation topics, response times, and feedback — all summarized on a real-time board matching Ari's visual design. <em>(You're talking to Ari right now.)</em></p>
+          <div class="proj-stack"><span class="proj-pill">Cloudflare Workers</span><span class="proj-pill">Vectorize</span><span class="proj-pill">KV</span><span class="proj-pill">RAG</span></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -914,8 +956,8 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
     loaderDiv.remove();
     const ratingHTML = `<div class="rating-row">
-      <button class="rating-btn up" data-postid="${postId}" data-msg="${msg.replace(/"/g, '&quot;')}" data-rating="up">👍</button>
-      <button class="rating-btn down" data-postid="${postId}" data-msg="${msg.replace(/"/g, '&quot;')}" data-rating="down">👎</button>
+      <button class="rating-btn up" data-postid="${postId}" data-msg="${msg.replace(/"/g, '&quot;')}" data-rating="up">Helpful</button>
+      <button class="rating-btn down" data-postid="${postId}" data-msg="${msg.replace(/"/g, '&quot;')}" data-rating="down">Not</button>
     </div>
     <div class="review-inline" id="rev-${postId}">
       <input type="text" placeholder="Any extra thoughts?" />
