@@ -1,6 +1,8 @@
 import { ARI_PERSONA_PROMPT } from './persona.js';
 const OR_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
+const CF_MODEL = '@cf/openai/gpt-oss-120b';
+const CF_FALLBACK_MODEL = '@cf/zai-org/glm-4.7-flash';
 const NVIDIA_MODEL = 'deepseek-ai/deepseek-v4-pro';
 const CHAT_MODEL = 'nvidia/nemotron-3-ultra-550b-a55b:free';
 const FALLBACK_MODEL = 'google/gemma-4-26b-a4b-it:free';
@@ -84,12 +86,11 @@ function stripMeta(text) {
   return result || text;
 }
 
-async function callCloudflare(env, messages, maxTokens) {
-  const result = await env.AI.run('@cf/moonshotai/kimi-k2.6', {
+async function callCloudflare(env, messages, maxTokens, model) {
+  const result = await env.AI.run(model, {
     messages,
     max_tokens: maxTokens,
     temperature: 0.7,
-    reasoning_effort: 'none',
   });
   let content = result.choices?.[0]?.message?.content || result.response || '';
   content = stripMeta(content);
@@ -125,15 +126,26 @@ async function callNVIDIA(env, messages, maxTokens) {
 }
 
 async function callLLM(env, messages, { maxTokens = 200 } = {}) {
-  // Try Cloudflare Workers AI (Kimi K2.6) first
+  // Try Cloudflare Workers AI (gpt-oss-120b) first — retry once on empty (reasoning mode can eat the budget)
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const content = await callCloudflare(env, messages, maxTokens, CF_MODEL);
+      if (content.trim()) return { content, model: 'gpt-oss-120b' };
+    } catch (e) {
+      break;
+    }
+  }
+  // Fallback: Cloudflare (glm-4.7-flash)
   try {
-    return await callCloudflare(env, messages, maxTokens);
+    const content = await callCloudflare(env, messages, maxTokens, CF_FALLBACK_MODEL);
+    if (content.trim()) return { content, model: 'glm-4.7-flash' };
   } catch (e) {
     // fall through to NVIDIA
   }
   // Fallback: NVIDIA (DeepSeek V4 Pro)
   try {
-    return await callNVIDIA(env, messages, maxTokens);
+    const content = await callNVIDIA(env, messages, maxTokens);
+    if (content.trim()) return { content, model: 'deepseek-v4-pro' };
   } catch (e) {
     // fall through to OpenRouter
   }
@@ -166,7 +178,7 @@ async function callLLM(env, messages, { maxTokens = 200 } = {}) {
       const data = await res.json();
       let content = data.choices[0].message.content;
       content = stripMeta(content);
-      return content;
+      if (content.trim()) return { content, model: model === CHAT_MODEL ? 'nemotron-ultra' : 'gemma-4-26b' };
     } catch (e) {
       if (model === FALLBACK_MODEL) throw e;
     }
@@ -293,6 +305,7 @@ export default {
         }
 
         let reply;
+        let replyModel = null;
         const startTime = Date.now();
 
         if (!found) {
@@ -303,7 +316,9 @@ export default {
             ...history,
             { role: 'user', content: message },
           ];
-          reply = await callLLM(env, messages, { maxTokens: 400 });
+          const llm = await callLLM(env, messages, { maxTokens: 600 });
+          reply = llm.content;
+          replyModel = llm.model;
         } else {
           const messages = [
             { role: 'system', content: ARI_PERSONA_PROMPT },
@@ -311,7 +326,9 @@ export default {
             ...history,
             { role: 'user', content: message },
           ];
-          reply = await callLLM(env, messages, { maxTokens: 400 });
+          const llm = await callLLM(env, messages, { maxTokens: 600 });
+          reply = llm.content;
+          replyModel = llm.model;
         }
 
         // Mark review as prompted
@@ -327,7 +344,7 @@ export default {
           try {
             await env.SESSIONS.put(
               `log:${Date.now()}:${sessionId}`,
-              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs, found }),
+              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs, found, model: replyModel }),
               { expirationTtl: 86400 * 30 },
             );
           } catch {} // never block the user
