@@ -249,18 +249,16 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
   <div class="wrap hero-grid">
     <div>
       <h1>Prashant Singh</h1>
-      <p class="hero-role">MBA candidate focused on risk analytics, data science and product</p>
-      <p class="hero-lede">I build end-to-end analytics that end in a decision: which applicants to approve, which transactions to review, how much currency exposure to hedge. My background is in physics, and I've worked as a product management intern at i3digital health on an oncology AI product.</p>
+      <p class="hero-role">MBA Candidate · Business Analytics · Building at the intersection of data and decisions</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#work">View projects</a>
-        <a class="btn btn-secondary" href="#contact">Contact me</a>
       </div>
     </div>
   </div>
 </header>
 
 <div class="highlights wrap" style="padding:0">
-  <div class="hl"><div class="hl-num">22</div><div class="hl-label">End-to-end projects across credit, fraud, market risk and product</div></div>
+  <div class="hl"><div class="hl-num">15</div><div class="hl-label">End-to-end projects across credit, fraud, market risk and product</div></div>
   <div class="hl"><div class="hl-num">Top 20</div><div class="hl-label">of 5,000+ teams, FinSpark '26 banking cybersecurity hackathon</div></div>
   <div class="hl"><div class="hl-num">1st Runner-up</div><div class="hl-label">“The Hot Seat” case competition, Interface '26, BITS Pilani</div></div>
   <div class="hl"><div class="hl-num">PM Intern</div><div class="hl-label">i3digital health: owned an oncology AI product end to end with a 4–5 person engineering team</div></div>
@@ -271,16 +269,18 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
   <div class="wrap about-grid">
     <div>
       <p class="eyebrow reveal">About</p>
-      <h2 class="section-heading reveal reveal-delay-1">From physics to business decisions</h2>
+      <h2 class="section-heading reveal reveal-delay-1">Why a physics graduate builds data products</h2>
       <div class="about-body" style="margin-top:1.5rem">
-        <p class="reveal reveal-delay-2">I chose a B.Sc. in Physics at Banaras Hindu University over engineering. Physics taught me to <strong>reason from first principles</strong>: build a simple model of a system, test it against data and accept what the data says.</p>
-        <p class="reveal reveal-delay-2">I'm now doing an MBA in Business Analytics at BITS Pilani, applying the same approach to business problems. Every project here follows that discipline. I state the business question, use real data, check the method, and report findings that hold up, including when the honest answer is that a model doesn't beat the simple benchmark.</p>
-        <p class="reveal reveal-delay-3">I'm most interested in roles where analytics turns into decisions: <strong>credit and fraud risk, market and FX risk, and data-driven product management</strong>.</p>
+        <p class="reveal reveal-delay-2">You're probably wondering why a physics graduate is building dashboards and data products. Here is the short version of a calculated, and genuinely enjoyable, journey.</p>
+        <p class="reveal reveal-delay-2">I fell in love with physics while preparing for engineering entrance exams, so much that, after clearing a few colleges, I dropped engineering altogether and pursued a B.Sc. in Physics instead. Which raises the obvious question: <em>why an MBA, and not an M.Sc. or a PhD?</em></p>
+        <p class="reveal reveal-delay-3">What drew me to physics is how it lets you <strong>imagine</strong>: how a moving electron generates a magnetic field, how matter shows a dual nature. Imagination has no bounds, but physics adds rules and constraints that make an idea hold up in the real world. Imagine freely, then test against reality. That is the habit I wanted to keep.</p>
+        <p class="reveal reveal-delay-3">With a foundation in first principles, I wanted to point that thinking at something other than machines. Could it create real impact in business? That question brought me to an MBA in Business Analytics at BITS Pilani.</p>
+        <p class="reveal reveal-delay-3">The best way to find out was to <strong>start doing it</strong>. The projects below are the result.</p>
       </div>
     </div>
     <div class="focus-list">
-      <div class="focus reveal reveal-delay-1"><h3>Risk analytics</h3><p>Credit scorecards (WoE/IV), PD and expected loss, cut-off strategy, fraud rules vs ML at fixed alert budgets, early-warning monitoring.</p></div>
-      <div class="focus reveal reveal-delay-2"><h3>Markets &amp; volatility</h3><p>GARCH and GJR-GARCH, VaR and Expected Shortfall, FX outlooks, hedging backtests and forecast evaluation against honest benchmarks.</p></div>
+      <div class="focus reveal reveal-delay-1"><h3>Risk analytics</h3><p>Credit scorecards (WoE/IV), default prediction and risk tiering, cost-based cut-offs, and explainable fraud detection with XGBoost and SHAP.</p></div>
+      <div class="focus reveal reveal-delay-2"><h3>Markets &amp; volatility</h3><p>GARCH and GJR-GARCH, VaR and Expected Shortfall, Monte Carlo simulation, portfolio optimisation and forecast evaluation against simple benchmarks.</p></div>
       <div class="focus reveal reveal-delay-3"><h3>Product &amp; data</h3><p>Discovery, PRDs and use cases, privacy-by-design data models, Python and SQL pipelines, and dashboards in Power BI, Tableau and Excel.</p></div>
     </div>
   </div>
@@ -353,50 +353,8 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
     <div class="proj-grid">
 
       <!-- FEATURED -->
-      <article class="proj-card featured reveal" data-cat="risk">
-        <div>
-          <div class="proj-category">Credit risk · Scorecard &amp; decision engine</div>
-          <h3 class="proj-title">Credit Risk Engine — who should a lender approve?</h3>
-          <p class="proj-desc">A 6-variable WoE scorecard grades Lending Club applicants A–E. A decision engine returns approve, review or decline with reason codes and expected loss. The profit-maximising cut-off is a score of 536, and a sensitivity analysis shows how strongly it depends on the profit and LGD assumptions.</p>
-          <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">scikit-learn</span><span class="proj-pill">WoE / IV</span><span class="proj-pill">Power BI</span></div>
-          <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's Credit Risk Engine project">Ask Ari about this →</button></div>
-        </div>
-        <div class="proj-metrics">
-          <div class="metric"><b>163,987</b><span>Lending Club loans ($2.14B lent)</span></div>
-          <div class="metric"><b>18.3% → 10.8%</b><span>bad rate at the recommended cut-off (test set)</span></div>
-          <div class="metric"><b>4.1×</b><span>grade E vs grade A default rate</span></div>
-        </div>
-      </article>
 
-      <article class="proj-card featured reveal" data-cat="risk">
-        <div>
-          <div class="proj-category">Fraud risk · Controls, detection &amp; strategy</div>
-          <h3 class="proj-title">Fraud Risk Strategy — rules vs ML under an alert budget</h3>
-          <p class="proj-desc">The full fraud-management lifecycle on IEEE-CIS card-not-present data, tested on a later, out-of-time month. It covers SQL velocity features, 11 readable rules, XGBoost scored against those rules at fixed alert budgets, an approve / OTP / review / decline strategy, SHAP reason codes, early-warning triggers and rule-decay monitoring.</p>
-          <div class="proj-stack"><span class="proj-pill">SQL</span><span class="proj-pill">XGBoost</span><span class="proj-pill">SHAP</span><span class="proj-pill">Python</span></div>
-          <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's Fraud Risk Strategy project">Ask Ari about this →</button></div>
-        </div>
-        <div class="proj-metrics">
-          <div class="metric"><b>590,540</b><span>transactions; test month held out in time</span></div>
-          <div class="metric"><b>86% vs 15%</b><span>alert precision, ML vs rules, at a 1% alert budget</span></div>
-          <div class="metric"><b>$441K → $226K</b><span>modelled monthly fraud + ops cost, rules vs ML strategy (assumed costs)</span></div>
-        </div>
-      </article>
 
-      <article class="proj-card featured reveal" data-cat="markets">
-        <div>
-          <div class="proj-category">FX strategy · Forecasting &amp; hedging</div>
-          <h3 class="proj-title">USD/INR Outlook &amp; Hedging Backtest</h3>
-          <p class="proj-desc">A strategy note on the rupee using FRED data from 2019 to 2026. The rupee weakens steadily on trend, but ARIMA forecasts are no better than a random walk with drift in a 24-origin walk-forward test. A backtest of forwards priced with covered interest parity measures what hedging was worth to a $1M-a-month importer.</p>
-          <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">statsmodels</span><span class="proj-pill">FRED</span><span class="proj-pill">Diebold-Mariano</span></div>
-          <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's USD/INR outlook project">Ask Ari about this →</button></div>
-        </div>
-        <div class="proj-metrics">
-          <div class="metric"><b>4.14% a year</b><span>trend depreciation of the rupee (CAGR)</span></div>
-          <div class="metric"><b>p = 0.81</b><span>ARIMA vs random walk + drift (no forecasting edge)</span></div>
-          <div class="metric"><b>₹0.82 crore</b><span>saved by a full hedge after the forward premium</span></div>
-        </div>
-      </article>
 
       <article class="proj-card featured reveal" data-cat="product" data-href="https://prashantsingh-19.github.io/ari-instrumentation/">
         <div>
@@ -442,14 +400,6 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
       </article>
 
       <!-- MARKETS -->
-      <article class="proj-card reveal" data-cat="markets">
-        <div class="proj-category">FX · Peer comparison</div>
-        <h3 class="proj-title">INR vs EM Asia Peers</h3>
-        <p class="proj-desc">The rupee compared with six Asian currencies using Fed H.10 data. INR is the weakest of the seven but the least sensitive to the dollar index: a low-beta, steady-depreciation profile.</p>
-        <div class="proj-metrics"><div class="metric"><b>+36.86%</b><span>INR move vs USD</span></div><div class="metric"><b>0.18</b><span>DXY beta, lowest of 7</span></div></div>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">FRED</span><span class="proj-pill">Regression</span></div>
-        <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's INR vs EM Asia peers project">Ask Ari →</button></div>
-      </article>
 
       <article class="proj-card reveal" data-cat="markets">
         <div class="proj-category">Equity risk · Volatility</div>
@@ -478,23 +428,7 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
         <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's Nifty returns and risk forecasting project">Ask Ari →</button></div>
       </article>
 
-      <article class="proj-card reveal" data-cat="markets">
-        <div class="proj-category">Macro · Event study</div>
-        <h3 class="proj-title">Interest Rates &amp; Nifty Volatility</h3>
-        <p class="proj-desc">Do RBI repo decisions and US 10-year yield moves raise Nifty 50 volatility? Three hypotheses were tested with GARCH and event windows. None is supported once autocorrelation-robust errors are used.</p>
-        <div class="proj-metrics"><div class="metric"><b>0 of 3</b><span>hypotheses supported</span></div></div>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">GARCH</span><span class="proj-pill">HAC tests</span></div>
-        <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's interest rates and Nifty volatility project">Ask Ari →</button></div>
-      </article>
 
-      <article class="proj-card reveal" data-cat="markets">
-        <div class="proj-category">Equity · Statistical arbitrage</div>
-        <h3 class="proj-title">Pairs Trading: HDFC Bank vs ICICI Bank</h3>
-        <p class="proj-desc">The pair fails the cointegration test, and the July 2023 HDFC merger is a structural break. The strategy is reported honestly as a case for when <em>not</em> to trade a pair.</p>
-        <div class="proj-metrics"><div class="metric"><b>+3.2%</b><span>strategy</span></div><div class="metric"><b>+84%</b><span>ICICI buy-and-hold</span></div></div>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">Engle-Granger</span><span class="proj-pill">Chow test</span></div>
-        <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's HDFC ICICI pairs trading project">Ask Ari →</button></div>
-      </article>
 
       <article class="proj-card reveal" data-cat="markets">
         <div class="proj-category">Portfolio construction · Excel</div>
@@ -505,14 +439,6 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
         <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's portfolio risk dashboard">Ask Ari →</button></div>
       </article>
 
-      <article class="proj-card reveal" data-cat="markets">
-        <div class="proj-category">LLM data pipeline · Equity research</div>
-        <h3 class="proj-title">MuseSpark — Financial Intelligence Pipeline</h3>
-        <p class="proj-desc">An LLM extracts audited fundamentals from annual reports for Reliance, HDFC Bank and TCS. The figures are validated against Screener and joined with technical indicators for Power BI. The finding: fundamentals improved at all three while price trends turned bearish.</p>
-        <div class="proj-metrics"><div class="metric"><b>98–100%</b><span>match vs Screener</span></div></div>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">LLM extraction</span><span class="proj-pill">Pydantic</span><span class="proj-pill">Power BI</span></div>
-        <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's MuseSpark financial intelligence pipeline">Ask Ari →</button></div>
-      </article>
 
       <!-- BUSINESS ANALYTICS -->
       <article class="proj-card reveal" data-cat="analytics">
@@ -586,7 +512,7 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
     <h2 class="section-heading reveal reveal-delay-1" style="margin-bottom:2.5rem">Tools and methods</h2>
     <div class="skills-grid">
       <div class="skill-col reveal"><h3>Risk &amp; modelling</h3><ul><li>Credit scorecards (WoE / IV)</li><li>PD, expected loss, cut-off strategy</li><li>XGBoost, random forest, SHAP</li><li>Logistic regression, calibration, PSI</li><li>Survival analysis, K-means, PCA</li></ul></div>
-      <div class="skill-col reveal reveal-delay-1"><h3>Markets &amp; time series</h3><ul><li>GARCH, GJR-GARCH</li><li>VaR and Expected Shortfall</li><li>ARIMA, walk-forward testing</li><li>Monte Carlo simulation</li><li>Cointegration, event studies</li></ul></div>
+      <div class="skill-col reveal reveal-delay-1"><h3>Markets &amp; time series</h3><ul><li>GARCH, GJR-GARCH</li><li>VaR and Expected Shortfall</li><li>ARIMA forecasting</li><li>Monte Carlo simulation</li><li>Portfolio optimisation</li></ul></div>
       <div class="skill-col reveal reveal-delay-2"><h3>Data &amp; BI</h3><ul><li>Python (pandas, NumPy, scikit-learn)</li><li>SQL (PostgreSQL, SQLite), R</li><li>ETL pipelines</li><li>Power BI, Tableau</li><li>Excel modelling and dashboards</li></ul></div>
       <div class="skill-col reveal reveal-delay-3"><h3>Product &amp; AI</h3><ul><li>Discovery, PRDs, use-case design</li><li>Privacy-by-design data models</li><li>RAG, LLM apps, vector search</li><li>Cloudflare Workers, Next.js, Supabase</li><li>Hypothesis testing and experiment design</li></ul></div>
     </div>
@@ -667,9 +593,9 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
   position: absolute;
   top: -6px; left: 50%;
   transform: translateX(-50%);
-  background: var(--bg);
-  border: 1px solid var(--line);
-  color: var(--text);
+  background: var(--page);
+  border: 1px solid var(--stone-light);
+  color: var(--ink);
   font-size: 11px;
   padding: 5px 10px;
   border-radius: 12px;
