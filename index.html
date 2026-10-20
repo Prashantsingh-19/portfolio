@@ -58,7 +58,10 @@ nav{
 .eyebrow{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
 .hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.8rem,7vw,5.2rem);line-height:1.05;letter-spacing:-.02em;color:var(--ink);margin-bottom:.75rem}
 .hero-role{font-size:clamp(1.1rem,2vw,1.35rem);font-weight:500;color:var(--ink-mid);margin-bottom:1.5rem}
-.hero-lede{font-size:17px;line-height:1.7;color:var(--ink-mid);max-width:36em;margin-bottom:2rem}
+.hero-lede{font-size:18px;line-height:1.7;color:var(--ink-mid);max-width:40em;margin-bottom:1rem}
+.hero h1 + .hero-lede{margin-top:1.5rem}
+.hero-lede:last-of-type{margin-bottom:2rem}
+button.btn{font-family:var(--sans);cursor:pointer}
 .hero-actions{display:flex;gap:.75rem;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:.5rem;font-size:15px;font-weight:500;text-decoration:none;padding:.75rem 1.25rem;border-radius:6px;border:1px solid transparent;transition:all .2s}
 .btn-primary{background:var(--navy);color:#fff}
@@ -220,7 +223,7 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
   .hl-num{font-size:1.7rem}
   .assistant-widget{display:none !important}
   .section{padding:4rem 0}
-  .ask-ari{display:none}
+  .ask-ari,#heroAskAri{display:none}
   .crab-hole{display:none}
   #clawCursor{display:none}
   #ariChatPanel{display:none}
@@ -249,9 +252,11 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
   <div class="wrap hero-grid">
     <div>
       <h1>Prashant Singh</h1>
-      <p class="hero-role">MBA Candidate · Business Analytics · Building at the intersection of data and decisions</p>
+      <p class="hero-lede">I'm an MBA candidate in Business Analytics at BITS Pilani, with a bachelor's degree in Physics from Banaras Hindu University. Most recently, I was a Product Management Intern at a health-tech company.</p>
+      <p class="hero-lede">Scroll down to see my experience, the projects I've built and why I chose an MBA. Have a question? Ari, my AI assistant, can walk you through any project or tell you why I'd be a good hire.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#work">View projects</a>
+        <button class="btn btn-secondary" id="heroAskAri" type="button">Chat with Ari</button>
       </div>
     </div>
   </div>
@@ -557,6 +562,14 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
         if (show) c.classList.add('visible');
       });
     });
+  });
+  const heroAsk = document.getElementById('heroAskAri');
+  if (heroAsk) heroAsk.addEventListener('click', () => {
+    const crab = document.getElementById('clawCursor');
+    const widget = document.querySelector('.assistant-widget');
+    if (crab && widget && !widget.classList.contains('is-open')) crab.click();
+    const input = document.querySelector('#ariChatPanel input');
+    if (input) setTimeout(() => input.focus(), 350);
   });
   document.querySelectorAll('.ask-ari').forEach(btn => {
     btn.addEventListener('click', e => {
