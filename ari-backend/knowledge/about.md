@@ -13,4 +13,4 @@ Prashant fell in love with physics while preparing for engineering entrance exam
 Prashant starts every project from a business question, uses real data where possible, checks the method, and reports findings honestly, including when a model does not beat a simple benchmark. In his AI products he follows one design rule: code computes the numbers and the language model only writes the words, with a validator that blocks made-up figures.
 
 ## Contact
-The best way to reach Prashant is by email at workwithprashant.in@gmail.com or via LinkedIn at linkedin.com/in/prashant-singh-in. His code is on GitHub at github.com/Prashantsingh-19.
+The best way to reach Prashant is by email at h20250845@pilani.bits-pilani.ac.in or via LinkedIn at linkedin.com/in/prashant-singh-in. His code is on GitHub at github.com/Prashantsingh-19.
