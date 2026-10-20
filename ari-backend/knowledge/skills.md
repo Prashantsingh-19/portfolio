@@ -1,25 +1,16 @@
-# Skills — What Prashant Brings to the Table
+# Prashant's Skills
 
-## Product thinking and product storytelling
-His strongest skill. The ability to visualize a product before it's built — to see the workable story behind it: why this feature and not that one, why this direction and not another. Turning a vague idea into a structured build that engineers can actually build against.
+## Risk and modelling skills
+Prashant has built credit scorecards with Weight of Evidence and Information Value, default-prediction models (logistic regression, random forest, XGBoost), probability calibration, cost-based cut-offs, risk bands, PSI stability checks and SHAP explanations. He has also used survival analysis (Kaplan-Meier, Cox models), K-means segmentation and PCA.
 
-## Data architecture and system design
-Designing database schemas and data pipelines from scratch. Understanding how data flows through a system and structuring it for privacy, scalability, and clarity. Built the database structure for an AI agent product with a redaction policy for customer data.
+## Markets and time-series skills
+Prashant has applied GARCH and GJR-GARCH volatility models, Value at Risk and Expected Shortfall, Monte Carlo simulation, ARIMA forecasting with honest benchmark tests, and mean-variance portfolio optimisation.
 
-## Translating between business and engineering
-Speaking both languages. Can take a product/customer question and translate it into a structured build format for engineering teams — defining UI behavior, agent responses, and data requirements in terms developers can execute against.
+## Data and BI skills
+Prashant works in Python (pandas, NumPy, scikit-learn), SQL (PostgreSQL and SQLite) and R. He builds ETL pipelines and delivers dashboards in Power BI, Tableau and Excel, including formula-driven Excel models with scenarios and sensitivities.
 
-## Analytics and visualization
-Building dashboards and analytical products that surface actionable insights. Experience with Recharts, ECharts, Tableau. Designing KPIs, cohort analysis, and funnel analysis. Turning raw data into strategic output.
+## Product and Gen AI skills
+From his internship and projects, Prashant has experience in product discovery, competitive analysis, PRDs with user stories and acceptance criteria, release notes, QA and usability test plans, and privacy-by-design data models. On the Gen AI side he has built RAG assistants and agentic copilots with tool calling, number validators and offline fallbacks, using Streamlit, Cloudflare Workers, vector search and LLM APIs such as Gemini and Claude.
 
-## Machine learning and NLP
-Practical experience with XGBoost, Random Forest, scikit-learn, BERTopic, LDA, scispaCy, and NER. Built an AI hiring signals pipeline using BERTopic and Granger causality. Built a political discourse topic modeling pipeline.
-
-## Technical stack
-Python, SQL, Postgres, Next.js, TypeScript, Supabase, Vercel. Cloudflare Workers and serverless architecture. Building full-stack data products end to end.
-
-## First-principles reasoning
-Physics background gives him a foundation in mathematical modeling and breaking complex problems down from first principles. This shows up in how he approaches unfamiliar domains — learn the structure, then build from there.
-
-## Creative and professional balance
-Coordinator of the Creative Club at BITS Pilani. Believes creativity and rigor aren't in tension — you can be playful and professional at the same time. Ari (a crab chatbot on a portfolio site) is itself proof of that belief.
+## Leadership
+Prashant is Coordinator of the Creative Club at BITS Pilani, where he led a 5-member team across 10+ events. He believes creativity and rigour go together.

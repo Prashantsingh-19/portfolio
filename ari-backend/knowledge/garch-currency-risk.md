@@ -9,6 +9,8 @@ A quantitative finance project that models and quantifies currency risk on the U
 - Model: an adaptive GJR-GARCH(1,1) / GARCH(1,1) setup — GJR-GARCH captures the asymmetric response of volatility to negative vs. positive shocks, which plain GARCH misses.
 - Simulation: a 10,000-path Monte Carlo simulation run on top of the fitted volatility model.
 - Risk metrics: Value at Risk (VaR) and Expected Shortfall (ES) computed on a $1M notional exposure.
+- Model choice is automatic: the asymmetry (gamma) term is tested, and GJR-GARCH is kept only if it is significant (p < 0.05); otherwise plain GARCH(1,1) is used.
+- Code: https://github.com/Prashantsingh-19/Time-Series-GARCH
 - Output: a business-facing risk report, including a fan chart visualization of the simulated distribution of outcomes over time.
 
 ## Why it matters (for a recruiter)

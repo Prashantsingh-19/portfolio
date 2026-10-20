@@ -9,16 +9,23 @@ const WORKER_URL = 'https://ari-chatbot.itsprashantsingh19.workers.dev/seed-kb';
 const CHUNK_SIZE = 300;
 const CHUNK_OVERLAP = 50;
 
+// One chunk per "## " section, prefixed with the file's "# " title so every
+// chunk names its project. Long sections fall back to overlapping word windows.
 function chunkText(text, source) {
-  const words = text.split(/\s+/);
+  const title = (text.match(/^# (.+)$/m) || [, source])[1].trim();
+  const sections = text.split(/^## /m).slice(1);
   const chunks = [];
-  for (let i = 0; i < words.length; i += CHUNK_SIZE - CHUNK_OVERLAP) {
-    const slice = words.slice(i, i + CHUNK_SIZE);
-    if (slice.length < 20) continue;
-    chunks.push({
-      id: `${source}-${chunks.length}`,
-      text: slice.join(' '),
-    });
+  for (const section of sections) {
+    const words = `${title} — ${section}`.split(/\s+/);
+    for (let i = 0; i < words.length; i += CHUNK_SIZE - CHUNK_OVERLAP) {
+      const slice = words.slice(i, i + CHUNK_SIZE);
+      if (slice.length < 20) continue;
+      chunks.push({
+        id: `${source}-${chunks.length}`,
+        text: slice.join(' '),
+      });
+      if (i + CHUNK_SIZE >= words.length) break;
+    }
   }
   return chunks;
 }

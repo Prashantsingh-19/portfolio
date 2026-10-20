@@ -9,7 +9,9 @@ Most fraud detection systems flag anomalies within a single data silo (one accou
 ## How it's built
 - Core model: XGBoost, with SHAP used for explainability — so flagged cases come with a human-readable reason, not just a black-box score.
 - Currently trained and validated on simulated/synthetic transaction data, purpose-built for model testing; real dataset swap planned as the project matures.
+- Stack: Python, FastAPI, XGBoost, SHAP and scikit-learn.
 - Code: https://github.com/Prashantsingh-19/finspark-fraud-engine
+- Live dashboard: https://finspark-fraud-engine.onrender.com/dashboard
 
 ## Why it matters (for a recruiter)
 FinSpark shows two things at once:

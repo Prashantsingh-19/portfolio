@@ -263,7 +263,7 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
 </header>
 
 <div class="highlights wrap" style="padding:0">
-  <div class="hl"><div class="hl-num">15</div><div class="hl-label">End-to-end projects across credit, fraud, market risk and product</div></div>
+  <div class="hl"><div class="hl-num">19</div><div class="hl-label">Projects across risk, analytics, strategy and Gen AI products</div></div>
   <div class="hl"><div class="hl-num">Top 20</div><div class="hl-label">of 5,000+ teams, FinSpark '26 banking cybersecurity hackathon</div></div>
   <div class="hl"><div class="hl-num">1st Runner-up</div><div class="hl-label">“The Hot Seat” case competition, Interface '26, BITS Pilani</div></div>
   <div class="hl"><div class="hl-num">PM Intern</div><div class="hl-label">i3digital health: owned an oncology AI product end to end with a 4–5 person engineering team</div></div>
@@ -447,6 +447,15 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
 
       <!-- BUSINESS ANALYTICS -->
       <article class="proj-card reveal" data-cat="analytics">
+        <div class="proj-category">Product strategy · Market sizing</div>
+        <h3 class="proj-title">QuickReach — Quick-Commerce Expansion into Tier-2 India</h3>
+        <p class="proj-desc">Should a quick-commerce player expand into tier-2 India, which cities first, and can a dark store break even? A bottom-up Excel model of 10 cities built on Census, HCES and TRAI data, with Low / Base / High scenarios, four customer personas and a positioning thesis built on top-up categories.</p>
+        <div class="proj-metrics"><div class="metric"><b>₹980 Cr</b><span>Year-1 market (base)</span></div><div class="metric"><b>~705</b><span>orders/day to break even</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Excel</span><span class="proj-pill">Python</span><span class="proj-pill">openpyxl</span></div>
+        <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's QuickReach quick-commerce market sizing project">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="analytics">
         <div class="proj-category">Customer analytics · Retention</div>
         <h3 class="proj-title">Customer Segmentation, Survival &amp; Retention</h3>
         <p class="proj-desc">Segments 7,043 subscription customers with K-means, tests churn drivers and models time to churn with Kaplan-Meier curves. One price-sensitive segment holds two-thirds of revenue at risk. Delivered as a 14-sheet Excel dashboard and a Tableau view.</p>
@@ -474,6 +483,33 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
       </article>
 
       <!-- AI & PRODUCT -->
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">Gen AI product · Agentic RAG</div>
+        <h3 class="proj-title">FeaturePilot — Copilot over Product Feature Requests</h3>
+        <p class="proj-desc">A copilot that lets a PM ask what users want most, what a competitor offers and what to build next, across public GitHub issues for Metabase and Apache Superset. Counting tools produce the numbers, retrieval cites real issues, and a validator rejects any figure no tool returned. It is built on the ReviewPilot engine (6 tools, 12 passing tests).</p>
+        <div class="proj-metrics"><div class="metric"><b>6</b><span>agent tools</span></div><div class="metric"><b>12</b><span>passing tests</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">SQLite</span><span class="proj-pill">Streamlit</span><span class="proj-pill">LLM agents</span></div>
+        <div class="proj-links"><span class="proj-note">In progress</span><button class="ask-ari" data-q="Tell me about Prashant's FeaturePilot project">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">Gen AI product · Fintech for SMEs</div>
+        <h3 class="proj-title">CollectIQ — AI Receivables Briefing for Indian SMEs</h3>
+        <p class="proj-desc">An SME uploads its invoice ledger and gets a plain-language weekly brief covering who owes what, who is slipping, cash at risk and whom to chase first. Code computes every figure and the LLM only writes the text. An agentic layer drafts escalating reminders that the owner approves, keeping a human in the loop, and the product is distributed through CA firms.</p>
+        <div class="proj-metrics"><div class="metric"><b>4-tier</b><span>escalation ladder</span></div><div class="metric"><b>B2B2C</b><span>via CA firms</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">scikit-learn</span><span class="proj-pill">Streamlit</span><span class="proj-pill">APScheduler</span></div>
+        <div class="proj-links"><span class="proj-note">In progress</span><button class="ask-ari" data-q="Tell me about Prashant's CollectIQ project">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">AI research tool · Earnings calls</div>
+        <h3 class="proj-title">Earnings Intelligence Copilot</h3>
+        <p class="proj-desc">A RAG-style research assistant that finds and compares management commentary across earnings-call transcripts. It searches chunked transcripts, shows the source evidence behind every result, extracts capex and margin guidance with explainable outlook signals, and compares companies side by side.</p>
+        <div class="proj-metrics"><div class="metric"><b>TF-IDF</b><span>local retrieval, no API key</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">Streamlit</span><span class="proj-pill">NLP</span></div>
+        <div class="proj-links"><span class="proj-note">Prototype · illustrative data</span><button class="ask-ari" data-q="Tell me about Prashant's Earnings Intelligence Copilot">Ask Ari →</button></div>
+      </article>
+
       <article class="proj-card reveal" data-cat="product" data-href="https://github.com/Prashantsingh-19/prashant-ai-os">
         <div class="proj-category">AI agents · Orchestration</div>
         <h3 class="proj-title">Prashant AI OS</h3>
@@ -878,7 +914,7 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
     <button class="ari-chat-close" id="ariChatClose">✕</button>
   </div>
   <div class="ari-chat-body" id="ariChatBody">
-    <div class="ari-chat-msg bot" id="ariWelcomeMsg">Hi! I'm Ari, a personal chatbot assistant and a side hustle for Prashant. Ask me anything about him!</div>
+    <div class="ari-chat-msg bot" id="ariWelcomeMsg">Hi, I'm Ari, Prashant's AI assistant. Ask me about his experience, projects or why he'd be a good hire.</div>
   </div>
   <div class="ari-chat-footer">
     <input type="text" placeholder="Type a message..." disabled />
