@@ -1,13 +1,13 @@
 # Prashant's Achievements
 
-## First Runner-up, "The Hot Seat" case competition, Interface '26
-Prashant's team was First Runner-up in "The Hot Seat" case competition at Interface '26, BITS Pilani. They built a dark-store network strategy and an Excel model for a quick-commerce client and defended it in a live Q&A with the CEO.
+## First Runner-Up, "The Hot Seat", Interface '26 (Sep 2026)
+In September 2026, Prashant's team was First Runner-Up in "The Hot Seat" case competition at Interface '26, BITS Pilani. They built a recovery strategy for a quick-commerce dark-store network (SwiftCart), backed by a network model, presented it as a 6-slide pitch to the panel and defended it in a live Q&A with the CEO.
 
-## Top 20 of 5,000+ teams, FinSpark '26
-Prashant's team was shortlisted among the Top 20 finalists out of more than 5,000 teams in FinSpark '26, India's national Banking Cybersecurity Innovation Hackathon. It was presented by Bank of Maharashtra with the Indian Banks' Association, the Department of Financial Services (Government of India) and COEP Technological University. Their entry was the FinSpark cross-silo fraud detection engine.
+## Top 20 of 5,000+ teams, FinSpark '26 (Jul 2026)
+In July 2026, Prashant's team was among the Top 20 finalist teams out of more than 5,000 in FinSpark '26, India's national Banking Cybersecurity Innovation Hackathon, presented by Bank of Maharashtra with the Indian Banks' Association and the Department of Financial Services (DFS), Government of India. Their entry was a cross-silo fraud detection engine built with XGBoost, SHAP explanations and 4 independent agents with plain-English LLM reasoning, and it was selected for the Grand Finale at COEP Pune.
 
-## Coordinator, Creative Club, BITS Pilani
-As Coordinator of the Creative Club at BITS Pilani, Prashant led a 5-member team across more than 10 events. He conceived "Say It Without Saying", a brand-strategy competition with over 300 participants.
+## Coordinator, Creative Club, BITS Pilani (Nov 2025 – present)
+As Coordinator of the Creative Club in the Department of Management at BITS Pilani, Prashant leads a 5-member creative team that turns organisers' briefs into posters, social media creatives and event branding for 10+ department-level academic and cultural events, managing timelines, feedback rounds and final delivery. He conceptualised and led "Say It Without Saying It", a national-level, product-based marketing competition where 300+ participants interpreted product features, value propositions and positioning.
 
-## 1st Runner-up, Finquest, IIM Rohtak
-Prashant's team was 1st Runner-up in Finquest, a finance quiz competition held by IIM Rohtak.
+## 1st Runner-Up, FinQuest, IIM Rohtak (Nov 2025)
+In November 2025, Prashant was 1st Runner-Up among 200+ participants in FinQuest, a finance quiz conducted by IIM Rohtak.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Prashant Singh — Risk, Analytics &amp; Product</title>
+<title>Prashant Singh — Product, AI &amp; Analytics</title>
 <meta name="description" content="Prashant Singh — MBA (Business Analytics), BITS Pilani. Credit and fraud risk models, market and FX risk studies, analytics and AI products."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -103,6 +103,7 @@ button.btn{font-family:var(--sans);cursor:pointer}
 .tl-body{font-size:15px;color:var(--ink-mid);line-height:1.7}
 .tl-body ul{padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
 .tl-body li::marker{color:var(--accent)}
+.tl-body strong{color:var(--ink);font-weight:600}
 .awards{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:3rem}
 .award{border:1px solid var(--line);border-radius:10px;padding:1.2rem 1.4rem;background:var(--page)}
 .award-title{font-weight:600;font-size:15px;color:var(--ink);margin-bottom:.25rem}
@@ -221,12 +222,11 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
   .highlights{grid-template-columns:repeat(2,1fr)}
   .hl{padding:1.25rem 1rem}
   .hl-num{font-size:1.7rem}
-  .assistant-widget{display:none !important}
+  #ariThought{display:none !important}
+  .assistant-widget{width:auto !important;left:1rem;right:1rem !important;bottom:1rem}
+  #ariChatPanel{max-height:70vh}
   .section{padding:4rem 0}
-  .ask-ari,#heroAskAri{display:none}
   .crab-hole{display:none}
-  #clawCursor{display:none}
-  #ariChatPanel{display:none}
 }
 </style>
 </head>
@@ -263,10 +263,10 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
 </header>
 
 <div class="highlights wrap" style="padding:0">
-  <div class="hl"><div class="hl-num">18</div><div class="hl-label">Projects across risk, analytics, strategy and Gen AI products</div></div>
-  <div class="hl"><div class="hl-num">Top 20</div><div class="hl-label">of 5,000+ teams, FinSpark '26 banking cybersecurity hackathon</div></div>
-  <div class="hl"><div class="hl-num">1st Runner-up</div><div class="hl-label">“The Hot Seat” case competition, Interface '26, BITS Pilani</div></div>
-  <div class="hl"><div class="hl-num">PM Intern</div><div class="hl-label">i3digital health: owned an oncology AI product end to end with a 4–5 person engineering team</div></div>
+  <div class="hl"><div class="hl-num">20</div><div class="hl-label">Projects across risk, analytics, strategy and Gen AI products</div></div>
+  <div class="hl"><div class="hl-num">Top 20</div><div class="hl-label">of 5,000+ teams, FinSpark '26 banking cybersecurity hackathon (Jul 2026)</div></div>
+  <div class="hl"><div class="hl-num">1st Runner-up</div><div class="hl-label">“The Hot Seat”, Interface '26, BITS Pilani (Sep 2026)</div></div>
+  <div class="hl"><div class="hl-num">PM Intern</div><div class="hl-label">i3digital health: AI voice agent for physicians, forecasting model and competitor dashboard</div></div>
 </div>
 
 <!-- ABOUT -->
@@ -284,9 +284,9 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
       </div>
     </div>
     <div class="focus-list">
-      <div class="focus reveal reveal-delay-1"><h3>Risk analytics</h3><p>Credit scorecards (WoE/IV), default prediction and risk tiering, cost-based cut-offs, and explainable fraud detection with XGBoost and SHAP.</p></div>
-      <div class="focus reveal reveal-delay-2"><h3>Markets &amp; volatility</h3><p>GARCH and GJR-GARCH, VaR and Expected Shortfall, Monte Carlo simulation, portfolio optimisation and forecast evaluation against simple benchmarks.</p></div>
-      <div class="focus reveal reveal-delay-3"><h3>Product &amp; data</h3><p>Discovery, PRDs and use cases, privacy-by-design data models, Python and SQL pipelines, and dashboards in Power BI, Tableau and Excel.</p></div>
+      <div class="focus reveal reveal-delay-1"><h3>Product &amp; AI</h3><p>Discovery and specialist interviews, TAM/SAM/SOM sizing, PRDs and use cases, and Gen AI products built with RAG, LLM agents and guardrails that keep numbers grounded.</p></div>
+      <div class="focus reveal reveal-delay-2"><h3>Risk analytics</h3><p>Credit scorecards (WoE/IV), default prediction and risk tiering, cost-based cut-offs, and explainable fraud detection with XGBoost and SHAP.</p></div>
+      <div class="focus reveal reveal-delay-3"><h3>Markets &amp; volatility</h3><p>GARCH and GJR-GARCH, VaR and Expected Shortfall, Monte Carlo simulation, portfolio optimisation and forecast evaluation against simple benchmarks.</p></div>
     </div>
   </div>
 </section>
@@ -303,9 +303,9 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
           <div class="tl-role">Product Management Intern</div>
           <div class="tl-org">i3digital health · Oncology AI</div>
           <div class="tl-body"><ul>
-            <li>Owned an oncology-focused AI product end to end (timeline, use cases, UI, database design) with a 4–5 member engineering team, from ambiguous requirements to launch.</li>
-            <li>Led discovery for a RAG-based agentic voice agent for physicians through competitive analysis of 10+ companies and specialist interviews; wrote a 5-use-case PRD with patient PII redaction built in by design.</li>
-            <li>Built a Python ETL pipeline powering an oncology competitive-intelligence dashboard that benchmarks 5 PD-1/PD-L1 drugs and flags declining sponsor trial volume.</li>
+            <li><strong>AI Voice Agent for Physicians:</strong> led discovery through 10+ specialist interviews, sized the opportunity with TAM/SAM/SOM and turned the findings into a 5-use-case PRD. Built it with the engineering team across timeline, UI and database design; the agent answers clinical queries via RAG, decides when and where to fetch data before responding, and redacts patient PII.</li>
+            <li><strong>Forecasting Model:</strong> built an expert-weighted Python model that benchmarks PD-1/PD-L1 drugs on sparse data (10–20 entries per biomarker) and forecasts competitor movement, which informed go-to-market strategy.</li>
+            <li><strong>Competitor Analysis Dashboard:</strong> built an ETL pipeline and automated dashboard that surfaces companies' drug-trial funding slowdowns and the current treatment landscape for each biomarker, highlighting white-space opportunities for leadership.</li>
           </ul></div>
         </div>
       </div>
@@ -329,10 +329,10 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
 
     <h3 class="sub-heading reveal">Leadership &amp; achievements</h3>
     <div class="awards">
-      <div class="award reveal"><div class="award-title">First Runner-up, “The Hot Seat” — Interface '26, BITS Pilani</div><div class="award-desc">Dark-store network strategy and Excel model for a quick-commerce client, defended in a live CEO Q&amp;A.</div></div>
-      <div class="award reveal reveal-delay-1"><div class="award-title">Top 20 of 5,000+ teams — FinSpark '26</div><div class="award-desc">National banking cybersecurity hackathon by Bank of Maharashtra with the Indian Banks' Association.</div></div>
-      <div class="award reveal"><div class="award-title">Coordinator, Creative Club — BITS Pilani</div><div class="award-desc">Led a 5-member team across 10+ events; conceived “Say It Without Saying”, a brand-strategy competition with 300+ participants.</div></div>
-      <div class="award reveal reveal-delay-1"><div class="award-title">1st Runner-up — Finquest, IIM Rohtak</div><div class="award-desc">Finance quiz competition.</div></div>
+      <div class="award reveal"><div class="award-title">First Runner-up, “The Hot Seat” — Interface '26, BITS Pilani · Sep 2026</div><div class="award-desc">Recovery strategy for a quick-commerce dark-store network (SwiftCart), backed by a network model, presented as a 6-slide pitch and defended in a live CEO Q&amp;A.</div></div>
+      <div class="award reveal reveal-delay-1"><div class="award-title">Top 20 of 5,000+ teams — FinSpark '26 · Jul 2026</div><div class="award-desc">National banking cybersecurity hackathon by Bank of Maharashtra with the Indian Banks' Association and DFS, Govt. of India. Cross-silo fraud detection engine with XGBoost, SHAP explanations and 4 independent agents with plain-English LLM reasoning; selected for the Grand Finale at COEP Pune.</div></div>
+      <div class="award reveal"><div class="award-title">Coordinator, Creative Club — BITS Pilani · Nov 2025–present</div><div class="award-desc">Led a 5-member creative team producing posters, social media creatives and event branding for 10+ department events. Conceptualised and led “Say It Without Saying It”, a national-level, product-based marketing competition with 300+ participants.</div></div>
+      <div class="award reveal reveal-delay-1"><div class="award-title">1st Runner-Up — FinQuest, IIM Rohtak · Nov 2025</div><div class="award-desc">Finance quiz competition, among 200+ participants.</div></div>
     </div>
   </div>
 </section>
@@ -347,11 +347,11 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
         <p class="section-sub reveal reveal-delay-1">Each project starts from a business question and uses real data unless noted. All figures come from the project outputs.</p>
       </div>
       <div class="filters reveal reveal-delay-2" role="tablist" aria-label="Filter projects">
-        <button class="filter on" data-filter="all">All<span class="count"></span></button>
+        <button class="filter on" data-filter="product">AI &amp; product<span class="count"></span></button>
+        <button class="filter" data-filter="analytics">Business analytics<span class="count"></span></button>
         <button class="filter" data-filter="risk">Credit &amp; fraud<span class="count"></span></button>
         <button class="filter" data-filter="markets">Markets &amp; FX<span class="count"></span></button>
-        <button class="filter" data-filter="analytics">Business analytics<span class="count"></span></button>
-        <button class="filter" data-filter="product">AI &amp; product<span class="count"></span></button>
+        <button class="filter" data-filter="all">All<span class="count"></span></button>
       </div>
     </div>
 
@@ -374,6 +374,84 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
           <div class="metric"><b>Session memory</b><span>follow-up questions keep context</span></div>
           <div class="metric"><b>Live analytics</b><span>questions, latency and visitor tracking</span></div>
         </div>
+      </article>
+
+      <!-- AI & PRODUCT -->
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">Internship · i3digital health</div>
+        <h3 class="proj-title">AI Voice Agent for Physicians</h3>
+        <p class="proj-desc">Led discovery through 10+ specialist interviews, sized the opportunity with TAM/SAM/SOM and wrote a 5-use-case PRD. Built with the engineering team as an agent that answers clinical queries via RAG, decides when and where to fetch data before responding, and redacts patient PII.</p>
+        <div class="proj-metrics"><div class="metric"><b>10+</b><span>specialist interviews</span></div><div class="metric"><b>5</b><span>PRD use cases</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Discovery</span><span class="proj-pill">PRD</span><span class="proj-pill">RAG</span><span class="proj-pill">PII redaction</span></div>
+        <div class="proj-links"><button class="ask-ari" data-q="Tell me about the AI voice agent Prashant worked on at i3digital health">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">Gen AI product &amp; architecture · Jul–Oct 2026</div>
+        <h3 class="proj-title">CollectIQ — AI Receivables Briefing for Indian SMEs</h3>
+        <p class="proj-desc">Designed and prototyped a B2B2C AI product that turns an SME's invoice ledger into a plain-language weekly brief on who owes what and whom to chase first, with no accounting-system migration. An agentic collections layer escalates overdue invoices and drafts reminders for the owner to approve. Code computes every figure and the LLM only writes the text; go-to-market runs through CA firms.</p>
+        <div class="proj-metrics"><div class="metric"><b>4-tier</b><span>escalation ladder</span></div><div class="metric"><b>B2B2C</b><span>via CA firms</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">scikit-learn</span><span class="proj-pill">Streamlit</span><span class="proj-pill">APScheduler</span></div>
+        <div class="proj-links"><span class="proj-note">Prototype</span><button class="ask-ari" data-q="Tell me about Prashant's CollectIQ project">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">Gen AI &amp; NLP · Agentic RAG · Jul–Oct 2026</div>
+        <h3 class="proj-title">Earnings Intelligence Copilot</h3>
+        <p class="proj-desc">Agentic RAG over earnings calls: a retrieval-augmented pipeline over 30 earnings-call transcripts across 3 sectors that extracts and scores management guidance on capex and margin. Chunking, embedding and dense retrieval in Python, with a tool-calling agent layer in an agent-to-data pattern for governed enterprise question answering.</p>
+        <div class="proj-metrics"><div class="metric"><b>30</b><span>transcripts</span></div><div class="metric"><b>3</b><span>sectors</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">RAG</span><span class="proj-pill">Embeddings</span><span class="proj-pill">LLM agents</span></div>
+        <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's Earnings Intelligence Copilot">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">Market sizing &amp; segmentation · Apr–May 2026</div>
+        <h3 class="proj-title">ServZone — Managed Marketplace for Urban Car Servicing</h3>
+        <p class="proj-desc">Bottom-up sizing of an urban car-servicing market, stress-tested against service-volume and penetration scenarios, with customer segmentation and a positioning thesis that prioritises the highest-value service categories. Demand is forecast with a value-chain ratio method and extended to a 3-year view.</p>
+        <div class="proj-metrics"><div class="metric"><b>₹60 Cr</b><span>Year-1 opportunity</span></div><div class="metric"><b>3–4%</b><span>share, ~1.25 lakh visits</span></div><div class="metric"><b>~₹105 Cr</b><span>GMV by Year 3</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Excel</span><span class="proj-pill">Market sizing</span><span class="proj-pill">Segmentation</span></div>
+        <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's ServZone car-servicing marketplace project">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product">
+        <div class="proj-category">Gen AI product · Agentic RAG</div>
+        <h3 class="proj-title">FeaturePilot — Copilot over Product Feature Requests</h3>
+        <p class="proj-desc">A copilot that lets a PM ask what users want most, what a competitor offers and what to build next, across public GitHub issues for Metabase and Apache Superset. Counting tools produce the numbers, retrieval cites real issues, and a validator rejects any figure no tool returned. It is built on the tested ReviewPilot engine.</p>
+        <div class="proj-metrics"><div class="metric"><b>6</b><span>agent tools (ReviewPilot engine)</span></div></div>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">SQLite</span><span class="proj-pill">Streamlit</span><span class="proj-pill">LLM agents</span></div>
+        <div class="proj-links"><span class="proj-note">In progress</span><button class="ask-ari" data-q="Tell me about Prashant's FeaturePilot project">Ask Ari →</button></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product" data-href="https://github.com/Prashantsingh-19/prashant-ai-os">
+        <div class="proj-category">AI agents · Orchestration</div>
+        <h3 class="proj-title">Prashant AI OS</h3>
+        <p class="proj-desc">A personal multi-agent system for recurring tasks. The first agent, ARES, retrieves structured information on request over Telegram. Further agents and a performance dashboard are planned, prioritised around hardware limits.</p>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">Telegram Bot</span><span class="proj-pill">AI agents</span></div>
+        <div class="proj-links"><a class="proj-link" href="https://github.com/Prashantsingh-19/prashant-ai-os" target="_blank" rel="noopener">Code ↗</a></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product" data-href="https://oncoassistant.vercel.app/">
+        <div class="proj-category">Health tech · Competitive intelligence</div>
+        <h3 class="proj-title">OncoAssistant — Clinical Trials Dashboard</h3>
+        <p class="proj-desc">A competitive-intelligence dashboard for pharma strategy teams that maps where each competitor's drug trials stand: completed, active and new initiations, and which cancer targets they cover.</p>
+        <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Supabase</span><span class="proj-pill">ECharts</span></div>
+        <div class="proj-links"><a class="proj-link" href="https://oncoassistant.vercel.app/" target="_blank" rel="noopener">Live dashboard ↗</a></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product" data-href="https://onco-directory.vercel.app/sign-in">
+        <div class="proj-category">Health tech · Platform</div>
+        <h3 class="proj-title">Onco-Directory</h3>
+        <p class="proj-desc">A verified professional network for oncologists. Trust is tied to medical licence IDs, a graph-based engine suggests peers by specialisation, and direct messaging supports referrals and consultations.</p>
+        <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Supabase</span><span class="proj-pill">Clerk</span><span class="proj-pill">TypeScript</span></div>
+        <div class="proj-links"><a class="proj-link" href="https://onco-directory.vercel.app/sign-in" target="_blank" rel="noopener">Live app ↗</a></div>
+      </article>
+
+      <article class="proj-card reveal" data-cat="product" data-href="topic-modelling-dashboard.html">
+        <div class="proj-category">NLP · Topic modelling</div>
+        <h3 class="proj-title">Political Discourse Topic Modelling</h3>
+        <p class="proj-desc">An LDA pipeline analysing political leaders' speeches, with an interactive dashboard of topic weights, word clouds and domain analysis.</p>
+        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">LDA</span><span class="proj-pill">scikit-learn</span></div>
+        <div class="proj-links"><a class="proj-link" href="topic-modelling-dashboard.html" target="_blank" rel="noopener">Dashboard ↗</a><a class="proj-link" href="https://github.com/Prashantsingh-19/Topic-Modelling" target="_blank" rel="noopener">Code ↗</a></div>
       </article>
 
       <!-- CREDIT & FRAUD -->
@@ -473,66 +551,6 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
         <div class="proj-links"><button class="ask-ari" data-q="Tell me about Prashant's project delay risk analysis">Ask Ari →</button></div>
       </article>
 
-      <!-- AI & PRODUCT -->
-      <article class="proj-card reveal" data-cat="product">
-        <div class="proj-category">Gen AI product · Agentic RAG</div>
-        <h3 class="proj-title">FeaturePilot — Copilot over Product Feature Requests</h3>
-        <p class="proj-desc">A copilot that lets a PM ask what users want most, what a competitor offers and what to build next, across public GitHub issues for Metabase and Apache Superset. Counting tools produce the numbers, retrieval cites real issues, and a validator rejects any figure no tool returned. It is built on the ReviewPilot engine (6 tools, 12 passing tests).</p>
-        <div class="proj-metrics"><div class="metric"><b>6</b><span>agent tools</span></div><div class="metric"><b>12</b><span>passing tests</span></div></div>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">SQLite</span><span class="proj-pill">Streamlit</span><span class="proj-pill">LLM agents</span></div>
-        <div class="proj-links"><span class="proj-note">In progress</span><button class="ask-ari" data-q="Tell me about Prashant's FeaturePilot project">Ask Ari →</button></div>
-      </article>
-
-      <article class="proj-card reveal" data-cat="product">
-        <div class="proj-category">Gen AI product · Fintech for SMEs</div>
-        <h3 class="proj-title">CollectIQ — AI Receivables Briefing for Indian SMEs</h3>
-        <p class="proj-desc">An SME uploads its invoice ledger and gets a plain-language weekly brief covering who owes what, who is slipping, cash at risk and whom to chase first. Code computes every figure and the LLM only writes the text. An agentic layer drafts escalating reminders that the owner approves, keeping a human in the loop, and the product is distributed through CA firms.</p>
-        <div class="proj-metrics"><div class="metric"><b>4-tier</b><span>escalation ladder</span></div><div class="metric"><b>B2B2C</b><span>via CA firms</span></div></div>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">scikit-learn</span><span class="proj-pill">Streamlit</span><span class="proj-pill">APScheduler</span></div>
-        <div class="proj-links"><span class="proj-note">In progress</span><button class="ask-ari" data-q="Tell me about Prashant's CollectIQ project">Ask Ari →</button></div>
-      </article>
-
-      <article class="proj-card reveal" data-cat="product">
-        <div class="proj-category">AI research tool · Earnings calls</div>
-        <h3 class="proj-title">Earnings Intelligence Copilot</h3>
-        <p class="proj-desc">A RAG-style research assistant that finds and compares management commentary across earnings-call transcripts. It searches chunked transcripts, shows the source evidence behind every result, extracts capex and margin guidance with explainable outlook signals, and compares companies side by side.</p>
-        <div class="proj-metrics"><div class="metric"><b>TF-IDF</b><span>local retrieval, no API key</span></div></div>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">Streamlit</span><span class="proj-pill">NLP</span></div>
-        <div class="proj-links"><span class="proj-note">Prototype · illustrative data</span><button class="ask-ari" data-q="Tell me about Prashant's Earnings Intelligence Copilot">Ask Ari →</button></div>
-      </article>
-
-      <article class="proj-card reveal" data-cat="product" data-href="https://github.com/Prashantsingh-19/prashant-ai-os">
-        <div class="proj-category">AI agents · Orchestration</div>
-        <h3 class="proj-title">Prashant AI OS</h3>
-        <p class="proj-desc">A personal multi-agent system for recurring tasks. The first agent, ARES, retrieves structured information on request over Telegram. Further agents and a performance dashboard are planned, prioritised around hardware limits.</p>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">Telegram Bot</span><span class="proj-pill">AI agents</span></div>
-        <div class="proj-links"><a class="proj-link" href="https://github.com/Prashantsingh-19/prashant-ai-os" target="_blank" rel="noopener">Code ↗</a></div>
-      </article>
-
-      <article class="proj-card reveal" data-cat="product" data-href="https://onco-directory.vercel.app/sign-in">
-        <div class="proj-category">Health tech · Platform</div>
-        <h3 class="proj-title">Onco-Directory</h3>
-        <p class="proj-desc">A verified professional network for oncologists. Trust is tied to medical licence IDs, a graph-based engine suggests peers by specialisation, and direct messaging supports referrals and consultations.</p>
-        <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Supabase</span><span class="proj-pill">Clerk</span><span class="proj-pill">TypeScript</span></div>
-        <div class="proj-links"><a class="proj-link" href="https://onco-directory.vercel.app/sign-in" target="_blank" rel="noopener">Live app ↗</a></div>
-      </article>
-
-      <article class="proj-card reveal" data-cat="product" data-href="https://oncoassistant.vercel.app/">
-        <div class="proj-category">Health tech · Competitive intelligence</div>
-        <h3 class="proj-title">OncoAssistant — Clinical Trials Dashboard</h3>
-        <p class="proj-desc">A competitive-intelligence dashboard for pharma strategy teams that maps where each competitor's drug trials stand: completed, active and new initiations, and which cancer targets they cover.</p>
-        <div class="proj-stack"><span class="proj-pill">Next.js</span><span class="proj-pill">Supabase</span><span class="proj-pill">ECharts</span></div>
-        <div class="proj-links"><a class="proj-link" href="https://oncoassistant.vercel.app/" target="_blank" rel="noopener">Live dashboard ↗</a></div>
-      </article>
-
-      <article class="proj-card reveal" data-cat="product" data-href="topic-modelling-dashboard.html">
-        <div class="proj-category">NLP · Topic modelling</div>
-        <h3 class="proj-title">Political Discourse Topic Modelling</h3>
-        <p class="proj-desc">An LDA pipeline analysing political leaders' speeches, with an interactive dashboard of topic weights, word clouds and domain analysis.</p>
-        <div class="proj-stack"><span class="proj-pill">Python</span><span class="proj-pill">LDA</span><span class="proj-pill">scikit-learn</span></div>
-        <div class="proj-links"><a class="proj-link" href="topic-modelling-dashboard.html" target="_blank" rel="noopener">Dashboard ↗</a><a class="proj-link" href="https://github.com/Prashantsingh-19/Topic-Modelling" target="_blank" rel="noopener">Code ↗</a></div>
-      </article>
-
     </div>
   </div>
 </section>
@@ -543,10 +561,11 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
     <p class="eyebrow reveal">Skills</p>
     <h2 class="section-heading reveal reveal-delay-1" style="margin-bottom:2.5rem">Tools and methods</h2>
     <div class="skills-grid">
-      <div class="skill-col reveal"><h3>Risk &amp; modelling</h3><ul><li>Credit scorecards (WoE / IV)</li><li>PD, expected loss, cut-off strategy</li><li>XGBoost, random forest, SHAP</li><li>Logistic regression, calibration, PSI</li><li>Survival analysis, K-means, PCA</li></ul></div>
-      <div class="skill-col reveal reveal-delay-1"><h3>Markets &amp; time series</h3><ul><li>GARCH, GJR-GARCH</li><li>VaR and Expected Shortfall</li><li>ARIMA forecasting</li><li>Monte Carlo simulation</li><li>Portfolio optimisation</li></ul></div>
-      <div class="skill-col reveal reveal-delay-2"><h3>Data &amp; BI</h3><ul><li>Python (pandas, NumPy, scikit-learn)</li><li>SQL (PostgreSQL, SQLite), R</li><li>ETL pipelines</li><li>Power BI, Tableau</li><li>Excel modelling and dashboards</li></ul></div>
-      <div class="skill-col reveal reveal-delay-3"><h3>Product &amp; AI</h3><ul><li>Discovery, PRDs, use-case design</li><li>Privacy-by-design data models</li><li>RAG, LLM apps, vector search</li><li>Cloudflare Workers, Next.js, Supabase</li><li>Hypothesis testing and experiment design</li></ul></div>
+      <div class="skill-col reveal"><h3>Product</h3><ul><li>Product discovery &amp; user interviews</li><li>Market sizing (TAM/SAM/SOM)</li><li>PRDs, use cases, product design</li><li>Competitive analysis, go-to-market</li><li>PowerPoint storytelling</li></ul></div>
+      <div class="skill-col reveal reveal-delay-1"><h3>AI</h3><ul><li>RAG pipelines and vector search</li><li>LLM agents and tool calling</li><li>Guardrails: code computes, LLM narrates</li><li>Prompt engineering</li><li>Cloudflare Workers, Streamlit</li></ul></div>
+      <div class="skill-col reveal reveal-delay-2"><h3>Data</h3><ul><li>Python, SQL, R</li><li>Power BI, Excel, Tableau</li><li>EDA and data visualisation</li><li>ETL pipelines and dashboards</li><li>Statistical data analysis</li></ul></div>
+      <div class="skill-col reveal reveal-delay-3"><h3>Machine learning</h3><ul><li>XGBoost, random forest, logistic regression</li><li>SHAP explainability</li><li>Credit scorecards (WoE / IV)</li><li>GARCH volatility, Monte Carlo</li><li>Survival analysis, K-means, PCA</li></ul></div>
+    </div>
     </div>
   </div>
 </section>
@@ -590,6 +609,9 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
       });
     });
   });
+  // Product work first: open on the AI & product filter
+  const defaultBtn = buttons.find(b => b.classList.contains('on'));
+  if (defaultBtn) defaultBtn.click();
   const heroAsk = document.getElementById('heroAskAri');
   if (heroAsk) heroAsk.addEventListener('click', () => {
     const crab = document.getElementById('clawCursor');
