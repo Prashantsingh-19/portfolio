@@ -64,37 +64,60 @@ async function embed(text, env) {
   return data[0];
 }
 
-const NOT_FOUND_THRESHOLD = 0.35;
+// bge-base cosine scores, calibrated on real questions (2026-10-24): on-topic questions
+// top out at 0.62-0.82, off-topic ones at 0.46-0.61. Between WEAK and STRONG the context is
+// passed with a warning; below WEAK Ari says it doesn't have the detail.
+const STRONG_MATCH = 0.62;
+const WEAK_MATCH = 0.55;
+const KEEP_WITHIN = 0.08; // keep chunks scoring within this of the best one
+const MAX_CHUNKS = 6;
 
-async function retrieve(env, query, topKCount = 8) {
-  const queryVec = await embed(query, env);
-  const results = await env.VECTORIZE.query(queryVec, { topK: topKCount, returnMetadata: true, returnValues: true });
-  if (!results.matches || !results.matches.length) return { context: '(no matching context found)', topScore: 0 };
-  const topScore = results.matches[0].score || 0;
-  const context = results.matches.map(m => m.metadata.text).join('\n\n---\n\n');
-  return { context, topScore };
+// Embeds the question alone and with the previous user turn, so short follow-ups
+// ("is the vectorization deep?") retrieve from the topic being discussed.
+async function retrieve(env, query, history = []) {
+  const prevUser = [...history].reverse().find(m => m.role === 'user');
+  const texts = prevUser ? [query, `${prevUser.content}\n${query}`] : [query];
+  const { data } = await env.AI.run('@cf/baai/bge-base-en-v1.5', { text: texts });
+  const results = await Promise.all(data.map(v => env.VECTORIZE.query(v, { topK: 8, returnMetadata: true })));
+  const best = new Map();
+  results.forEach(r => (r.matches || []).forEach(m => {
+    if (!best.has(m.id) || best.get(m.id).score < m.score) best.set(m.id, m);
+  }));
+  const matches = [...best.values()].sort((a, b) => b.score - a.score);
+  if (!matches.length) return { context: '', topScore: 0, sources: [] };
+  const topScore = matches[0].score || 0;
+  const kept = matches.filter(m => m.score >= Math.max(topScore - KEEP_WITHIN, WEAK_MATCH)).slice(0, MAX_CHUNKS);
+  return {
+    context: kept.map(m => m.metadata.text).join('\n\n---\n\n'),
+    topScore,
+    sources: kept.map(m => `${m.id}:${m.score.toFixed(2)}`),
+  };
 }
 
+// Reasoning comes back in a separate field, so only strip leaked planning lines at the very
+// start and markdown the chat window can't render. (The old version also dropped any line
+// starting with "Here's", "First" or "Based on", which deleted real answer content.)
 function stripMeta(text) {
-  let result = text
+  let result = (text || '')
     .replace(/<thinking>[\s\S]*?<\/thinking>/g, '')
-    .replace(/^["']|["']$/g, '')
-    .replace(/^(the (?:user|question|context|persona|pool)|i (?:need to|should|will|'ll|'m going to)|from the context|based on|according to|here'?s|correct answer|answer key|hold your horses|crunching|scuttling|peeking|gimme|pincers)[^.!?\n]*[.!?]*\s*/gmi, '')
-    .replace(/^(okay|ok|so|now|first|firstly|second|secondly)[:,\s][^.!?\n]*[.!?]*\s*/gmi, '')
-    .replace(/\n\s*(the (?:user|question|context|persona|pool)|i (?:need to|should|will|'ll|'m going to)|from the context|based on|according to|here'?s|correct answer|answer key|hold your horses|crunching|scuttling|peeking|gimme|pincers)[^.!?\n]*[.!?]*\s*/gmi, '\n')
+    .replace(/^\s*(?:(?:the user (?:is asking|asks|wants)|we need to|i need to|i should|let me)[^\n]*\n+)+/i, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^\s*[-*•]\s+/gm, '')
+    .replace(/^["']([\s\S]*)["']$/, '$1')
     .trim();
-  return result || text;
+  return result || (text || '').trim();
 }
 
 async function callCloudflare(env, messages, maxTokens, model) {
-  const result = await env.AI.run(model, {
-    messages,
-    max_tokens: maxTokens,
-    temperature: 0.7,
-  });
-  let content = result.choices?.[0]?.message?.content || result.response || '';
-  content = stripMeta(content);
-  return content;
+  const params = { messages, max_tokens: maxTokens, temperature: 0.3 };
+  // gpt-oss is a reasoning model: at default effort its thinking ate the whole token budget
+  // and replies came back cut off mid-sentence ("Credit Card Default").
+  if (model === CF_MODEL) params.reasoning_effort = 'low';
+  const result = await env.AI.run(model, params);
+  const choice = result.choices?.[0];
+  if (choice?.finish_reason === 'length') throw new Error('truncated');
+  return stripMeta(choice?.message?.content || result.response || '');
 }
 
 async function callNVIDIA(env, messages, maxTokens) {
@@ -109,7 +132,7 @@ async function callNVIDIA(env, messages, maxTokens) {
     body: JSON.stringify({
       model: NVIDIA_MODEL,
       messages,
-      temperature: 0.7,
+      temperature: 0.3,
       top_p: 0.9,
       max_tokens: maxTokens,
       stream: false,
@@ -126,13 +149,13 @@ async function callNVIDIA(env, messages, maxTokens) {
 }
 
 async function callLLM(env, messages, { maxTokens = 200 } = {}) {
-  // Try Cloudflare Workers AI (gpt-oss-120b) first — retry once on empty (reasoning mode can eat the budget)
-  for (let attempt = 0; attempt < 2; attempt++) {
+  // Try Cloudflare Workers AI (gpt-oss-120b) first; on an empty or cut-off reply, retry once with double the budget
+  for (const budget of [maxTokens, maxTokens * 2]) {
     try {
-      const content = await callCloudflare(env, messages, maxTokens, CF_MODEL);
+      const content = await callCloudflare(env, messages, budget, CF_MODEL);
       if (content.trim()) return { content, model: 'gpt-oss-120b' };
     } catch (e) {
-      break;
+      if (e.message !== 'truncated') break;
     }
   }
   // Fallback: Cloudflare (glm-4.7-flash)
@@ -163,7 +186,7 @@ async function callLLM(env, messages, { maxTokens = 200 } = {}) {
         body: JSON.stringify({
           model,
           messages,
-          temperature: 0.7,
+          temperature: 0.3,
           top_p: 0.9,
           max_tokens: maxTokens,
           stream: false,
@@ -288,12 +311,14 @@ export default {
           });
         }
 
-        const { context, topScore } = await retrieve(env, message);
+        const startTime = Date.now(); // end to end, including retrieval
         let [history, userName] = await Promise.all([
           getHistory(env, sessionId),
           getUserName(env, sessionId),
         ]);
-        const found = topScore >= NOT_FOUND_THRESHOLD && context !== '(no matching context found)';
+        const { context, topScore, sources } = await retrieve(env, message, history);
+        const match = topScore >= STRONG_MATCH ? 'strong' : topScore >= WEAK_MATCH ? 'weak' : 'none';
+        const found = match !== 'none';
 
         const msgCount = await incrementMsgCount(env, sessionId);
         const reviewDone = sessionId ? !!(await env.SESSIONS.get(`rev:${sessionId}`)) : false;
@@ -306,27 +331,27 @@ export default {
 
         let reply;
         let replyModel = null;
-        const startTime = Date.now();
 
         if (!found) {
-          const contextTag = context === '(no matching context found)' ? 'NO_CONTEXT' : 'NOT_FOUND';
+          const contextTag = 'NOT_FOUND';
           const messages = [
             { role: 'system', content: ARI_PERSONA_PROMPT },
             { role: 'system', content: `Context about Prashant: ${contextTag} (no relevant knowledge found for this query)\n\n${identityPrompt}${reviewTag}` },
             ...history,
             { role: 'user', content: message },
           ];
-          const llm = await callLLM(env, messages, { maxTokens: 600 });
+          const llm = await callLLM(env, messages, { maxTokens: 900 });
           reply = llm.content;
           replyModel = llm.model;
         } else {
+          const strength = match === 'weak' ? 'WEAK MATCH (may not contain the answer)\n' : '';
           const messages = [
             { role: 'system', content: ARI_PERSONA_PROMPT },
-            { role: 'system', content: `Context about Prashant:\n${context}\n\nUse this for factual questions about Prashant. For follow-ups and clarifications about something you just said in chat, use our conversation history instead.${identityPrompt}${reviewTag}` },
+            { role: 'system', content: `Context about Prashant: ${strength}\n${context}\n\nUse this for factual questions about Prashant. For follow-ups and clarifications about something you just said in chat, use our conversation history instead.${identityPrompt}${reviewTag}` },
             ...history,
             { role: 'user', content: message },
           ];
-          const llm = await callLLM(env, messages, { maxTokens: 600 });
+          const llm = await callLLM(env, messages, { maxTokens: 900 });
           reply = llm.content;
           replyModel = llm.model;
         }
@@ -344,7 +369,7 @@ export default {
           try {
             await env.SESSIONS.put(
               `log:${Date.now()}:${sessionId}`,
-              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs, found, model: replyModel }),
+              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs, found, match, topScore: Math.round(topScore * 1000) / 1000, sources, model: replyModel }),
               { expirationTtl: 86400 * 30 },
             );
           } catch {} // never block the user
