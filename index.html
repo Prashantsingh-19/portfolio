@@ -968,7 +968,8 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   const widget = document.querySelector('.assistant-widget');
 
   // ─── CONFIG ────────────────────────────
-  const WORKER_BASE = 'https://ari-chatbot.itsprashantsingh19.workers.dev';
+  // Proxied through Cloudflare Pages: some Indian ISPs block *.workers.dev
+  const WORKER_BASE = 'https://ari-instrumentation.pages.dev/ari';
 
   function miniAriSvg() {
     return '<svg viewBox="0 0 44 44" width="24" height="24" fill="none"><path class="leg" d="M12 30Q9 28 7 32"/><path class="leg" d="M12 33Q8 31 6 36"/><path class="leg" d="M12 36Q9 35 7 40"/><path class="leg" d="M32 30Q35 28 37 32"/><path class="leg" d="M32 33Q36 31 38 36"/><path class="leg" d="M32 36Q35 35 37 40"/><ellipse class="body" cx="22" cy="28" rx="10" ry="8.5"/><ellipse class="body-shine" cx="22" cy="29" rx="7" ry="4"/><line class="stalk" x1="17" y1="20" x2="14" y2="15"/><line class="stalk" x1="27" y1="20" x2="30" y2="15"/><circle class="eye" cx="14" cy="14" r="3.5"/><circle class="pupil" cx="15" cy="14" r="1.8"/><circle class="eye" cx="30" cy="14" r="3.5"/><circle class="pupil" cx="31" cy="14" r="1.8"/><path class="claw" d="M11 28C6 25 4 20 7 17 9 20 10 23 12 26Z"/><path class="claw-dark" d="M12 31C8 34 7 37 10 38 12 35 12 33 13 31Z"/><path class="claw" d="M33 28C38 25 40 20 37 17 35 20 34 23 32 26Z"/><path class="claw-dark" d="M32 31C36 34 37 37 34 38 32 35 32 33 31 31Z"/></svg>';
@@ -1044,7 +1045,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     if (widget.classList.contains('is-open')) return;
     widget.classList.add('is-open');
     chatOpenCount++;
-    if (chatOpenCount === 1) greetAri();
+    if (chatOpenCount === 1) { greetAri(); if (window.ariTrack) window.ariTrack('ari_open'); }
     chatInput.focus();
   }
 
@@ -1222,6 +1223,55 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     });
   });
 
+})();
+</script>
+<script>
+// ─── Visit analytics ─────────────────────────
+// Anonymous beacons to the Ari analytics dashboard: page view, link clicks, time on page.
+// Open the site once with ?me=1 to mark this browser as the owner (excluded); ?me=0 undoes it.
+(function () {
+  const ENDPOINT = 'https://ari-instrumentation.pages.dev/api/track';
+  const ls = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} }, del: k => { try { localStorage.removeItem(k); } catch {} } };
+  let vid = ls.get('ari_visitor_id');
+  if (!vid) { vid = crypto.randomUUID(); ls.set('ari_visitor_id', vid); }
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('me') === '1') ls.set('ari_owner', '1');
+  if (qs.get('me') === '0') ls.del('ari_owner');
+  const owner = ls.get('ari_owner') === '1';
+  const pageId = Math.random().toString(36).slice(2, 10);
+  const utm = ['utm_source', 'utm_medium', 'utm_campaign'].map(k => qs.get(k)).filter(Boolean).join(' / ');
+  const send = (t, extra) => {
+    const body = JSON.stringify(Object.assign({ t, v: vid, s: pageId, p: location.pathname, owner }, extra));
+    try { if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, body)) return; } catch {}
+    fetch(ENDPOINT, { method: 'POST', body, keepalive: true }).catch(() => {});
+  };
+  window.ariTrack = t => send(t);
+  send('view', { r: document.referrer, u: utm });
+
+  document.addEventListener('click', e => {
+    const card = e.target.closest('.proj-card');
+    const a = e.target.closest('a[href]');
+    if (!a && !(card && card.dataset.href)) return;
+    const href = a ? a.href : card.dataset.href;
+    if (a && a.hash && a.pathname === location.pathname) return; // in-page nav
+    const title = card && card.querySelector('.proj-title');
+    let label = (a ? a.textContent : '').trim().replace(/\s+/g, ' ').slice(0, 40);
+    if (/^mailto:/.test(href)) label = 'Email';
+    else if (/linkedin\.com/.test(href)) label = 'LinkedIn';
+    else if (/\.pdf($|\?)|resume|cv/i.test(href)) label = 'Resume';
+    else if (title) label = title.textContent.trim().slice(0, 50) + (label && a ? ' → ' + label : '');
+    send('click', { l: label || href.slice(0, 60), h: href });
+  }, true);
+
+  const t0 = Date.now();
+  let maxScroll = 0;
+  addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    if (h > 0) maxScroll = Math.max(maxScroll, Math.round(scrollY / h * 100));
+  }, { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') send('leave', { d: (Date.now() - t0) / 1000, sc: maxScroll });
+  });
 })();
 </script>
 </body>
