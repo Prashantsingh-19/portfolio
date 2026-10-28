@@ -1083,6 +1083,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
   function closeChat() {
     widget.classList.remove('is-open');
+    armIdle(true);
   }
 
   ari.addEventListener('click', openChat);
@@ -1249,13 +1250,15 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   });
 
   // ─── Ari's own messages ────────────────────────
-  // First visit: a "You have 1 new message" welcome. After Ari has been opened, 45s with no
-  // question (open or closed) → one polite ask for name, email and feedback, at most once a week.
+  // First visit: a "You have 1 new message" welcome. Later Ari asks whether the visitor will answer
+  // two quick questions (name/email, how Ari could be better) and shows the form only on "Sure":
+  // after 2+ questions and 15s quiet with the chat open, or 20s after closing the chat having asked
+  // something. At most once a week, never after a submit, never for the owner.
   const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
   const CONTACT_API = 'https://ari-instrumentation.pages.dev/api/contact';
-  // ?ari=contact forces the name/email/feedback ask after 5s, for testing.
+  // ?ari=contact forces the ask 5s after opening Ari, for testing.
   const forceContact = new URLSearchParams(location.search).get('ari') === 'contact';
-  const IDLE_MS = forceContact ? 5000 : 45000, ASK_EVERY_MS = 7 * 86400000;
+  const QUIET_OPEN_MS = 15000, QUIET_CLOSED_MS = 20000, MIN_QUESTIONS = 2, ASK_EVERY_MS = 7 * 86400000;
   const notice = document.getElementById('ariNotice');
   const WELCOME_TEXT = "Hi, I'm Ari, Prashant's AI assistant 👋 Ask me anything about his work, projects or experience.";
   let idleTimer, contactAsked = false, welcomeShown = false;
@@ -1290,20 +1293,46 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
 
   function contactDue() {
     if (forceContact) return !contactAsked;
-    return !contactAsked && !store.get('ari_contact_done') && Date.now() - +(store.get('ari_contact_asked') || 0) > ASK_EVERY_MS;
+    // Never ask the site owner (browsers marked with ?me=1).
+    return !contactAsked && !store.get('ari_owner') && !store.get('ari_contact_done') && Date.now() - +(store.get('ari_contact_asked') || 0) > ASK_EVERY_MS;
   }
-  function armIdle() {
+  function armIdle(closed = false) {
     clearTimeout(idleTimer);
-    if (contactDue()) idleTimer = setTimeout(askContact, IDLE_MS);
+    if (!contactDue()) return;
+    if (forceContact) { idleTimer = setTimeout(askConsent, 5000); return; }
+    if (closed ? msgIndex >= 1 : msgIndex >= MIN_QUESTIONS) idleTimer = setTimeout(askConsent, closed ? QUIET_CLOSED_MS : QUIET_OPEN_MS);
   }
 
-  function askContact() {
-    if (chatInput.value.trim() || ari.classList.contains('searching')) return armIdle();
-    contactAsked = true;
-    store.set('ari_contact_asked', String(Date.now()));
+  // A bot message; with `delay`, typing dots show first.
+  function addBotMessage(html, delay = 0) {
     const div = document.createElement('div');
     div.className = 'ari-chat-msg bot';
-    div.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Before you go: if you're happy to, leave your name and email so Prashant can get back to you. And if you have a minute, tell me one thing that would make me better. All optional.
+    div.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${delay ? '<span class="ari-loader"><span>.</span><span>.</span><span>.</span></span>' : html}</span>`;
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    if (delay) setTimeout(() => { div.querySelector('.ari-bubble').innerHTML = html; chatBody.scrollTop = chatBody.scrollHeight; }, delay);
+  }
+
+  function askConsent() {
+    if (chatInput.value.trim() || ari.classList.contains('searching')) return armIdle(!widget.classList.contains('is-open'));
+    contactAsked = true;
+    store.set('ari_contact_asked', String(Date.now()));
+    addBotMessage(`Quick one: could I ask you two short questions, so Prashant can follow up and I can get better? 🦀
+      <div class="ari-contact-actions ari-consent" style="margin-top:8px"><button type="button" class="yes" style="background:var(--rust);color:#fff">Sure</button><button type="button" class="skip">Not now</button></div>`);
+    if (!widget.classList.contains('is-open')) showNotice('Ari left you a message', 'Quick one: could I ask you two short questions?');
+  }
+
+  chatBody.addEventListener('click', e => {
+    const btn = e.target.closest('.ari-consent button');
+    if (!btn) return;
+    const yes = btn.classList.contains('yes');
+    btn.closest('.ari-consent').remove();
+    const reply = document.createElement('div');
+    reply.className = 'ari-chat-msg user';
+    reply.textContent = yes ? 'Sure' : 'Not now';
+    chatBody.appendChild(reply);
+    if (!yes) { addBotMessage("No problem. I'm here if anything else comes up.", 700); return; }
+    addBotMessage(`Thanks! Your name and email, so Prashant can get back to you, and one thing that would make me better. Fill in whatever you like.
       <form class="ari-contact" novalidate>
         <input name="name" type="text" placeholder="Name" maxlength="80" autocomplete="name">
         <input name="email" type="email" placeholder="Email" maxlength="120" autocomplete="email">
@@ -1311,11 +1340,8 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
         <div class="ari-contact-err"></div>
         <div class="ari-contact-actions"><button type="submit">Send</button><button type="button" class="skip">No thanks</button></div>
         <div class="ari-contact-note">Only Prashant sees this.</div>
-      </form></span>`;
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-    if (!widget.classList.contains('is-open')) showNotice('Ari left you a message', 'Mind leaving your name and email, and a quick note on how I could be better?');
-  }
+      </form>`, 700);
+  });
 
   // Ari's reply to the form arrives as its own message, after a short typing pause.
   function closeForm(form, note, reply) {
@@ -1323,15 +1349,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     done.className = 'feedback-sent';
     done.textContent = note;
     form.replaceWith(done);
-    const div = document.createElement('div');
-    div.className = 'ari-chat-msg bot';
-    div.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble"><span class="ari-loader"><span>.</span><span>.</span><span>.</span></span></span>`;
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-    setTimeout(() => {
-      div.querySelector('.ari-bubble').textContent = reply;
-      chatBody.scrollTop = chatBody.scrollHeight;
-    }, 700);
+    addBotMessage(reply.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]), 700);
   }
 
   chatBody.addEventListener('click', e => {

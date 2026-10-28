@@ -73,10 +73,11 @@ const KEEP_WITHIN = 0.08; // keep chunks scoring within this of the best one
 const MAX_CHUNKS = 6;
 
 // Embeds the question alone and with the previous user turn, so short follow-ups
-// ("is the vectorization deep?") retrieve from the topic being discussed.
-async function retrieve(env, query, history = []) {
+// ("is the vectorization deep?") retrieve from the topic being discussed. `rewrites` are
+// extra search queries from the corrective step below.
+async function retrieve(env, query, history = [], rewrites = []) {
   const prevUser = [...history].reverse().find(m => m.role === 'user');
-  const texts = prevUser ? [query, `${prevUser.content}\n${query}`] : [query];
+  const texts = (prevUser ? [query, `${prevUser.content}\n${query}`] : [query]).concat(rewrites);
   const { data } = await env.AI.run('@cf/baai/bge-base-en-v1.5', { text: texts });
   const results = await Promise.all(data.map(v => env.VECTORIZE.query(v, { topK: 8, returnMetadata: true })));
   const best = new Map();
@@ -92,6 +93,37 @@ async function retrieve(env, query, history = []) {
     topScore,
     sources: kept.map(m => `${m.id}:${m.score.toFixed(2)}`),
   };
+}
+
+// Corrective RAG: when the first retrieval isn't a strong match, the LLM restates the question
+// as standalone search queries in the write-ups' vocabulary and we retrieve again, keeping
+// whichever result scores higher. Small talk skips it, since there is nothing to retrieve.
+const SMALLTALK = /^(hi+|hey+|hello+|yo|sup|thanks?|thank you|ok(ay)?|cool|nice|great|bye|good (morning|evening|afternoon))\b[\s!.?]*$/i;
+const REWRITE_PROMPT = `You rewrite a visitor's question into search queries for a knowledge base of write-ups about Prashant Singh: his projects, work experience, skills, education, hackathons, and Ari (the RAG chatbot on his portfolio, which is who the visitor is talking to).
+Rules:
+- Output 1 to 3 short search queries, one per line, and nothing else: no numbering, no quotes, no explanation.
+- Resolve references from the conversation: "you", "your", "this bot" or "this prompt" mean Ari; "it", "that" or "the project" mean whatever was just discussed.
+- Use the words a write-up would use, e.g. "Ari technical specs: which LLM Ari runs on", "CollectIQ collections prioritisation results", "Prashant internship i3digital health product management".
+- Fix spelling and expand abbreviations.`;
+
+async function rewriteQuery(env, message, history) {
+  const recent = history.slice(-4).map(m => `${m.role === 'user' ? 'Visitor' : 'Ari'}: ${m.content.slice(0, 300)}`).join('\n');
+  const llm = await callLLM(env, [
+    { role: 'system', content: REWRITE_PROMPT },
+    { role: 'user', content: `${recent ? `Conversation so far:\n${recent}\n\n` : ''}Latest question: ${message}` },
+  ], { maxTokens: 300 });
+  return llm.content.split('\n').map(l => l.replace(/^[\s\d.)*•-]+/, '').replace(/^["']|["']$/g, '').trim())
+    .filter(l => l.length > 3).slice(0, 3);
+}
+
+// CRAG's evaluator: a rewrite can lift the score just by adding "Prashant Singh", which matches
+// his general profile. Before trusting a rescued retrieval, ask whether it actually answers the question.
+async function contextAnswers(env, message, context) {
+  const llm = await callLLM(env, [
+    { role: 'system', content: 'You check search results. Reply with exactly one word: YES if the context contains information that answers the question, NO if it does not.' },
+    { role: 'user', content: `Question: ${message}\n\nContext:\n${context.slice(0, 2500)}` },
+  ], { maxTokens: 200 });
+  return /\byes\b/i.test(llm.content) && !/\bno\b/i.test(llm.content.slice(0, 5));
 }
 
 // Reasoning comes back in a separate field, so only strip leaked planning lines at the very
@@ -316,7 +348,22 @@ export default {
           getHistory(env, sessionId),
           getUserName(env, sessionId),
         ]);
-        const { context, topScore, sources } = await retrieve(env, message, history);
+        let { context, topScore, sources } = await retrieve(env, message, history);
+        let rewrites = [], scoreBefore = null, graded = null;
+        if (topScore < STRONG_MATCH && !SMALLTALK.test(message.trim())) {
+          try {
+            rewrites = await rewriteQuery(env, message, history);
+            scoreBefore = topScore;
+            if (rewrites.length) {
+              const second = await retrieve(env, message, history, rewrites);
+              if (second.topScore > topScore) {
+                graded = await contextAnswers(env, message, second.context);
+                if (graded) ({ context, topScore, sources } = second);
+                else ({ context, topScore, sources } = { context: '', topScore: Math.min(topScore, WEAK_MATCH - 0.001), sources: [] });
+              }
+            }
+          } catch {} // the first retrieval still stands
+        }
         const match = topScore >= STRONG_MATCH ? 'strong' : topScore >= WEAK_MATCH ? 'weak' : 'none';
         const found = match !== 'none';
 
@@ -369,7 +416,8 @@ export default {
           try {
             await env.SESSIONS.put(
               `log:${Date.now()}:${sessionId}`,
-              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs, found, match, topScore: Math.round(topScore * 1000) / 1000, sources, model: replyModel }),
+              JSON.stringify({ ts: Date.now(), sessionId, visitorId, message, reply, latencyMs, found, match, topScore: Math.round(topScore * 1000) / 1000, sources, model: replyModel,
+                ...(scoreBefore != null && { rewrites, scoreBefore: Math.round(scoreBefore * 1000) / 1000, graded }) }),
               { expirationTtl: 86400 * 30 },
             );
           } catch {} // never block the user
