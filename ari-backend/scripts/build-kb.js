@@ -50,7 +50,7 @@ async function main() {
 
   const res = await fetch(WORKER_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Seed-Key': process.env.SEED_KEY || '' },
     body: JSON.stringify({ chunks: allChunks }),
   });
 

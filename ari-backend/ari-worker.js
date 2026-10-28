@@ -9,25 +9,25 @@ const FALLBACK_MODEL = 'google/gemma-4-26b-a4b-it:free';
 
 const TYPED_GREETINGS = {
   recruiter: [
-    "Hi! I'm Ari, Prashant's resident crab. He built me for portfolios like this — ask me anything about his work, and I'll pinch up the answers.",
-    "Oh, a recruiter! Shell yeah — I'm Ari, the crab who lives in this portfolio. Dig into anything you want to know about Prashant.",
+    "Hi, I'm Ari — I know Prashant's work in detail and can connect you directly if you'd like. Ask me anything.",
+    "Welcome! I'm Ari, Prashant's AI assistant. I can walk you through his experience and projects — what would you like to know?",
   ],
   builder: [
-    "Hey builder! I'm Ari, a little crab chatbot Prashant made. Peek under my shell — ask me anything about his stack or projects.",
-    "A fellow builder! Love it. I'm Ari — Prashant's crab sidekick. Ask me about the tech or the projects, I've watched him build it all.",
+    "A fellow builder! I'm Ari, Prashant's AI assistant. Peek under my shell: ask me how I'm built or about his projects.",
+    "Hey builder! I'm Ari. Ask me about Prashant's tech, projects, or how things are built — I've got the details.",
   ],
   curious: [
-    "Hey there! I'm Ari, the crab living in Prashant's portfolio. Curious minds welcome — ask me anything about him!",
-    "A curious visitor — my favorite kind! I'm Ari, the resident crab. Prashant's my maker, and I know all about his work. What do you want to know?",
+    "Hi, I'm Ari — I know Prashant's work in detail and can connect you directly if you'd like. Ask me anything.",
+    "A curious visitor, my favourite kind! I'm Ari, the crab who lives in Prashant's portfolio. Ask me anything about his work.",
   ],
 };
 
 const RETURN_GREETINGS = [
-  "Welcome back! Ready to crab more about Prashant?",
-  "You're back! I was just shell-fing through some memories of Prashant. What next?",
-  "Hey again! My claws have been idle — ask me something about Prashant!",
-  "Back for more? I've got plenty of crabby stories about Prashant. Shoot!",
-  "Welcome back to the shell — Prashant's portfolio, that is. What's on your mind?",
+  "Welcome back! What would you like to know about Prashant?",
+  "You're back! Ready to dive into more of Prashant's work?",
+  "Hey again! I've got all the details ready. What's on your mind?",
+  "Back for more? My claws are ready. I can go deeper on any project.",
+  "Welcome back — what's next? Happy to walk through anything.",
 ];
 
 function pickRandom(arr) {
@@ -411,6 +411,10 @@ export default {
       }
 
       if (url.pathname === '/seed-kb' && request.method === 'POST') {
+        // Writes to the knowledge base: disabled unless the SEED_KEY secret is set and sent as X-Seed-Key.
+        if (!env.SEED_KEY || request.headers.get('X-Seed-Key') !== env.SEED_KEY) {
+          return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: jsonHeaders });
+        }
         const { chunks } = await request.json();
         if (!chunks || !chunks.length) {
           return new Response(JSON.stringify({ error: 'chunks array required' }), {

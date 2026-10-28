@@ -866,6 +866,43 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
   .crab-hole{display:none}
 }
 
+/* ─── Ari notice: first-visit welcome and "left you a message" ─── */
+#ariNotice{
+  position:absolute;top:4px;right:96px;width:250px;z-index:203;
+  background:var(--page);border:1px solid var(--stone);border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.14);padding:10px 30px 11px 12px;
+  font-family:var(--sans);color:var(--ink);cursor:pointer;
+  opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .35s ease,transform .35s ease;
+}
+#ariNotice.show{opacity:1;transform:none;pointer-events:auto}
+.assistant-widget.is-open #ariNotice{display:none}
+.assistant-widget.has-notice #ariThought,#ariThought.done{opacity:0 !important}
+.ari-notice-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;color:var(--rust);letter-spacing:.02em;margin-bottom:4px}
+.ari-notice-dot{min-width:16px;height:16px;border-radius:8px;background:var(--rust);color:#fff;font-size:10px;display:inline-flex;align-items:center;justify-content:center}
+.ari-notice-text{font-size:12.5px;line-height:1.45;color:var(--ink-mid)}
+.ari-notice-x{position:absolute;top:6px;right:8px;border:none;background:none;color:var(--ink-light);font-size:12px;cursor:pointer;padding:2px}
+.ari-notice-x:hover{color:var(--rust)}
+#clawCursor .ari-badge{position:absolute;top:6px;right:8px;min-width:18px;height:18px;border-radius:9px;background:var(--rust);color:#fff;font:500 10px/18px var(--sans);text-align:center;display:none;box-shadow:0 0 0 2px var(--page)}
+.assistant-widget.has-notice #clawCursor .ari-badge{display:block}
+.assistant-widget.is-open #clawCursor .ari-badge{display:none}
+@media(max-width:700px){
+  #ariNotice{right:76px;top:-4px;width:auto;left:auto;max-width:min(250px,calc(100vw - 7rem))}
+  #clawCursor .ari-badge{top:-2px;right:-2px}
+}
+
+/* ─── Contact + feedback form inside a bot bubble ─── */
+.ari-contact{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.ari-contact input,.ari-contact textarea{border:1px solid var(--stone);border-radius:5px;padding:6px 8px;font-size:12px;font-family:var(--sans);color:var(--ink);background:var(--page);outline:none;resize:vertical;width:100%}
+.ari-contact input:focus,.ari-contact textarea:focus{border-color:var(--rust)}
+.ari-contact input::placeholder,.ari-contact textarea::placeholder{color:var(--ink-light)}
+.ari-contact-actions{display:flex;gap:6px;align-items:center}
+.ari-contact-actions button{border:none;border-radius:5px;padding:5px 10px;font-size:11.5px;cursor:pointer;font-family:var(--sans)}
+.ari-contact-actions button[type=submit]{background:var(--rust);color:#fff}
+.ari-contact-actions .skip{background:none;color:var(--ink-light)}
+.ari-contact-actions .skip:hover{color:var(--ink)}
+.ari-contact-err{font-size:10.5px;color:#991b1b;min-height:0}
+.ari-contact-note{font-size:10px;color:var(--ink-light)}
+
 .rating-row{display:flex;gap:6px;margin-top:6px;align-items:center;user-select:none}
 .rating-btn{border:none;background:var(--stone-light);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:3px;color:var(--ink-mid);transition:all .15s;border:1px solid transparent}
 .rating-btn:hover{background:var(--stone);color:var(--ink)}
@@ -885,6 +922,7 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
 <div class="assistant-widget">
 
 <div id="clawCursor" class="in-hole">
+  <span class="ari-badge" aria-hidden="true">1</span>
   <svg viewBox="0 0 44 44" width="60" height="60" fill="none">
     <filter id="cShadow">
       <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
@@ -919,6 +957,11 @@ footer{padding:1.5rem 0;background:var(--page);border-top:1px solid var(--line)}
 </div>
 
 <div id="ariThought">Ask me about Prashant 🦀</div>
+<div id="ariNotice" role="button" tabindex="0" aria-live="polite">
+  <button class="ari-notice-x" type="button" aria-label="Dismiss">✕</button>
+  <div class="ari-notice-head"><span class="ari-notice-dot">1</span><span id="ariNoticeTitle">You have 1 new message</span></div>
+  <div class="ari-notice-text" id="ariNoticeText"></div>
+</div>
 
 <!-- ARI CHAT PANEL -->
 <div id="ariChatPanel">
@@ -996,24 +1039,9 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     return id;
   }
 
-  // ─── Rotating thought bubble ─────────
+  // ─── Thought bubble: one quiet hint, then it gets out of the way ─────────
   const thoughtEl = document.getElementById('ariThought');
-  if (thoughtEl) {
-    const phrases = [
-      'I\'m a chatbot. Click me 🦀',
-      'Psst — I answer questions',
-      'Not a real crab. A chatbot.',
-      'Chat with me about him 👆',
-      'Recruiter? Builder? Curious?',
-      'Go on, click me 🦀',
-      'I talk. You click. Deal?',
-    ];
-    let idx = 0;
-    setInterval(() => {
-      idx = (idx + 1) % phrases.length;
-      thoughtEl.textContent = phrases[idx];
-    }, 5000);
-  }
+  if (thoughtEl) setTimeout(() => thoughtEl.classList.add('done'), 12000);
 
   // ─── Greeting sequence ────────────────
   setTimeout(() => {
@@ -1032,9 +1060,10 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
         body: JSON.stringify({ sessionId, visitorId: getVisitorId() }),
       });
       const data = await res.json();
-      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${data.greeting}</span></div>`;
+      // Visitors who saw the welcome card get the same message as the opening line of the chat.
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${welcomeShown ? WELCOME_TEXT : data.greeting}</span></div>`;
     } catch {
-      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Hi, I'm Ari! Ask me anything about Prashant.</span></div>`;
+      chatBody.innerHTML = `<div class="ari-chat-msg bot"><span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">${welcomeShown ? WELCOME_TEXT : "Hi, I'm Ari! Ask me anything about Prashant."}</span></div>`;
     }
     chatInput.disabled = false;
     chatSend.disabled = false;
@@ -1044,9 +1073,12 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   function openChat() {
     if (widget.classList.contains('is-open')) return;
     widget.classList.add('is-open');
+    hideNotice();
     chatOpenCount++;
-    if (chatOpenCount === 1) { greetAri(); if (window.ariTrack) window.ariTrack('ari_open'); }
+    if (chatOpenCount === 1) { greetAri().then(armIdle); if (window.ariTrack) window.ariTrack('ari_open'); }
+    else armIdle();
     chatInput.focus();
+    chatBody.scrollTop = chatBody.scrollHeight;
   }
 
   function closeChat() {
@@ -1088,6 +1120,7 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
   chatSend.disabled = false;
 
   async function sendMessage(msg) {
+    try { localStorage.setItem('ari_chatted', '1'); } catch {}
     chatBody.innerHTML += `<div class="ari-chat-msg user">${msg}</div>`;
     msgIndex++;
 
@@ -1137,9 +1170,11 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     chatInput.disabled = false;
     chatSend.disabled = false;
     ari.classList.remove('searching');
+    armIdle();
   }
 
   chatInput.addEventListener('keydown', (e) => {
+    clearTimeout(idleTimer);
     if (e.key === 'Enter' && chatInput.value.trim()) {
       const msg = chatInput.value.trim();
       chatInput.value = '';
@@ -1213,7 +1248,117 @@ window.addEventListener('scroll', updateActiveNav, {passive:true});
     revDiv.querySelector('button').click();
   });
 
-  // ─── Project card clicks ───────────────────────
+  // ─── Ari's own messages ────────────────────────
+  // First visit: a "You have 1 new message" welcome. After Ari has been opened, 45s with no
+  // question (open or closed) → one polite ask for name, email and feedback, at most once a week.
+  const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+  const CONTACT_API = 'https://ari-instrumentation.pages.dev/api/contact';
+  // ?ari=contact forces the name/email/feedback ask after 5s, for testing.
+  const forceContact = new URLSearchParams(location.search).get('ari') === 'contact';
+  const IDLE_MS = forceContact ? 5000 : 45000, ASK_EVERY_MS = 7 * 86400000;
+  const notice = document.getElementById('ariNotice');
+  const WELCOME_TEXT = "Hi, I'm Ari, Prashant's AI assistant 👋 Ask me anything about his work, projects or experience.";
+  let idleTimer, contactAsked = false, welcomeShown = false;
+
+  function showNotice(title, text) {
+    document.getElementById('ariNoticeTitle').textContent = title;
+    document.getElementById('ariNoticeText').textContent = text;
+    notice.classList.add('show');
+    widget.classList.add('has-notice');
+  }
+  function hideNotice() {
+    notice.classList.remove('show');
+    widget.classList.remove('has-notice');
+  }
+  notice.addEventListener('click', e => {
+    if (e.target.closest('.ari-notice-x')) { e.stopPropagation(); hideNotice(); return; }
+    openChat();
+  });
+  notice.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openChat(); } });
+
+  // Once per visit until the visitor has asked Ari something; ?ari=welcome forces it for testing.
+  const session = { get: k => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch {} } };
+  const forceWelcome = new URLSearchParams(location.search).get('ari') === 'welcome';
+  if (forceWelcome || (!store.get('ari_chatted') && !session.get('ari_welcomed'))) {
+    setTimeout(() => {
+      if (widget.classList.contains('is-open') || chatOpenCount) return;
+      session.set('ari_welcomed', '1');
+      welcomeShown = true;
+      showNotice('You have 1 new message', WELCOME_TEXT);
+    }, 4000);
+  }
+
+  function contactDue() {
+    if (forceContact) return !contactAsked;
+    return !contactAsked && !store.get('ari_contact_done') && Date.now() - +(store.get('ari_contact_asked') || 0) > ASK_EVERY_MS;
+  }
+  function armIdle() {
+    clearTimeout(idleTimer);
+    if (contactDue()) idleTimer = setTimeout(askContact, IDLE_MS);
+  }
+
+  function askContact() {
+    if (chatInput.value.trim() || ari.classList.contains('searching')) return armIdle();
+    contactAsked = true;
+    store.set('ari_contact_asked', String(Date.now()));
+    const div = document.createElement('div');
+    div.className = 'ari-chat-msg bot';
+    div.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble">Before you go: if you're happy to, leave your name and email so Prashant can get back to you. And if you have a minute, tell me one thing that would make me better. All optional.
+      <form class="ari-contact" novalidate>
+        <input name="name" type="text" placeholder="Name" maxlength="80" autocomplete="name">
+        <input name="email" type="email" placeholder="Email" maxlength="120" autocomplete="email">
+        <textarea name="feedback" rows="2" placeholder="How could Ari be better?" maxlength="600"></textarea>
+        <div class="ari-contact-err"></div>
+        <div class="ari-contact-actions"><button type="submit">Send</button><button type="button" class="skip">No thanks</button></div>
+        <div class="ari-contact-note">Only Prashant sees this.</div>
+      </form></span>`;
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    if (!widget.classList.contains('is-open')) showNotice('Ari left you a message', 'Mind leaving your name and email, and a quick note on how I could be better?');
+  }
+
+  // Ari's reply to the form arrives as its own message, after a short typing pause.
+  function closeForm(form, note, reply) {
+    const done = document.createElement('span');
+    done.className = 'feedback-sent';
+    done.textContent = note;
+    form.replaceWith(done);
+    const div = document.createElement('div');
+    div.className = 'ari-chat-msg bot';
+    div.innerHTML = `<span class="ari-msg-avatar">${miniAriSvg()}</span><span class="ari-bubble"><span class="ari-loader"><span>.</span><span>.</span><span>.</span></span></span>`;
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    setTimeout(() => {
+      div.querySelector('.ari-bubble').textContent = reply;
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }, 700);
+  }
+
+  chatBody.addEventListener('click', e => {
+    const skip = e.target.closest('.ari-contact .skip');
+    if (!skip) return;
+    closeForm(skip.closest('.ari-contact'), 'Skipped', "No problem. I'm here if anything else comes up.");
+  });
+
+  chatBody.addEventListener('submit', e => {
+    const form = e.target.closest('.ari-contact');
+    if (!form) return;
+    e.preventDefault();
+    const val = n => form.elements[n].value.trim();
+    const name = val('name'), email = val('email'), feedback = val('feedback');
+    const err = form.querySelector('.ari-contact-err');
+    if (!name && !email && !feedback) { err.textContent = 'Add your email or a note, or tap "No thanks".'; return; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'That email doesn\'t look right.'; return; }
+    fetch(CONTACT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ v: getVisitorId(), s: getSessionId(), name, email, feedback }),
+    }).catch(() => {});
+    store.set('ari_contact_done', String(Date.now()));
+    const who = name ? ', ' + name.split(/\s+/)[0] : '';
+    const msg = email ? `Thanks${who}! Prashant will be in touch.` : `Thanks${who}, that helps me get better. 🦀`;
+    closeForm(form, '✓ Sent', msg);
+  });
 
   // ─── Project card clicks ───────────────────────
   document.querySelectorAll('.proj-card[data-href]').forEach(card => {
